@@ -1,0 +1,55 @@
+{
+  "name": "benrosar.io",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node --test tests/*.test.mjs",
+    "test:integration": "node --test tests/integration/*.test.mjs",
+    "dev:vinext": "vinext dev --port 3001",
+    "build:vinext": "vinext build",
+    "start:vinext": "wrangler dev --config dist/server/wrangler.json --config wrangler.response-store.jsonc --local",
+    "deploy:vinext": "vinext-cloudflare deploy",
+    "deploy:response-store": "wrangler deploy --config wrangler.response-store.jsonc",
+    "check:vinext": "vinext check",
+    "check:cloudflare": "vinext-cloudflare deploy --dry-run",
+    "test:integration:vinext": "TEST_RUNTIME=vinext node --test tests/integration/*.test.mjs",
+    "deploy:vinext:warm": "vinext-cloudflare deploy --experimental-warm-cdn-cache"
+  },
+  "dependencies": {
+    "@cloudflare/vite-plugin": "^1.54.10",
+    "next": "^16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-markdown": "^10.1.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1",
+    "vinext": "^1.0.0-beta.10"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-response-store": "^0.1.0-beta.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vinext/cloudflare": "^1.0.0-beta.8",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
+    "react-server-dom-webpack": "19.2.8",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite": "^8.3.0",
+    "wrangler": "^4.132.0"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.12.2": true,
+    "esbuild@0.28.1": true,
+    "workerd@1.20260915.1": true
+  },
+  "type": "module"
+}

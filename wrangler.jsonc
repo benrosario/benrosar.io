@@ -1,0 +1,53 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "benrosar-io",
+  "workers_dev": true,
+  "vars": {
+    "SIERRA_API_URL": "https://api-production-4ae12.up.railway.app",
+    "SIERRA_GOOGLE_CLIENT_ID": "964260374321-kdlm29nfa7vueu6u26nvbbbbsk1ofgr7.apps.googleusercontent.com"
+  },
+  "routes": [
+    {
+      "pattern": "benrosar.io",
+      "custom_domain": true
+    }
+  ],
+  "compatibility_date": "2026-09-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "vinext/server/fetch-handler",
+  "assets": {
+    "directory": "dist/client",
+    "not_found_handling": "none",
+    "binding": "ASSETS"
+  },
+  "images": {
+    "binding": "IMAGES"
+  },
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  },
+  "cache": {
+    "enabled": false
+  },
+  "services": [
+    {
+      "binding": "RESPONSE_STORE",
+      "service": "benrosar-io-response-store",
+      "entrypoint": "ResponseStoreService"
+    }
+  ],
+  "account_id": "abfb73a975a267f55e5755d5cfc9be70",
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  }
+}
