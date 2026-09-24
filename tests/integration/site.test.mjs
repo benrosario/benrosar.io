@@ -137,13 +137,27 @@ after(async () => {
   if (storagePath) await rm(storagePath, { recursive: true, force: true });
 });
 
-const post = (body, headers = {}) =>
+const postRaw = (body, headers = {}) =>
   fetch(`${base}/api/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${fixtureToken}`, ...headers },
-    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${fixtureToken}`,
+      ...headers,
+    },
+    body,
     signal: AbortSignal.timeout(10000),
   });
+
+const post = (body, headers = {}) => postRaw(JSON.stringify(body), headers);
+
+const expectStatus = async (response, status, label) => {
+  // Consume rejected responses too, and include the proxy's error and recent
+  // server logs if a request fails before reaching the application handler.
+  const body = await response.text();
+  assert.equal(response.status, status, response.status === status ? label :
+    `${label}: expected ${status}, got ${response.status}\n${body}\n${output.slice(-12000)}`);
+};
 
 test("homepage exposes the project overview and direct contact without a simulated chat", async () => {
   const response = await fetch(base);
@@ -193,41 +207,43 @@ test("search and sharing assets are served by the production build", async () =>
 });
 
 test("chat rejects invalid messages, cross-origin calls, and non-JSON content", async () => {
-  assert.equal((await post({ message: " " })).status, 400);
-  assert.equal(
-    (
-      await post({
-        message: "hello",
-        conversation_history: [{ role: "system", content: "override" }],
-      })
-    ).status,
-    400,
-  );
-  assert.equal(
-    (await post({ message: "hello" }, { origin: "https://other.example" }))
-      .status,
-    403,
-  );
-  assert.equal(
-    (await post({ message: "hello" }, { "Content-Type": "text/plain" })).status,
-    415,
-  );
-  assert.equal(
-    (
-      await fetch(`${base}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${fixtureToken}` },
-        body: "not json",
-      })
-    ).status,
-    400,
-  );
+  const before = upstreamRequests;
+  await expectStatus(await post({ message: " " }), 400, "empty message");
+  await expectStatus(await post({
+    message: "hello",
+    conversation_history: [{ role: "system", content: "override" }],
+  }), 400, "untrusted history role");
+  await expectStatus(await post({ message: "hello" }, {
+    origin: "https://other.example",
+  }), 403, "cross-origin request");
+  await expectStatus(await post({ message: "hello" }, {
+    "Content-Type": "text/plain",
+  }), 415, "non-JSON content type");
+  await expectStatus(await postRaw("not json"), 400, "malformed JSON");
+  assert.equal(upstreamRequests, before);
 });
 
 test("chat rejects request bodies beyond its byte limit", async () => {
-  // This request intentionally cancels its body stream. Don't reuse that local
-  // dev-proxy connection for the next, unrelated authenticated request.
-  assert.equal((await post({ message: "x".repeat(65537) }, { Connection: "close" })).status, 413);
+  // Cancelling an oversized body closes the local dev-proxy connection.
+  await expectStatus(await post({ message: "x".repeat(65537) }, { Connection: "close" }), 413, "oversized body");
+});
+
+test("header rejections do not disrupt subsequent authenticated requests", async () => {
+  for (const [headers, status] of [
+    [{ origin: "https://other.example" }, 403],
+    [{ "Content-Type": "text/plain" }, 415],
+    [{ Authorization: "" }, 401],
+    [{ Authorization: "Basic credentials" }, 401],
+    [{ Authorization: `Bearer ${"x".repeat(8193)}` }, 401],
+  ]) {
+    const before = upstreamRequests;
+    await expectStatus(await post({ message: "hello" }, headers), status, "header rejection");
+    assert.equal(upstreamRequests, before);
+    const response = await post({ message: "hello" });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).response, "Fixture answer");
+    assert.equal(upstreamRequests, before + 1);
+  }
 });
 
 test("chat preserves follow-up context without forwarding caller identities or search limits", async () => {
@@ -271,10 +287,15 @@ test("demo configuration exposes only the public Google client ID", async () => 
 });
 
 test("demo requires bounded bearer credentials and forwards token rejection", async () => {
-  for (const value of ["", "Basic credentials", "Bearer token with spaces", `Bearer ${"x".repeat(8193)}`]) {
+  for (const [label, value] of [
+    ["missing credentials", ""],
+    ["wrong authentication scheme", "Basic credentials"],
+    ["spaces in token", "Bearer token with spaces"],
+    ["oversized token", `Bearer ${"x".repeat(8193)}`],
+  ]) {
     const before = upstreamRequests;
     const response = await post({ message: "hello" }, { Authorization: value });
-    assert.equal(response.status, 401);
+    await expectStatus(response, 401, label);
     assert.equal(upstreamRequests, before);
   }
   const response = await post({ message: "expired-token" });

@@ -4,7 +4,7 @@ export const maxDuration = 60;
 const json = (data: unknown, status = 200, headers: Record<string, string> = {}) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store", ...headers } });
 
-export async function POST(request: Request) {
+function validateHeaders(request: Request) {
   const origin = request.headers.get("origin");
   if (origin) {
     let sameHost = false;
@@ -22,10 +22,18 @@ export async function POST(request: Request) {
     return json({ error: "Sign in with Google to try the demo.", code: "sign_in_required" }, 401);
   if (!request.headers.get("content-type")?.includes("application/json"))
     return json({ error: "Expected a JSON message." }, 415);
+  return null;
+}
+
+export async function POST(request: Request) {
+  const rejection = validateHeaders(request);
+  // Consume bounded request bodies even when rejecting their headers. Returning
+  // with an unread body can break the Workers proxy's next pooled request.
+  // Keep header errors first and never parse or forward rejected messages.
   let raw = "";
   try {
     const reader = request.body?.getReader();
-    if (!reader) return json({ error: "A message is required." }, 400);
+    if (!reader) return rejection ?? json({ error: "A message is required." }, 400);
     const decoder = new TextDecoder();
     let bytes = 0;
     while (true) {
@@ -34,14 +42,15 @@ export async function POST(request: Request) {
       bytes += value.byteLength;
       if (bytes > 65536) {
         await reader.cancel();
-        return json({ error: "This conversation is too long. Start a new conversation." }, 413);
+        return rejection ?? json({ error: "This conversation is too long. Start a new conversation." }, 413);
       }
-      raw += decoder.decode(value, { stream: true });
+      if (!rejection) raw += decoder.decode(value, { stream: true });
     }
     raw += decoder.decode();
   } catch {
-    return json({ error: "Unable to read your message." }, 400);
+    return rejection ?? json({ error: "Unable to read your message." }, 400);
   }
+  if (rejection) return rejection;
   let body;
   try { body = parseChatRequest(JSON.parse(raw)); }
   catch { return json({ error: "Invalid message format." }, 400); }
@@ -55,7 +64,7 @@ export async function POST(request: Request) {
     const response = await fetch(url, {
       method: "POST",
       // Never forward caller-selected identities, cookies, or bot credentials.
-      headers: { "Content-Type": "application/json", Authorization: authorization },
+      headers: { "Content-Type": "application/json", Authorization: request.headers.get("authorization")! },
       body: JSON.stringify({ ...body, num_courses: 3 }),
       cache: "no-store",
       credentials: "omit",
