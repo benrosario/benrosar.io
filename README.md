@@ -1,182 +1,94 @@
 # Ben Rosario — portfolio
 
-A personal portfolio using React, TypeScript, Tailwind CSS v4, and App Router APIs.
-Cloudflare Workers runs the site through vinext; the original Next.js commands
-remain available for comparison and type checking.
+My personal website at **[benrosar.io](https://benrosar.io)**, featuring my projects,
+background, and résumé. I’m studying Cognitive Science at UC Berkeley and seeking
+Summer 2027 internships in software engineering and applied AI.
 
-## Local development
+[View the site](https://benrosar.io) · [Résumé](https://benrosar.io/resume.pdf) ·
+[LinkedIn](https://www.linkedin.com/in/ben-rosario) · [Email](mailto:hello@benrosar.io)
 
-Use Node.js 22.18+ and install locked dependencies with `npm ci`.
+## What I built
+
+I built this portfolio to make my work easy to explore, from the problem behind
+each project to the implementation decisions and a working demo.
+
+- **Project case studies** with technical decisions, usage context, and links to
+  source code and regression tests.
+- **An interactive Sierra Class Helper demo** with Google sign-in, conversation
+  history, Markdown responses, and clear feedback for usage limits and failures.
+- **A responsive interface** with theme switching, keyboard focus styles, and
+  reduced-motion support.
+- **Sharing and discovery features** including project-specific social previews,
+  a sitemap, and search metadata.
+
+The featured project, [Sierra Class Helper](https://github.com/benrosario/sierra-class-helper),
+is a Discord course-finding assistant adopted by 40+ Sierra College students,
+searching approximately 2,000 course records. This repository contains the
+portfolio and web demo integration; the linked repository contains the Python
+backend and retrieval pipeline.
+
+## Engineering choices
+
+**Server-rendered content, interactive components where needed.** The homepage
+and case studies render on the server. Theme switching and the chat demo run in
+client components. Project content lives in a typed registry, so adding a project
+creates both its homepage card and case study route without a CMS.
+
+**A bounded live demo.** The browser sends a Google ID token through the site's
+API proxy to the Sierra backend, which verifies identity and enforces three
+lifetime attempts per account. The proxy validates request size and conversation
+history, refuses redirects, and returns controlled error messages. Tokens stay
+in browser memory, and requests are never automatically retried because a failed
+attempt may still consume quota. Bot credentials and model API keys are not part
+of the website.
+
+**Production runtime coverage.** The site uses React, TypeScript, Tailwind CSS v4,
+and Next.js App Router APIs, deployed to Cloudflare Workers through vinext.
+The original Next.js commands remain available for comparison and type checking.
+The CI workflow exercises production pages and API routes in both runtimes using
+a local mock backend, without paid model calls.
+
+## Run locally
+
+Use Node.js 22.18+.
 
 ```bash
+npm ci
 npm run dev:vinext
 ```
 
-Open http://localhost:3001. For the original Next.js server, use `npm run dev`
-and http://localhost:3000.
+Open [localhost:3001](http://localhost:3001). To use the original Next.js server,
+run `npm run dev` and open [localhost:3000](http://localhost:3000).
 
-## Portfolio implementation
+### Optional live demo
 
-This portfolio uses Next.js App Router, React, TypeScript, and Tailwind CSS v4
-with custom design tokens. The homepage and project case studies render on the
-server; the theme picker and optional authenticated demo are client components. No database or
-CMS is required for the current content.
+The project overview is available without the live demo. Chat requires two
+runtime settings:
 
-### Content
+| Variable | Purpose |
+| --- | --- |
+| `SIERRA_API_URL` | Sierra FastAPI base URL, without `/demo/chat` |
+| `SIERRA_GOOGLE_CLIENT_ID` | Public Google OAuth Web application client ID |
 
-- `app/page.tsx`: introduction, About copy, contact section.
-- `lib/content.ts`: public profile and project registry. Add an entry here to
-  create a homepage project card and a generated `/projects/[slug]` case study.
-- `app/globals.css`: responsive design, keyboard focus, reduced-motion behavior.
-- `app/opengraph-image.tsx`, `app/sitemap.ts`, `app/robots.ts`: sharing and search.
+For Next.js, copy `.env.example` to `.env.local` and set both values. For Workers,
+use runtime variables in `wrangler.jsonc` or Wrangler secrets. The checked-in
+Wrangler configuration points to the production integration; use your own API
+and client ID when deploying a separate copy.
 
-The introduction and About copy reflect Ben’s Cognitive Science studies at UC
-Berkeley. The project story includes his motivation, the bot’s scope, and student
-feedback about non-English use. The site includes verified résumé figures,
-Summer 2027 internship interests, leadership experience, and source-linked
-regression evidence. It does not claim a measured retrieval-accuracy benchmark.
-Contact links include email, GitHub, LinkedIn, and Résumé. Their URLs live in
-`lib/content.ts`. Replace `public/resume.pdf` to update the résumé without changing
-its link. The supplied public PDF is preserved unchanged, including the email
-address it contains. The same public email is linked on the site.
+Register the website's exact origin under Google's Authorized JavaScript origins
+and configure the same client ID on the Sierra backend. Add development origins
+separately. The backend needs persistent storage for its quota database. See the
+[backend demo setup and API contract](https://github.com/benrosario/sierra-class-helper/blob/f62d7a40f602718a5ab380ebe03c057f84d27ceb/DEMO.md).
 
-### Google-authenticated live demo
+The client ID is public. Keep Google client secrets, bot tokens, and model API
+keys out of this repository. Local `.env*` and `.dev.vars*` files are ignored,
+except for `.env.example`.
 
-The homepage always shows the project overview and evidence. It adds a real chat
-when both runtime variables are configured:
-
-- `SIERRA_API_URL`: the deployed FastAPI base URL, without `/demo/chat`.
-- `SIERRA_GOOGLE_CLIENT_ID`: the public OAuth **Web application** client ID.
-
-`GET /api/demo/config` returns only the public client ID, with `no-store`; it
-returns `null` when the demo is unconfigured. A build-time client bundle never
-contains the API URL or any server credential. For Next.js, use `.env.local` or
-runtime environment variables. For Workers, use runtime variables in the source
-Wrangler config (or Wrangler secrets). The Google client ID is public, not a
-secret. Do not put the bot token, Google client secret, or OpenAI key in this site.
-
-Google setup requires the website's exact origin (`https://benrosar.io`) under
-Authorized JavaScript origins. Add a development origin separately if testing
-locally. Use the same client ID on the Sierra API, deploy its updated commit, and
-keep its quota database on persistent storage. See the upstream
-[demo setup and API contract](https://github.com/benrosario/sierra-class-helper/blob/f62d7a40f602718a5ab380ebe03c057f84d27ceb/DEMO.md).
-
-The Google script loads only when a visitor chooses to load sign-in. The callback
-keeps the ID token in memory. The browser sends it in the Authorization header to
-`POST /api/chat`; that proxy forwards it unchanged to `POST /demo/chat` over HTTPS.
-Google signature/expiry/audience verification and quota enforcement happen on the
-Sierra API. No cookies, caller-chosen identities, bot secrets, or raw upstream
-errors are forwarded. Browser-to-API CORS is unnecessary for this proxy flow;
-configure upstream allowed origins if also enabling direct browser calls.
-
-There are three lifetime attempts per Google account. The UI sends one request at
-a time, never automatically retries, displays returned `messages_remaining`,
-disables sending at zero, and requires sign-in again on 401. Global daily capacity
-and authentication burst limits have separate messages. An admitted failure may
-consume a slot; the UI reports an uncertain allowance instead of promising a
-retry is free. Resetting a conversation does not reset quota. Signing out removes
-the local token and transcript, without changing Google's account session.
-
-Requests are capped at 64 KiB and 2,000 message characters. History is trimmed to
-10 messages, 8,000 characters per entry, and 12,000 total. Only user/assistant
-roles are forwarded. Assistant replies render Markdown with lists, emphasis,
-links, tables, and code; user messages remain plain text. Raw HTML and embedded
-images are disabled, and only HTTP(S) links are clickable. The API proxy refuses
-redirects and unsafe non-HTTPS upstream URLs (loopback HTTP is allowed for local
-testing). The chat reminds visitors to verify course advice with Sierra College.
-
-The production API URL and public client ID are configured in `wrangler.jsonc`.
-Keep the API's Google client ID in sync when changing this configuration. A real
-Google sign-in is needed to verify the complete flow; automated tests use a local
-fixture service and no paid calls.
-
-### Validation
-
-Use Node.js 22.18+ (native TypeScript stripping is used by the test runner).
+## Checks and tests
 
 ```bash
 npm run lint
 npm test
-npm run build
-```
-
-### Cloudflare configuration and local preview
-
-The site uses two separately deployed Workers:
-
-- `wrangler.jsonc`: the portfolio, assets, Images binding, and a
-  `RESPONSE_STORE` service binding.
-- `wrangler.response-store.jsonc`: the cache service, its R2 bucket
-  `benrosar-io-response-store-cache-bodies`, and SQLite Durable Object.
-
-The Worker names and service entrypoint are aligned. Production output is
-written to `dist/server/wrangler.json`; edit the source configs, not that output.
-
-`vinext dev` uses the framework's default development cache because the Response
-Store adapter requires the generated production entrypoint in this beta.
-For the actual Workers cache path, build and start both Workers together:
-
-```bash
-npm run check:vinext
-npm run check:cloudflare
-npm run build:vinext
-npm run start:vinext
-```
-
-The preview runs locally (normally http://localhost:8787), including simulated R2
-and Durable Object storage. No Cloudflare login is required. Local storage lives
-in the ignored `.wrangler/` directory. `check:cloudflare` is a configuration dry
-run; it does not validate an account or provision resources.
-
-For a local Workers preview with the live integration, pass both settings:
-
-```bash
-npm run start:vinext -- --var SIERRA_API_URL:https://your-api-host --var SIERRA_GOOGLE_CLIENT_ID:your-client.apps.googleusercontent.com
-```
-
-Local `.dev.vars*` files are ignored as well as `.env*` files. The configuration
-endpoint reads the settings at request time; no public build-time environment
-variable is needed.
-
-### Deployment
-
-The portfolio is deployed to Cloudflare Workers. `wrangler.jsonc` configures
-`benrosar.io` as its custom domain and keeps the alternate
-https://benrosar-io.benrosario30.workers.dev address available. Cloudflare manages
-the custom domain's DNS and HTTPS certificate.
-
-The private cache Worker uses the provisioned R2 bucket
-`benrosar-io-response-store-cache-bodies` and a SQLite Durable Object. Both
-Workers have logs enabled and sample 1% of traces for troubleshooting.
-
-With Wrangler authenticated to the configured account, deploy in this order:
-
-```bash
-npm run deploy:response-store
-npm run deploy:vinext
-```
-
-The cache service must exist before the portfolio can use it. The application
-command builds and deploys the portfolio; it does not deploy the separate cache
-Worker. Redeploy that Worker when its package/config changes. Experimental cache
-prewarming is optional via `npm run deploy:vinext:warm` and requires an existing
-portfolio deployment, so it cannot be used for the first deployment.
-
-After publishing, verify HTTPS, page routes, the social image, résumé, theme
-picker, project overview, email link, and project-specific social preview.
-The cache Worker stays internal.
-
-## Continuous integration
-
-`.github/workflows/ci.yml` runs on pull requests and pushes to `main`. It installs
-locked dependencies with Node.js 22, runs lint and unit tests, builds the site
-(including TypeScript checks), then tests the production pages and chat routes in both Next.js and Cloudflare.
-The integration suite starts and stops a separate Next.js server on port 3101
-and a local mock course API. The vinext suite starts both Workers on port 3102
-with isolated temporary storage and the same mock API. It never needs model keys
-or calls the live backend.
-
-```bash
 npm run build
 npm run test:integration
 npm run check:vinext
@@ -184,14 +96,63 @@ npm run build:vinext
 npm run test:integration:vinext
 ```
 
-Coverage focuses on page availability, project routing, sharing metadata, chat
-validation, token forwarding, lifetime and daily quota states, follow-up context,
-rate limits, and safe handling of upstream errors.
-It does not automate browser clicks or visual layout; those still need browser
-checks. Avoid adding tests just to assert every paragraph or CSS class.
+The [CI workflow](.github/workflows/ci.yml) runs these checks on pull requests and
+pushes to `main`. Tests cover page availability, project routes, sharing metadata,
+chat validation, token forwarding, quota states, and upstream failures. Integration
+tests start local servers and a mock API; they do not call the live backend.
+Google sign-in and visual layout still need manual browser checks.
 
-The workflow becomes active after these files are committed and pushed to GitHub.
-No remote workflow run or branch-protection rule has been configured yet. Once
-active, require the `Lint, tests, and production build` check on `main`. The next
-hosting step is preview deployments for pull requests and production deployment
-only after successful checks; that provider-specific connection is still pending.
+## Cloudflare preview and deployment
+
+The deployment uses two Workers:
+
+- `wrangler.jsonc`: the portfolio, static assets, image optimization, and a
+  `RESPONSE_STORE` service binding.
+- `wrangler.response-store.jsonc`: an internal cache service backed by R2 and a
+  SQLite Durable Object.
+
+Development uses vinext's default cache. To preview the production cache path
+locally, build and start both Workers:
+
+```bash
+npm run check:cloudflare
+npm run build:vinext
+npm run start:vinext
+```
+
+The preview normally runs at [localhost:8787](http://localhost:8787) with simulated
+storage and no Cloudflare login. Local state lives in `.wrangler/`.
+`check:cloudflare` is a configuration dry run; it does not provision resources.
+Edit the source configuration files, not the generated `dist/server/wrangler.json`.
+
+To override the demo settings for this preview:
+
+```bash
+npm run start:vinext -- --var SIERRA_API_URL:https://your-api-host --var SIERRA_GOOGLE_CLIENT_ID:your-client.apps.googleusercontent.com
+```
+
+For deployment, authenticate Wrangler to the configured Cloudflare account and
+provision the R2 bucket named in the cache configuration. Deploy the cache service
+before the portfolio:
+
+```bash
+npm run deploy:response-store
+npm run deploy:vinext
+```
+
+The portfolio configuration uses `benrosar.io` as its custom domain. The application
+command builds and deploys the site; redeploy the separate cache Worker when its
+package or configuration changes. Both Workers have logs enabled and sample 1%
+of traces. After deployment, check the pages, résumé, social previews, theme picker,
+and sign-in flow in a browser.
+
+## Updating content
+
+| File | What to update |
+| --- | --- |
+| `app/page.tsx` | Introduction, About copy, and contact section |
+| `lib/content.ts` | Profile links, project details, and case study content |
+| `app/globals.css` | Layout, themes, and responsive styles |
+| `public/resume.pdf` | Downloadable résumé |
+| `app/opengraph-image.tsx` | Main social preview |
+| `app/projects/[slug]/opengraph-image.tsx` | Project social previews |
