@@ -146,15 +146,15 @@ export default function Home() {
               <dl>
                 <div>
                   <dt>Student Body President</dt>
-                  <dd>Chaired an 18-member student board that met 16 times a semester. Represented 21,000 students and oversaw a $342,000 annual operating budget.</dd>
+                  <dd>Chaired an 18-member student board that met 16 times a semester. Represented 21,000 students and oversaw the passage of 63 bills. Directed a $342,000 annual operating budget and $800,000 in reserves.</dd>
                 </div>
                 <div>
                   <dt>Student Trustee</dt>
-                  <dd>The students’ voice on the district’s governing board, with an advisory vote. Oversaw the drafting of district policy and reviewed major contracts for new building construction.</dd>
+                  <dd>The students’ voice on the district’s governing board, with an advisory vote. Reviewed district policy and contracts for science building and student housing projects worth $84M and $98M.</dd>
                 </div>
                 <div>
                   <dt>Tutor</dt>
-                  <dd>Two years tutoring math, computer science, English, and history, averaging 12 students a week.</dd>
+                  <dd>Two years tutoring math, computer science, English, and history, averaging 15 students a week.</dd>
                 </div>
               </dl>
             </section>
