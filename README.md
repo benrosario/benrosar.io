@@ -1,10 +1,10 @@
 # Ben Rosario — portfolio
 
 My personal website at **[benrosar.io](https://benrosar.io)**, featuring my projects,
-background, and résumé. I’m studying Cognitive Science at UC Berkeley and seeking
+background, and resume. I’m studying Cognitive Science at UC Berkeley and seeking
 Summer 2027 internships in software engineering and applied AI.
 
-[View the site](https://benrosar.io) · [Résumé](https://benrosar.io/resume.pdf) ·
+[View the site](https://benrosar.io) · [Resume](https://benrosar.io/resume.pdf) ·
 [LinkedIn](https://www.linkedin.com/in/ben-rosario) · [Email](mailto:hello@benrosar.io)
 
 ## What I built
@@ -143,7 +143,7 @@ npm run deploy:vinext
 The portfolio configuration uses `benrosar.io` as its custom domain. The application
 command builds and deploys the site; redeploy the separate cache Worker when its
 package or configuration changes. Both Workers have logs enabled and sample 1%
-of traces. After deployment, check the pages, résumé, social previews, theme picker,
+of traces. After deployment, check the pages, resume, social previews, theme picker,
 and sign-in flow in a browser.
 
 ## Updating content
@@ -153,6 +153,6 @@ and sign-in flow in a browser.
 | `app/page.tsx` | Introduction, About copy, and contact section |
 | `lib/content.ts` | Profile links, project details, and case study content |
 | `app/globals.css` | Layout, themes, and responsive styles |
-| `public/resume.pdf` | Downloadable résumé |
+| `public/resume.pdf` | Downloadable resume |
 | `app/opengraph-image.tsx` | Main social preview |
 | `app/projects/[slug]/opengraph-image.tsx` | Project social previews |

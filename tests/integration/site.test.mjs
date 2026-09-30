@@ -159,12 +159,13 @@ const expectStatus = async (response, status, label) => {
     `${label}: expected ${status}, got ${response.status}\n${body}\n${output.slice(-12000)}`);
 };
 
-test("homepage exposes the project overview and direct contact without a simulated chat", async () => {
+test("homepage shows a labeled replay of a real answer and direct contact, without a live chat input", async () => {
   const response = await fetch(base);
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /href="\/projects\/sierra-class-helper"/);
-  assert.match(html, /How students use it/);
+  assert.match(html, /Watch it find a class/);
+  assert.match(html, /A replay of a real reply from Discord/);
   assert.match(html, /href="mailto:hello@benrosar.io"/);
   assert.doesNotMatch(html, /id="chat-input"/);
   assert.match(html, /<title>Ben Rosario/);

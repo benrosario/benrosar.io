@@ -56,7 +56,6 @@ export default async function ProjectPage({
         <ThemePicker />
       </div>
       <div className="case-heading">
-        <span className="eyebrow">PROJECT NOTES / 2026</span>
         <h1>{project.title}</h1>
         <p>{project.summary}</p>
         <ProjectMetrics project={project} />
@@ -86,9 +85,8 @@ export default async function ProjectPage({
           <h2>The decisions behind it.</h2>
         </div>
         <div className="decisions">
-          {project.decisions.map((decision, index) => (
+          {project.decisions.map((decision) => (
             <article key={decision.title}>
-              <span className="eyebrow">0{index + 1}</span>
               <h3>{decision.title}</h3>
               <p>{decision.description}</p>
             </article>
@@ -96,7 +94,6 @@ export default async function ProjectPage({
         </div>
       </section>
       <section className="case-evidence" id="evidence" aria-labelledby="evidence-title">
-        <span className="eyebrow">TESTS &amp; VERIFICATION</span>
         <h2 id="evidence-title">Tests you can inspect</h2>
         <p className="evidence-scope">
           The search fixtures check specific retrieval failures. They

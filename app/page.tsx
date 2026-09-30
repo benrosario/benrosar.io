@@ -1,56 +1,63 @@
 import Link from "next/link";
 import { ProjectMetrics, ProjectOverview } from "@/components/project-overview";
-import { LiveDemo } from "@/components/chat-demo";
+import { LiveDemo, LiveDemoLink } from "@/components/chat-demo";
 import { ThemePicker } from "@/components/theme-picker";
-import { Arrow, GitHub, Mountain } from "@/components/icons";
+import { Arrow, Document, GitHub, LinkedIn, Spark } from "@/components/icons";
 import { projects, profile } from "@/lib/content";
 
 export default function Home() {
   const featured = projects[0];
   return (
     <>
-      <header className="site-header wrap">
-        <a className="wordmark" href="#home" aria-label="Ben Rosario home">
-          ben rosario<span>✳</span>
-        </a>
-        <nav aria-label="Main navigation">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href={profile.resume} target="_blank" rel="noopener noreferrer">
-            Résumé<span className="sr-only"> (PDF, opens in a new tab)</span>
-          </a>
-          <a className="nav-contact" href="#contact">
-            Let’s connect <Arrow />
-          </a>
-          <ThemePicker />
-        </nav>
+      <header className="site-header">
+        <div className="site-header-inner wrap">
+          <div className="header-left">
+            <a className="wordmark" href="#home" aria-label="Ben Rosario home">
+              ben rosario<span className="wordmark-mark" aria-hidden="true"><Spark weight={2.4} /></span>
+            </a>
+            <div className="profile-links">
+              <a className="profile-link" href={profile.github} target="_blank" rel="noreferrer">
+                <GitHub /> <span className="profile-label">GitHub</span>
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              <a className="profile-link" href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+                <LinkedIn /> <span className="profile-label">LinkedIn</span>
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              <a className="profile-link" href={profile.resume} target="_blank" rel="noopener noreferrer">
+                <Document /> <span className="profile-label">Resume <span className="file-type">PDF</span></span>
+                <span className="sr-only"> (PDF, opens in a new tab)</span>
+              </a>
+            </div>
+          </div>
+          <nav aria-label="Main navigation">
+            <a href="#work">Work</a>
+            <a href="#about">About</a>
+            <a className="nav-email" href={`mailto:${profile.email}`}>
+              {profile.email}
+            </a>
+            <ThemePicker />
+          </nav>
+        </div>
       </header>
       <main id="home">
         <section className="hero wrap" aria-labelledby="intro-title">
           <div className="hero-copy">
-            <div className="eyebrow">
-              <span className="status-dot" /> DEVELOPER / UC BERKELEY
-            </div>
             <h1 id="intro-title">
-              Ben
-              <br />
-              Rosario<span className="orange">.</span>
+              I’m a developer studying Cognitive Science at UC Berkeley
+              <span className="orange">.</span>
             </h1>
             <p>
-              I’m Ben, a developer in the San Francisco Bay Area studying
-              Cognitive Science at UC Berkeley, Class of 2028.
+              Class of 2028, based in the San Francisco Bay Area. I built{" "}
+              <a className="inline-link" href="#work">Sierra Class Helper</a>, a
+              course-finding bot adopted by 40+ students at Sierra College.
             </p>
-            <p className="availability">{profile.availability}</p>
+            <p className="availability">
+              <span className="status-dot" aria-hidden="true" />
+              {profile.availability}
+            </p>
             <a className="button primary" href="#work">
               Explore my work <Arrow direction="down" />
-            </a>
-            <a
-              className="text-link hero-github"
-              href={profile.github}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <GitHub /> Find me on GitHub <Arrow />
             </a>
           </div>
           <div className="hero-art" aria-hidden="true">
@@ -63,15 +70,7 @@ export default function Home() {
               <span className="sculpture-ring ring-two" />
               <span className="sculpture-ring ring-three" />
             </div>
-            <span className="art-spark spark-one">✳</span>
-            <span className="art-spark spark-two">+</span>
-            <span className="art-label label-top">
-              cognitive science + software
-            </span>
-            <span className="art-label label-bottom">
-              <span className="tiny-square" /> BERKELEY, CALIFORNIA
-            </span>
-            <span className="art-coordinate">37° N / 122° W</span>
+            <span className="art-spark spark-one"><Spark weight={1.2} /></span>
           </div>
         </section>
         <section
@@ -79,23 +78,9 @@ export default function Home() {
           id="work"
           aria-labelledby="work-title"
         >
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow section-index">01 / SELECTED WORK</span>
-              <h2 id="work-title">What I’m building.</h2>
-            </div>
-            <p>Projects and what I’m learning from them.</p>
-          </div>
+          <h2 className="section-title" id="work-title">What I’m building.</h2>
           <article className="featured-project">
             <div className="project-story">
-              <div className="project-kicker">
-                <span className="project-icon">
-                  <Mountain />
-                </span>
-                <span>
-                  FEATURED PROJECT <span className="muted">/ 2026</span>
-                </span>
-              </div>
               <h3>{featured.title}</h3>
               <p className="project-subtitle">
                 Finding classes,
@@ -114,33 +99,22 @@ export default function Home() {
                   <span key={tag}>{tag}</span>
                 ))}
               </div>
+              <LiveDemoLink />
               <div className="project-links">
                 <Link className="text-link" href={`/projects/${featured.slug}`}>
-                  Explore the project <Arrow />
+                  Read the case study <Arrow />
                 </Link>
-                <a
-                  className="icon-link"
-                  href={featured.repo}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Sierra Class Helper source on GitHub"
-                >
-                  <GitHub />
+                <a className="text-link" href={featured.repo} target="_blank" rel="noreferrer">
+                  <GitHub /> Source on GitHub
+                  <span className="sr-only"> (opens in a new tab)</span>
                 </a>
               </div>
-              <div className="project-note">
-                <span className="status-dot" /> Deployed on Discord
-              </div>
+              <p className="project-note">
+                <span className="status-dot" aria-hidden="true" /> Deployed on Discord <span aria-hidden="true">&middot;</span> 2026
+              </p>
             </div>
-            <ProjectOverview project={featured} />
+            <ProjectOverview />
           </article>
-          <div className="project-bottom">
-            <span>Course search for Sierra College students.</span>
-            <span>
-              Python backend <i>↗</i> AI-powered search <i>↗</i> Conversational
-              interface
-            </span>
-          </div>
           <LiveDemo />
           {projects.slice(1).map((project) => (
             <Link
@@ -149,7 +123,6 @@ export default function Home() {
               key={project.slug}
             >
               <div>
-                <span className="eyebrow">MORE WORK</span>
                 <h3>{project.title}</h3>
                 <p>{project.summary}</p>
               </div>
@@ -163,18 +136,28 @@ export default function Home() {
           aria-labelledby="about-title"
         >
           <div className="about-left">
-            <span className="eyebrow section-index">02 / ABOUT</span>
             <h2 id="about-title">
               A bit
               <br />
               about me.
             </h2>
-            <div className="location">
-              <span className="location-icon" aria-hidden="true">
-                ↗
-              </span>{" "}
-              San Francisco Bay Area, CA
-            </div>
+            <section className="roles" aria-labelledby="roles-title">
+              <h3 id="roles-title">At Sierra College</h3>
+              <dl>
+                <div>
+                  <dt>Student Body President</dt>
+                  <dd>Chaired an 18-member student board that met 16 times a semester. Represented 21,000 students and oversaw a $342,000 annual operating budget.</dd>
+                </div>
+                <div>
+                  <dt>Student Trustee</dt>
+                  <dd>The students’ voice on the district’s governing board, with an advisory vote. Oversaw the drafting of district policy and reviewed major contracts for new building construction.</dd>
+                </div>
+                <div>
+                  <dt>Tutor</dt>
+                  <dd>Two years tutoring math, computer science, English, and history, averaging 12 students a week.</dd>
+                </div>
+              </dl>
+            </section>
           </div>
           <div className="about-copy">
             <p className="about-lead">
@@ -185,52 +168,12 @@ export default function Home() {
               Cognitive Science gives me room to explore neural networks alongside
               how people think, make decisions, and use technology.
             </p>
-            <p>
-              At Sierra College, I served as student body president, representing
-              21,000 students and overseeing a $342,000 annual operating budget,
-              and as the district’s student trustee. I also spent two years
-              tutoring math and computer science.
-            </p>
             <div className="focus-list">
-              <span>Currently exploring</span>
-              <div>
-                Neural networks <span>·</span> Retrieval-augmented generation
-                <span>·</span> Software development
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="contact-section wrap" id="contact">
-          <div>
-            <span className="eyebrow">03 / SAY HELLO</span>
-            <h2>
-              Get in touch<span>↗</span>
-            </h2>
-            <p>
-              For internships or a conversation about my work, you can reach me
-              by email.
-            </p>
-          </div>
-          <div className="contact-links" aria-label="Professional profiles and résumé">
-            <a className="text-link contact-email" href={`mailto:${profile.email}`}>
-              {profile.email} <Arrow />
-            </a>
-            <a
-              className="button primary"
-              href={profile.github}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <GitHub /> Find me on GitHub <Arrow />
-            </a>
-            <div className="contact-secondary">
-              <a className="text-link" href={profile.linkedin} target="_blank" rel="noopener noreferrer">
-                LinkedIn <Arrow />
-              </a>
-              <a className="text-link" href={profile.resume} target="_blank" rel="noopener noreferrer">
-                Résumé <span className="file-type">PDF</span> <Arrow />
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
+              <p className="focus-title">Currently exploring</p>
+              <p>
+                Neural networks <span aria-hidden="true">·</span> Retrieval-augmented generation{" "}
+                <span aria-hidden="true">·</span> Software development
+              </p>
             </div>
           </div>
         </section>
@@ -240,6 +183,7 @@ export default function Home() {
           br<span>.</span>
         </a>
         <span>© {new Date().getFullYear()} Ben Rosario</span>
+        <a className="footer-email" href={`mailto:${profile.email}`}>{profile.email}</a>
         <a href="#home">Back to top ↑</a>
       </footer>
     </>

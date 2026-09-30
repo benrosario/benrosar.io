@@ -2,7 +2,7 @@
 import Script from "next/script";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { trimChatHistory, type ChatMessage } from "@/lib/chat-request";
-import { Mountain } from "./icons";
+import { Arrow, Mountain } from "./icons";
 import { ChatMessageContent } from "./chat-message";
 
 type GoogleIdentity = {
@@ -15,19 +15,42 @@ declare global {
 }
 
 // Runtime configuration keeps the overview intact until both services are ready.
-export function LiveDemo() {
+// One request per page load, shared by the demo and the button that links to it.
+let demoConfig: Promise<string | null> | null = null;
+function loadDemoClientId() {
+  demoConfig ??= fetch("/api/demo/config", { cache: "no-store", credentials: "omit" })
+    .then(async (response) => response.ok ? response.json() : null)
+    .then((data) => typeof data?.google_client_id === "string" ? data.google_client_id as string : null)
+    .catch(() => null); // The project overview remains usable if configuration is unavailable.
+  return demoConfig;
+}
+function useDemoClientId() {
   const [clientId, setClientId] = useState<string | null>(null);
   useEffect(() => {
-    const controller = new AbortController();
-    void fetch("/api/demo/config", { cache: "no-store", credentials: "omit", signal: controller.signal })
-      .then(async (response) => response.ok ? response.json() : null)
-      .then((data) => {
-        if (!controller.signal.aborted && typeof data?.google_client_id === "string")
-          setClientId(data.google_client_id);
-      }).catch(() => { /* The project overview remains usable if configuration is unavailable. */ });
-    return () => controller.abort();
+    let active = true;
+    void loadDemoClientId().then((id) => { if (active) setClientId(id); });
+    return () => { active = false; };
   }, []);
+  return clientId;
+}
+
+export function LiveDemo() {
+  const clientId = useDemoClientId();
   return clientId ? <ChatDemo googleClientId={clientId} /> : null;
+}
+
+// Shown only when the live demo is available, so it never links to nothing.
+export function LiveDemoLink() {
+  const clientId = useDemoClientId();
+  if (!clientId) return null;
+  return (
+    <div className="demo-link">
+      <a className="button primary" href="#live-demo">
+        Try the live demo <Arrow direction="down" />
+      </a>
+      <p>Sign in with Google. Three questions per account.</p>
+    </div>
+  );
 }
 
 export function ChatDemo({ googleClientId }: { googleClientId: string }) {
@@ -138,48 +161,44 @@ export function ChatDemo({ googleClientId }: { googleClientId: string }) {
 
   return (
     <section className="live-demo" id="live-demo" aria-labelledby="live-demo-title">
-      <div className="section-heading">
-        <div><span className="eyebrow">LIVE COURSE SEARCH</span><h2 id="live-demo-title">Try Sierra Class Helper</h2></div>
+      <div className="demo-sign-in">
+        <h3 id="live-demo-title">Ask your own question</h3>
+        <p>Sign in with Google to search Sierra College courses live. Each account gets three questions in total, and a question can count even if the answer fails.</p>
+        {!loadGoogle && <button className="button primary" onClick={() => setLoadGoogle(true)}>Load Google sign-in</button>}
+        {loadGoogle && <Script src="https://accounts.google.com/gsi/client" onReady={initializeGoogle} onError={() => setError("Google sign-in could not load. Please reload the page to try again.")} />}
+        <div ref={googleButton} hidden={!loadGoogle || signedIn} />
+        {loadGoogle && !googleReady && !error && <p role="status">Loading Google sign-in…</p>}
+        {signedIn && <button className="text-link" onClick={signOut} disabled={busy}>Sign out of this demo</button>}
+        <p className="demo-privacy">Your sign-in and conversation are not saved in this browser. Questions go to the course service and its AI provider. The service counts usage per account without storing your name or email.</p>
       </div>
-      <div className="live-demo-layout">
-        <div className="demo-sign-in">
-          <h3>Three attempts per Google account</h3>
-          <p>Sign in to ask about Sierra College courses. This is a lifetime demo allowance; signing out, reloading, or starting a new conversation does not reset it.</p>
-          <p>Once a request is accepted, it can count even if the connection or answer fails.</p>
-          {!loadGoogle && <button className="button primary" onClick={() => setLoadGoogle(true)}>Load Google sign-in</button>}
-          {loadGoogle && <Script src="https://accounts.google.com/gsi/client" onReady={initializeGoogle} onError={() => setError("Google sign-in could not load. Please reload the page to try again.")} />}
-          <div ref={googleButton} hidden={!loadGoogle || signedIn} />
-          {loadGoogle && !googleReady && !error && <p role="status">Loading Google sign-in…</p>}
-          {signedIn && <button className="text-link" onClick={signOut} disabled={busy}>Sign out of this demo</button>}
-          <p className="demo-privacy">Your sign-in token and conversation are not saved in this browser. Questions are sent to the course service and its AI provider. The service keeps a record of account usage to enforce the limit, without storing your name or email in that record.</p>
+      <div className={signedIn || messages.length ? "replay chat-panel is-active" : "replay chat-panel"}>
+        <div className="replay-bar">
+          <span className="replay-avatar live-avatar" aria-hidden="true"><Mountain /></span>
+          <span className="replay-name">Sierra Class Helper</span>
+          <button className="reset-chat" onClick={resetConversation} disabled={busy || !messages.length} aria-label="Start a new conversation" title="Start a new conversation">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 9.5a5.5 5.5 0 1 0 1.7-4M4.5 3.5v3h3" /></svg>
+          </button>
         </div>
-        <div className="demo-shell">
-          <div className="chat-panel">
-            <div className="chat-header">
-              <span className="chat-logo"><Mountain /></span>
-              <div><strong>Sierra Class Helper</strong><span>Ask about Sierra College courses</span></div>
-              <button className="reset-chat" onClick={resetConversation} disabled={busy || !messages.length} aria-label="Start a new conversation" title="Start a new conversation">↻</button>
+        <div className="chat-transcript" role="log" aria-label="Chat conversation" aria-live="polite" ref={transcript}>
+          {!messages.length && <p className="demo-empty">{signedIn ? "Ask about a subject, meeting time, campus, or course you have in mind." : "Sign in to ask your own question."}</p>}
+          {messages.map((message, index) => (
+            <div className={message.role === "user" ? "user-message" : "assistant-message"} key={index}>
+              <div><span className={message.role === "user" ? "message-author sr-only" : "message-author"}>{message.role === "user" ? "You" : "Sierra Class Helper"}</span><ChatMessageContent role={message.role} content={message.content} /></div>
             </div>
-            <div className="chat-transcript" role="log" aria-label="Chat conversation" aria-live="polite" ref={transcript}>
-              {!messages.length && <p className="demo-empty">{signedIn ? "Ask about a subject, meeting time, campus, or course you have in mind." : "Sign in with Google to ask a question. The project overview above is available without signing in."}</p>}
-              {messages.map((message, index) => (
-                <div className={message.role === "user" ? "user-message" : "assistant-message"} key={index}>
-                  <div><span className="message-author">{message.role === "user" ? "You" : "Sierra Class Helper"}</span><ChatMessageContent role={message.role} content={message.content} /></div>
-                </div>
-              ))}
-              {busy && <p className="chat-loading" role="status">Searching the course catalog…</p>}
-            </div>
-            <p className="demo-allowance" role="status">{remaining === 0 ? "All three demo attempts have been used for this account." : remaining === null ? "Up to three lifetime attempts. Your remaining allowance is confirmed after a request." : `${remaining} demo ${remaining === 1 ? "attempt" : "attempts"} remaining.`}</p>
-            {error && <p className="chat-error" role="alert">{error}</p>}
-            {paused && <button className="text-link demo-resume" onClick={() => { setPaused(false); setError(""); }}>I’ll try again now</button>}
-            <form className="chat-form" onSubmit={send}>
-              <label className="sr-only" htmlFor="chat-input">Ask about courses</label>
-              <input id="chat-input" ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} maxLength={2000} disabled={!signedIn || busy || remaining === 0 || paused} placeholder={signedIn ? "Ask about a class…" : "Sign in to ask about a class"} aria-describedby="chat-disclosure" />
-              <button aria-label="Send message" disabled={!signedIn || !input.trim() || busy || remaining === 0 || paused} type="submit">↑</button>
-            </form>
-            <p className="chat-disclosure" id="chat-disclosure">AI answers may be inaccurate. Confirm courses and enrollment details with <a href="https://www.sierracollege.edu/" target="_blank" rel="noreferrer">Sierra College</a>. {updatedAt && <>Course data updated: {new Date(updatedAt).toLocaleString()}.</>}</p>
-          </div>
+          ))}
+          {busy && <p className="chat-loading" role="status">Searching the course catalog…</p>}
         </div>
+        <p className="demo-allowance" role="status" hidden={!signedIn && remaining === null}>{remaining === 0 ? "All three demo attempts have been used for this account." : remaining === null ? "Up to three lifetime attempts. Your remaining allowance is confirmed after a request." : `${remaining} demo ${remaining === 1 ? "attempt" : "attempts"} remaining.`}</p>
+        {error && <p className="chat-error" role="alert">{error}</p>}
+        {paused && <button className="text-link demo-resume" onClick={() => { setPaused(false); setError(""); }}>I’ll try again now</button>}
+        <form className="chat-form" onSubmit={send}>
+          <label className="sr-only" htmlFor="chat-input">Ask about courses</label>
+          <input id="chat-input" ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} maxLength={2000} disabled={!signedIn || busy || remaining === 0 || paused} placeholder={signedIn ? "Ask about a class…" : "Sign in to ask about a class"} aria-describedby="chat-disclosure" />
+          <button aria-label="Send message" disabled={!signedIn || !input.trim() || busy || remaining === 0 || paused} type="submit">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M10 4.5 15.5 10 10 15.5" /></svg>
+          </button>
+        </form>
+        <p className="chat-disclosure" id="chat-disclosure">AI answers may be inaccurate. Confirm courses and enrollment details with <a href="https://www.sierracollege.edu/" target="_blank" rel="noreferrer">Sierra College</a>. {updatedAt && <>Course data updated: {new Date(updatedAt).toLocaleString()}.</>}</p>
       </div>
     </section>
   );
