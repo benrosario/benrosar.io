@@ -51,7 +51,7 @@ pre{background:var(--code);border-radius:8px;padding:10px 12px;overflow-x:auto;f
 aside .star{color:#d9a400;font-size:12px}aside .skp{font-size:10.5px;color:var(--mut);border:1px solid var(--bd);border-radius:999px;padding:0 6px}
 .cb{margin:10px 0}.cb pre{margin:0}.cbh{display:flex;justify-content:flex-end;margin-top:6px}.qh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:2px}.qh .fb{text-align:right;flex:none;max-width:60%;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}.qh .fb .stale{font-size:12px;color:var(--mut);flex-basis:100%;text-align:right}.qh .fb .mk{font-size:12px;padding:2px 8px}
 .ai{display:inline-flex;align-items:center;gap:6px}.ai[hidden]{display:none}.ai.copied{border-color:var(--ok);color:var(--ok)}
-.fa{font-size:12px;padding:3px 10px}.fa.shown{border-color:var(--ok);color:var(--ok)}
+.fa{font-size:14px;padding:7px 14px}.fa.shown{border-color:var(--ok);color:var(--ok)}
 .fillv{background:rgba(31,138,76,.14);border-radius:3px;padding:0 1px}
 .dd{position:relative}.ddb,.ddm{display:none}
 @media (hover:hover) and (pointer:fine){.dd select{display:none}
@@ -260,12 +260,12 @@ function card(q,id,p){const wrap=document.createElement('div');wrap.className='q
  else q.o.forEach((o,i)=>h+=`<label class="o"><input type="${q.k=='mc'?'radio':'checkbox'}" name="${id}" value="${i}"><span>${esc(o)}</span></label>`);
  h+=`<div class="row"><button class="p ck">Check</button><button class="sh">Show answer</button><button class="ai" hidden title="Copies a prompt about your mistake — paste it into ChatGPT, Claude, or any AI chat."><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg><span>Ask AI why</span></button><button class="rst">Reset</button></div><div class="out" hidden></div><div class="ans" hidden></div>`;
  c.innerHTML=h;wireFills(c);const ta=c.querySelector('textarea'),grow=()=>{if(!ta)return;ta.style.height='auto';ta.style.height=ta.scrollHeight+2+'px'},ins=[...c.querySelectorAll('input')],fb=c.querySelector('.fb'),an=c.querySelector('.ans'),out=c.querySelector('.out');
- const showKey=()=>{an.hidden=false;an.innerHTML=`<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>`+(q.x?`<div class="x">${esc(q.x)}</div>`:'')};
+ const showKey=()=>{an.innerHTML=`<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>`+(q.x?`<div class="x">${esc(q.x)}</div>`:'');slide(an,true)};
  const ai=c.querySelector('.ai');ai.onclick=async()=>{const s=S[id];if(!s)return;const ok=await copyText(aiPrompt(D.find(x=>id.startsWith(x.id+'|')),p,q,s.v,s.o));const lb=ai.querySelector('span');lb.textContent=ok?'Copied — paste into an AI chat':'Couldn’t copy';ai.classList.toggle('copied',ok);setTimeout(()=>{lb.textContent='Ask AI why';ai.classList.remove('copied')},2500)};
  function show(ok,msg,o){c.className='q '+(ok?'ok':'no');ai.hidden=!!ok;fb.className='fb '+(ok?'ok':'no');
   fb.innerHTML=ok?'✓ '+esc(msg||'Correct'):'✗ Not quite'+(q.k=='blank'?' <button class="mk">I was right</button>':'');
   const mk=fb.querySelector('.mk');if(mk)mk.onclick=()=>{S[id].ok=true;S[id].m='Marked correct by you';save();show(true,S[id].m);out.hidden=true;stats()};
-  out.hidden=!o;out.textContent=o||'';if(ok)an.hidden=true}
+  out.hidden=!o;out.textContent=o||'';if(ok&&!an.hidden)slide(an,false)}
  if(st){if(ta)ta.value=st.v;else ins.forEach(x=>x.checked=q.k=='mc'?st.v===+x.value:st.v.includes(+x.value));show(st.ok,st.m,st.o);
   // A wrong answer saved by an older checker: re-check text answers now; ask before running code.
   if(!st.ok&&st.gv!==GV&&q.k=='blank'){if(!q.r)grade(q,st.v,p).then(g=>{if(g.ok){S[id]={v:st.v,ok:true,m:g.how,gv:GV};save();show(true,g.how);stats()}});
@@ -276,7 +276,7 @@ function card(q,id,p){const wrap=document.createElement('div');wrap.className='q
   const g=await grade(q,v,p);ck.disabled=false;S[id]={v,ok:g.ok,m:g.how,o:g.out,gv:GV};save();show(g.ok,g.how,g.out);stats();if(g.ok)confetti(ck);
   if(!g.ok){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}};
  c.addEventListener('animationend',()=>c.classList.remove('shake'));
- const sh=c.querySelector('.sh');confirmBtn(sh,()=>showKey(),()=>!an.hidden&&(an.hidden=true,true));
+ const sh=c.querySelector('.sh');confirmBtn(sh,()=>showKey(),()=>!an.hidden&&(slide(an,false),true));
  confirmBtn(c.querySelector('.rst'),()=>{delete S[id];save();(()=>{const nw=card(q,id,p);nw.id=wrap.id;nw.style.scrollMarginTop=wrap.style.scrollMarginTop;wrap.replaceWith(nw)})();stats()});
  if(ta){ta.addEventListener('input',grow);requestAnimationFrame(grow)}
  if(ta)ta.onkeydown=ev=>{if(ev.key=='Enter'&&(ev.metaKey||ev.ctrlKey))ck.click()};wrap.append(c,an);return wrap}
@@ -288,7 +288,14 @@ function swapLabel(btn,text,change){const w0=btn.getBoundingClientRect().width;b
  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!btn.animate)return;
  const w1=btn.getBoundingClientRect().width;
  if(Math.abs(w1-w0)>.5)btn.animate([{width:w0+'px'},{width:w1+'px'}],{duration:220,easing:'cubic-bezier(.25,.8,.25,1)'});
- btn.firstChild.animate([{opacity:0},{opacity:1}],{duration:160,easing:'ease-out'})}
+ btn.firstChild.animate([{opacity:.35},{opacity:1}],{duration:160,easing:'ease-out'})}
+// Open or close a block by animating its height (plus padding, margin and borders) so content below moves smoothly.
+function slide(el,open){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!el.animate){el.hidden=!open;return}
+ const was=el.getAnimations();was.forEach(a=>a.cancel());if(open)el.hidden=false;if(el.hidden)return;
+ const cs=getComputedStyle(el),full={height:el.getBoundingClientRect().height+'px',paddingTop:cs.paddingTop,paddingBottom:cs.paddingBottom,marginTop:cs.marginTop,borderTopWidth:cs.borderTopWidth,borderBottomWidth:cs.borderBottomWidth,opacity:1},
+  zero={height:'0px',paddingTop:'0px',paddingBottom:'0px',marginTop:'0px',borderTopWidth:'0px',borderBottomWidth:'0px',opacity:0};
+ el.style.overflow='hidden';const a=el.animate(open?[zero,full]:[full,zero],{duration:open?240:180,easing:open?'cubic-bezier(.2,.8,.2,1)':'ease-in'});
+ a.onfinish=()=>{el.style.overflow='';if(!open)el.hidden=true}}
 function confirmBtn(btn,act,skip){const label=btn.textContent;let t;const disarm=()=>{clearTimeout(t);if(!btn.classList.contains('arm'))return;swapLabel(btn,label,()=>btn.classList.remove('arm'))};
  btn.onclick=()=>{if(skip&&skip())return disarm();if(btn.classList.contains('arm')){disarm();act();return}
   swapLabel(btn,label+': are you sure?',()=>btn.classList.add('arm'));t=setTimeout(disarm,3000)};btn.onblur=()=>setTimeout(()=>{if(document.activeElement!==btn)disarm()},150)}
