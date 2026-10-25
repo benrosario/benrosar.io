@@ -19,7 +19,7 @@ select{appearance:none;-webkit-appearance:none;padding-right:32px;background-ima
 .lst{overflow:hidden}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.5s;animation-timing-function:ease-in-out;mix-blend-mode:normal}
 @media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
-button.arm,button.rst.arm,#rs.arm,.fa.arm{font-weight:600;background:var(--card);border-color:var(--no);color:var(--no)}button.arm:hover,#rs.arm:hover,button.rst.arm:hover{background:var(--nob)}button{transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s}button .lbl{display:inline-block;white-space:nowrap}button:has(>.lbl){white-space:nowrap;overflow:hidden;text-overflow:clip}
+button.arm,button.rst.arm,#rs.arm,.fa.arm{font-weight:600;background:var(--card);border-color:var(--no);color:var(--no)}button.arm:hover,#rs.arm:hover,button.rst.arm:hover{background:var(--nob)}button{transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s}button .lbl{display:inline-block;white-space:nowrap}button:has(>.lbl){white-space:nowrap;overflow:hidden;text-overflow:clip;text-align:left}
 .grip{position:sticky;top:53px;flex:none;width:6px;margin-left:-3px;height:calc(100vh - 53px);cursor:col-resize;z-index:1;touch-action:none}
 .grip:hover,.grip.on{background:var(--acc);opacity:.35}body.drag{cursor:col-resize;user-select:none}
 aside{position:sticky;top:53px;width:var(--sw,270px);flex:none;height:calc(100vh - 53px);overflow-y:auto;border-right:1px solid var(--bd);background:var(--card);padding:10px 8px}
@@ -49,7 +49,7 @@ pre{background:var(--code);border-radius:8px;padding:10px 12px;overflow-x:auto;f
 .badge{display:inline-block;margin-left:8px;font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid;letter-spacing:.02em}
 .q.oosq{opacity:.72}.q.oosq:hover,.q.oosq:focus-within{opacity:1}
 aside .star{color:#d9a400;font-size:12px}aside .skp{font-size:10.5px;color:var(--mut);border:1px solid var(--bd);border-radius:999px;padding:0 6px}
-.cb{margin:10px 0}.cb pre{margin:0}.cbh{display:flex;justify-content:flex-end;margin-top:6px}.qh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:2px}.qh .fb{text-align:right;flex:none;max-width:60%;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}.qh .fb .mk{font-size:12px;padding:2px 8px}
+.cb{margin:10px 0}.cb pre{margin:0}.cbh{display:flex;justify-content:flex-end;margin-top:6px}.qh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:2px}.qh .fb{text-align:right;flex:none;max-width:60%;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}.qh .fb .stale{font-size:12px;color:var(--mut);flex-basis:100%;text-align:right}.qh .fb .mk{font-size:12px;padding:2px 8px}
 .ai{display:inline-flex;align-items:center;gap:6px}.ai[hidden]{display:none}.ai.copied{border-color:var(--ok);color:var(--ok)}
 .fa{font-size:12px;padding:3px 10px}.fa.shown{border-color:var(--ok);color:var(--ok)}
 .fillv{background:rgba(31,138,76,.14);border-radius:3px;padding:0 1px}
@@ -118,13 +118,17 @@ function fill(text,alone,vals){return text.split('\n').map(line=>{for(const [,bi
   else line=line.replace(tok,(v??'__unfilled__').split('\n').join(' '))}return line}).join('\n')}
 
 // ---- grading ----
+const GV=2; // bump when grading changes so old wrong answers can be re-checked
+// Remove indentation shared by every line (and blank edges), so pasted or indented answers line up with the blank.
+function dedent(t){const L=t.replace(/\t/g,'    ').split('\n');while(L.length&&!L[0].trim())L.shift();while(L.length&&!L.at(-1).trim())L.pop();
+ const n=Math.min(...L.filter(l=>l.trim()).map(l=>l.match(/^ */)[0].length));return L.map(l=>l.slice(n).trimEnd()).join('\n')}
 const norm=s=>s.toLowerCase().replace(/"/g,"'").replace(/\s+/g,'').replace(/;$/,'');
 async function grade(q,v,p){
  if(q.k=='mc')return{ok:v===q.a};
  if(q.k=='sata')return{ok:[...q.a].sort()+''==[...v].sort()+''};
  if(q.a.some(x=>norm(x)==norm(v)))return{ok:true,how:'Matches the official answer'};
  if(!q.r)return{ok:false};
- const R=p.run,vals={...R.v},parts=q.r.length>1?v.split('\n').filter(x=>x.trim()):[v];
+ const R=p.run,vals={...R.v},parts=q.r.length>1?v.split('\n').filter(x=>x.trim()).map(x=>x.trim()):[dedent(v)];
  if(parts.length!=q.r.length)return{ok:false,out:`This question has ${q.r.length} blanks — put each on its own line.`};
  q.r.forEach((b,i)=>vals[b]=parts[i]);
  const full=R.c.map(c=>fill(c,R.b,vals)).join('\n\n'),r=await runPy(full,fill(R.c[R.ch[q.r[0]]],R.b,vals));
@@ -262,11 +266,14 @@ function card(q,id,p){const wrap=document.createElement('div');wrap.className='q
   fb.innerHTML=ok?'✓ '+esc(msg||'Correct'):'✗ Not quite'+(q.k=='blank'?' <button class="mk">I was right</button>':'');
   const mk=fb.querySelector('.mk');if(mk)mk.onclick=()=>{S[id].ok=true;S[id].m='Marked correct by you';save();show(true,S[id].m);out.hidden=true;stats()};
   out.hidden=!o;out.textContent=o||'';if(ok)an.hidden=true}
- if(st){if(ta)ta.value=st.v;else ins.forEach(x=>x.checked=q.k=='mc'?st.v===+x.value:st.v.includes(+x.value));show(st.ok,st.m,st.o)}
+ if(st){if(ta)ta.value=st.v;else ins.forEach(x=>x.checked=q.k=='mc'?st.v===+x.value:st.v.includes(+x.value));show(st.ok,st.m,st.o);
+  // A wrong answer saved by an older checker: re-check text answers now; ask before running code.
+  if(!st.ok&&st.gv!==GV&&q.k=='blank'){if(!q.r)grade(q,st.v,p).then(g=>{if(g.ok){S[id]={v:st.v,ok:true,m:g.how,gv:GV};save();show(true,g.how);stats()}});
+   else{fb.insertAdjacentHTML('beforeend','<span class="stale">Checker updated since you answered. Press Check again.</span>')}}}
  function get(){if(ta)return ta.value;if(q.k=='mc'){const x=ins.find(x=>x.checked);return x?+x.value:null}return ins.filter(x=>x.checked).map(x=>+x.value)}
  const ck=c.querySelector('.ck');ck.onclick=async()=>{const v=get();if(v===null||(typeof v=='string'&&!v.trim())||(Array.isArray(v)&&!v.length)){fb.className='fb no';fb.textContent='Enter an answer first';return}
   ck.disabled=true;fb.className='fb';fb.textContent=q.r&&!W?'Loading Python (first run takes a few seconds)…':q.r?'Running…':'';
-  const g=await grade(q,v,p);ck.disabled=false;S[id]={v,ok:g.ok,m:g.how,o:g.out};save();show(g.ok,g.how,g.out);stats();if(g.ok)confetti(ck);
+  const g=await grade(q,v,p);ck.disabled=false;S[id]={v,ok:g.ok,m:g.how,o:g.out,gv:GV};save();show(g.ok,g.how,g.out);stats();if(g.ok)confetti(ck);
   if(!g.ok){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}};
  c.addEventListener('animationend',()=>c.classList.remove('shake'));
  const sh=c.querySelector('.sh');confirmBtn(sh,()=>showKey(),()=>!an.hidden&&(an.hidden=true,true));
