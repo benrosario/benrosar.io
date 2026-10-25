@@ -49,7 +49,8 @@ pre{background:var(--code);border-radius:8px;padding:10px 12px;overflow-x:auto;f
 .badge{display:inline-block;margin-left:8px;font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid;letter-spacing:.02em}
 .q.oosq{opacity:.72}.q.oosq:hover,.q.oosq:focus-within{opacity:1}
 aside .star{color:#d9a400;font-size:12px}aside .skp{font-size:10.5px;color:var(--mut);border:1px solid var(--bd);border-radius:999px;padding:0 6px}
-.cb{margin:10px 0}.cb pre{margin:0}.cbh{display:flex;justify-content:flex-end;margin-top:6px}.ai{display:inline-flex;align-items:center;gap:6px}.ai[hidden]{display:none}.ai.copied{border-color:var(--ok);color:var(--ok)}
+.cb{margin:10px 0}.cb pre{margin:0}.cbh{display:flex;justify-content:flex-end;margin-top:6px}.qh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:2px}.qh .fb{text-align:right;flex:none;max-width:60%;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}.qh .fb .mk{font-size:12px;padding:2px 8px}
+.ai{display:inline-flex;align-items:center;gap:6px}.ai[hidden]{display:none}.ai.copied{border-color:var(--ok);color:var(--ok)}
 .fa{font-size:12px;padding:3px 10px}.fa.shown{border-color:var(--ok);color:var(--ok)}
 .fillv{background:rgba(31,138,76,.14);border-radius:3px;padding:0 1px}
 .dd{position:relative}.ddb,.ddm{display:none}
@@ -250,15 +251,15 @@ function goTo(i,j,qid){if(cur!=i){cur=i;render()}else sidebar();
  el?.scrollIntoView({behavior:'smooth',block:'start'})}
 function card(q,id,p){const wrap=document.createElement('div');wrap.className='qw';const c=document.createElement('div'),st=S[id];c.className='q'+(st?st.ok?' ok':' no':'')+(OOS(q)?' oosq':'');
  const tag={mc:'Multiple choice',sata:'Select all that apply',blank:'Fill in the blank'}[q.k];
- let h=`<div class="tag">${tag}${(q.g||[]).map(k=>`<span class="badge ${k}">${TIPICON[k]} ${BADGE[k]}</span>`).join('')}</div><div class="ql">${segHTML(q.l)}</div>`;
+ let h=`<div class="qh"><div class="tag">${tag}${(q.g||[]).map(k=>`<span class="badge ${k}">${TIPICON[k]} ${BADGE[k]}</span>`).join('')}</div><span class="fb" role="status" aria-live="polite"></span></div><div class="ql">${segHTML(q.l)}</div>`;
  if(q.k=='blank')h+=`<textarea rows="${q.r?q.r.length:1}" spellcheck="false" placeholder="Your answer…"></textarea>`;
  else q.o.forEach((o,i)=>h+=`<label class="o"><input type="${q.k=='mc'?'radio':'checkbox'}" name="${id}" value="${i}"><span>${esc(o)}</span></label>`);
- h+=`<div class="row"><button class="p ck">Check</button><button class="sh">Show answer</button><span class="fb"></span><button class="ai" hidden title="Copies a prompt about your mistake — paste it into ChatGPT, Claude, or any AI chat."><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg><span>Ask AI why</span></button><button class="rst">Reset</button></div><div class="out" hidden></div><div class="ans" hidden></div>`;
+ h+=`<div class="row"><button class="p ck">Check</button><button class="sh">Show answer</button><button class="ai" hidden title="Copies a prompt about your mistake — paste it into ChatGPT, Claude, or any AI chat."><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg><span>Ask AI why</span></button><button class="rst">Reset</button></div><div class="out" hidden></div><div class="ans" hidden></div>`;
  c.innerHTML=h;wireFills(c);const ta=c.querySelector('textarea'),grow=()=>{if(!ta)return;ta.style.height='auto';ta.style.height=ta.scrollHeight+2+'px'},ins=[...c.querySelectorAll('input')],fb=c.querySelector('.fb'),an=c.querySelector('.ans'),out=c.querySelector('.out');
  const showKey=()=>{an.hidden=false;an.innerHTML=`<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>`+(q.x?`<div class="x">${esc(q.x)}</div>`:'')};
  const ai=c.querySelector('.ai');ai.onclick=async()=>{const s=S[id];if(!s)return;const ok=await copyText(aiPrompt(D.find(x=>id.startsWith(x.id+'|')),p,q,s.v,s.o));const lb=ai.querySelector('span');lb.textContent=ok?'Copied — paste into an AI chat':'Couldn’t copy';ai.classList.toggle('copied',ok);setTimeout(()=>{lb.textContent='Ask AI why';ai.classList.remove('copied')},2500)};
  function show(ok,msg,o){c.className='q '+(ok?'ok':'no');ai.hidden=!!ok;fb.className='fb '+(ok?'ok':'no');
-  fb.innerHTML=ok?'✓ '+esc(msg||'Correct'):'✗ Not quite'+(q.k=='blank'?' — <button class="mk">I was right</button>':'');
+  fb.innerHTML=ok?'✓ '+esc(msg||'Correct'):'✗ Not quite'+(q.k=='blank'?' <button class="mk">I was right</button>':'');
   const mk=fb.querySelector('.mk');if(mk)mk.onclick=()=>{S[id].ok=true;S[id].m='Marked correct by you';save();show(true,S[id].m);out.hidden=true;stats()};
   out.hidden=!o;out.textContent=o||'';if(ok)an.hidden=true}
  if(st){if(ta)ta.value=st.v;else ins.forEach(x=>x.checked=q.k=='mc'?st.v===+x.value:st.v.includes(+x.value));show(st.ok,st.m,st.o)}
@@ -314,9 +315,17 @@ grip.onpointerdown=e=>{e.preventDefault();grip.setPointerCapture(e.pointerId);gr
 grip.ondblclick=()=>{setW(270);save();if(S._zoom=='fit')applyZoom()};
 grip.onkeydown=e=>{const w=nav.offsetWidth;if(e.key=='ArrowLeft'){setW(w-20);save()}if(e.key=='ArrowRight'){setW(w+20);save()}if(S._zoom=='fit')applyZoom()};
 // ---- zoom for the question area: a number (0.5-2) or 'fit' ----
+// Keep the content at the top of the viewport (just under the header) in the same spot across a layout change.
+function keepPlace(change){const y=document.querySelector('header').getBoundingClientRect().bottom+12,r=m.getBoundingClientRect();
+ const el=document.elementFromPoint(Math.max(r.left+8,Math.min(r.left+r.width/2,innerWidth-8)),y);
+ const a=el&&m.contains(el)?el.closest('pre,p,h2,h3,.qw,.note,.tips,label,.row')||el:null;
+ if(!a||scrollY<1){change();return}
+ const b=a.getBoundingClientRect(),frac=b.height?(y-b.top)/b.height:0;change();
+ const b2=a.getBoundingClientRect();scrollBy({top:b2.top+frac*b2.height-y,behavior:'instant'})}
 function applyZoom(){let z=S._zoom??1;const fit=z=='fit';
  if(fit){const side=matchMedia('(max-width:760px)').matches?0:nav.offsetWidth+grip.offsetWidth;z=Math.max(.7,Math.min(2,(innerWidth-side)/900))}
- z=Math.round(z*100)/100;document.documentElement.style.setProperty('--zm',z);if(document.activeElement!==$('#zv'))$('#zv').value=Math.round(z*100)+'%';$('#zf').classList.toggle('on',fit);$('#zf').setAttribute('aria-pressed',fit);return z}
+ z=Math.round(z*100)/100;const prev=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zm'))||1;
+ if(z!==prev)keepPlace(()=>document.documentElement.style.setProperty('--zm',z));else document.documentElement.style.setProperty('--zm',z);if(document.activeElement!==$('#zv'))$('#zv').value=Math.round(z*100)+'%';$('#zf').classList.toggle('on',fit);$('#zf').setAttribute('aria-pressed',fit);return z}
 const zoomBy=d=>{const z=applyZoom();S._zoom=Math.max(.5,Math.min(2,Math.round((z+d)*10)/10));save();applyZoom()};
 $('#zo').onclick=()=>zoomBy(-.1);$('#zi').onclick=()=>zoomBy(.1);
 const zv=$('#zv');
