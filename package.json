@@ -14,6 +14,7 @@
     "start:vinext": "wrangler dev --config dist/server/wrangler.json --config wrangler.response-store.jsonc --local",
     "deploy:vinext": "vinext-cloudflare deploy",
     "deploy:response-store": "wrangler deploy --config wrangler.response-store.jsonc",
+    "deploy:practice": "wrangler deploy --config practice/wrangler.jsonc",
     "check:vinext": "vinext check",
     "check:cloudflare": "vinext-cloudflare deploy --dry-run",
     "test:integration:vinext": "TEST_RUNTIME=vinext node --test tests/integration/*.test.mjs",

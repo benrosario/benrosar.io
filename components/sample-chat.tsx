@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { History } from "./icons";
 
 // A replay of a real Sierra Class Helper reply from Discord (September 29, 2026).
@@ -55,12 +55,11 @@ const COURSES: Course[] = [
 // Words revealed per second while the reply "types". Chosen to read as a
 // quick, steady stream rather than a letter-by-letter typewriter.
 const WORDS_PER_SECOND = 32;
-const THINKING_MS = 900;
-
-type Phase = "idle" | "thinking" | "streaming" | "done";
-
+const REPLAY_SEEN_KEY = "sierra-class-helper-replay-seen";
+const REPLAY_SEEN_EVENT = "sierra-class-helper-replay-seen";
 // Walks the reply in reading order, handing out one index per word so the
-// stream can reveal words in sequence. Anything past `shown` is not rendered.
+// stream can reveal words in sequence. Hidden words retain their space so
+// playback never shifts the page or needs to control the visitor's scroll.
 class Cursor {
   n = 0;
   shown: number;
@@ -69,14 +68,16 @@ class Cursor {
     this.shown = shown;
     this.animate = animate;
   }
-  get open() { return this.n < this.shown; }
   words(text: string): ReactNode[] {
     return (text.match(/\s*\S+\s*/g) ?? []).map((word) => {
       const index = this.n++;
-      if (index >= this.shown) return null;
-      return this.animate
-        ? <span className="stream-word" key={index}>{word}</span>
-        : <span key={index}>{word}</span>;
+      const hidden = index >= this.shown;
+      return <span
+        key={index}
+        className={this.animate && !hidden ? "stream-word" : undefined}
+        style={hidden ? { visibility: "hidden" } : undefined}
+        aria-hidden={hidden || undefined}
+      >{word}</span>;
     });
   }
   runs(runs: Run[]): ReactNode[] {
@@ -91,27 +92,29 @@ class Cursor {
 function countWords(): number {
   const c = new Cursor(Infinity, false);
   c.runs(INTRO);
-  renderCourse(COURSES[0], c);
+  for (const course of COURSES) renderCourse(course, c);
   return c.n;
 }
 
 function renderCourse(course: Course, c: Cursor): ReactNode {
-  if (!c.open) return null;
   const title = c.words(course.title);
   return (
     <div className="replay-course">
       <h5>{title}</h5>
       <ul>
         {course.items.map((item) => {
-          if (!c.open) return null;
+          const revealed = c.n < c.shown;
           const label = c.words(`${item.label}:`);
           const value = c.runs(item.runs);
           return (
-            <li key={item.label}>
+            <li key={item.label} style={revealed ? undefined : { visibility: "hidden" }} aria-hidden={!revealed || undefined}>
               <strong>{label}</strong> {value}
               {item.sub && (
                 <ul>
-                  {item.sub.map((line) => c.open ? <li key={line}>{c.words(line)}</li> : null)}
+                  {item.sub.map((line) => {
+                    const revealed = c.n < c.shown;
+                    return <li key={line} style={revealed ? undefined : { visibility: "hidden" }} aria-hidden={!revealed || undefined}>{c.words(line)}</li>;
+                  })}
                 </ul>
               )}
             </li>
@@ -129,89 +132,121 @@ function prefersReducedMotion() {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function hasSeenReplay() {
+  // Prefer the complete example if autoplay or persistence is unavailable.
+  if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") return true;
+  try {
+    return localStorage.getItem(REPLAY_SEEN_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function subscribeToReplayVisit(notify: () => void) {
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  window.addEventListener("storage", notify);
+  window.addEventListener(REPLAY_SEEN_EVENT, notify);
+  motion.addEventListener("change", notify);
+  return () => {
+    window.removeEventListener("storage", notify);
+    window.removeEventListener(REPLAY_SEEN_EVENT, notify);
+    motion.removeEventListener("change", notify);
+  };
+}
+
+function rememberReplay() {
+  try {
+    localStorage.setItem(REPLAY_SEEN_KEY, "1");
+    window.dispatchEvent(new Event(REPLAY_SEEN_EVENT));
+  } catch {
+    // Manual playback still works if saving the preference is blocked.
+  }
+}
+
 export function SampleChat() {
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [shown, setShown] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [shown, setShown] = useState(TOTAL_WORDS);
   const [expanded, setExpanded] = useState(false);
-  const [run, setRun] = useState(0);
+  const [hasReplayed, setHasReplayed] = useState(false);
   const frame = useRef<number | null>(null);
-  const timer = useRef<number | null>(null);
+  const question = useRef<HTMLParagraphElement | null>(null);
+  // Server HTML remains readable without JavaScript; hydration checks this browser's visit.
+  const seenReplay = useSyncExternalStore(subscribeToReplayVisit, hasSeenReplay, () => true);
+  const waiting = !seenReplay && !hasReplayed && !playing;
 
-  const stop = () => {
+  const stop = useCallback(() => {
     if (frame.current !== null) cancelAnimationFrame(frame.current);
-    if (timer.current !== null) clearTimeout(timer.current);
-    frame.current = timer.current = null;
-  };
-  useEffect(() => stop, []);
+    frame.current = null;
+  }, []);
+  useEffect(() => stop, [stop]);
 
-  const send = (event?: FormEvent) => {
-    event?.preventDefault();
-    if (phase !== "idle") return;
-    if (prefersReducedMotion()) {
-      setShown(TOTAL_WORDS);
-      setPhase("done");
-      return;
-    }
-    setPhase("thinking");
-    timer.current = window.setTimeout(() => {
-      setPhase("streaming");
-      const start = performance.now();
-      const tick = (now: number) => {
-        const next = Math.min(TOTAL_WORDS, Math.floor(((now - start) / 1000) * WORDS_PER_SECOND) + 1);
-        setShown(next);
-        if (next < TOTAL_WORDS) frame.current = requestAnimationFrame(tick);
-        else { frame.current = null; setPhase("done"); }
-      };
-      frame.current = requestAnimationFrame(tick);
-    }, THINKING_MS);
-  };
+  const startPlayback = useCallback(() => {
+    stop();
+    setHasReplayed(true);
+    rememberReplay();
+    setPlaying(true);
+    setShown(0);
+    const start = performance.now();
+    const tick = (now: number) => {
+      const next = Math.min(TOTAL_WORDS, Math.floor(((now - start) / 1000) * WORDS_PER_SECOND) + 1);
+      setShown(next);
+      if (next < TOTAL_WORDS) frame.current = requestAnimationFrame(tick);
+      else { frame.current = null; setPlaying(false); }
+    };
+    frame.current = requestAnimationFrame(tick);
+  }, [stop]);
+
+  useEffect(() => {
+    if (!waiting || !question.current) return;
+    let active = true;
+    const observer = new IntersectionObserver((entries) => {
+      if (!active || !entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.75)) return;
+      active = false;
+      observer.disconnect();
+      startPlayback();
+    }, { threshold: 0.75, rootMargin: "-80px 0px -32px 0px" });
+    observer.observe(question.current);
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [waiting, startPlayback]);
 
   const replay = () => {
-    stop();
-    setShown(0);
-    setExpanded(false);
-    setPhase("idle");
-    setRun((r) => r + 1);
+    if (playing || prefersReducedMotion()) {
+      stop();
+      setShown(TOTAL_WORDS);
+      setPlaying(false);
+      return;
+    }
+    startPlayback();
   };
 
-  const sent = phase !== "idle";
-  const done = phase === "done";
-  const c = new Cursor(shown, true);
+  const c = new Cursor(waiting ? 0 : shown, playing);
+  const playbackLabel = playing ? "Skip replay" : waiting ? "Watch response" : "Replay response";
+  const hideDetails = waiting || playing;
 
   return (
-    <div className="replay" data-phase={phase} aria-busy={phase === "thinking" || phase === "streaming"}>
+    <div className="replay" data-phase={playing ? "streaming" : waiting ? "waiting" : "done"}>
       <div className="replay-bar">
         <span className="replay-avatar" aria-hidden="true"><History /></span>
         <span className="replay-name"><span>Sierra Class Helper</span> <span className="replay-name-tag">— Replay</span></span>
-        {done && (
-          <button type="button" className="replay-again" onClick={replay} aria-label="Play again">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 9.5a5.5 5.5 0 1 0 1.7-4M4.5 3.5v3h3" /></svg>
-            <span className="replay-again-label" aria-hidden="true">Play again</span>
-          </button>
-        )}
+        <button type="button" className="replay-again" onClick={replay} aria-label={playbackLabel}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 9.5a5.5 5.5 0 1 0 1.7-4M4.5 3.5v3h3" /></svg>
+          <span className="replay-again-label" aria-hidden="true">{playbackLabel}</span>
+        </button>
       </div>
 
-      <div className="replay-log" key={run}>
-        {!sent && (
-          <p className="replay-hint">
-            Press send to see how the bot answers.
-          </p>
-        )}
-        {sent && <p className="replay-question"><span className="sr-only">Question: </span>{QUESTION}</p>}
-        {phase === "thinking" && (
-          <p className="replay-thinking" role="status">
-            <span className="sr-only">Sierra Class Helper is typing</span>
-            <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
-          </p>
-        )}
-        {(phase === "streaming" || done) && (
-          <div className="replay-answer">
-            <p className="replay-from">Sierra Class Helper <span>4:12 PM</span></p>
-            <p>{c.runs(INTRO)}</p>
-            {renderCourse(COURSES[0], c)}
-            <div className="replay-more" data-open={expanded} id="replay-more" inert={!expanded}>
-              <div>
-                {renderCourse(COURSES[1], new Cursor(Infinity, false))}
+      <div className="replay-log">
+        <p className="replay-question" ref={question}><span className="sr-only">Question: </span>{QUESTION}</p>
+        <div className="replay-answer">
+          <p className="replay-from">Sierra Class Helper <span>4:12 PM</span></p>
+          <p>{c.runs(INTRO)}</p>
+          {renderCourse(COURSES[0], c)}
+          <div className="replay-more" data-open={expanded} id="replay-more" inert={!expanded}>
+            <div>
+              {renderCourse(COURSES[1], c)}
+              <div style={hideDetails ? { visibility: "hidden" } : undefined} aria-hidden={hideDetails || undefined} inert={hideDetails}>
                 <p className="replay-updated">Classes last updated: 16:04 PDT (8 minutes ago)</p>
                 <p className="replay-disclaimer">
                   AI can make mistakes. Verify important information on the{" "}
@@ -221,35 +256,20 @@ export function SampleChat() {
                 </p>
               </div>
             </div>
-            {done && (
-              <button
-                type="button"
-                className="replay-toggle"
-                aria-expanded={expanded}
-                aria-controls="replay-more"
-                onClick={() => setExpanded((open) => !open)}
-              >
-                {expanded ? "Show less" : "Show the full reply"}
-                <span aria-hidden="true" className="replay-chevron" />
-              </button>
-            )}
           </div>
-        )}
-        {done && <p className="sr-only" role="status">Sierra Class Helper replied.</p>}
+          <button
+            type="button"
+            className="replay-toggle"
+            aria-expanded={expanded}
+            aria-controls="replay-more"
+            onClick={() => setExpanded((open) => !open)}
+          >
+            {expanded ? "Show less" : "Show the full reply"}
+            <span aria-hidden="true" className="replay-chevron" />
+          </button>
+        </div>
       </div>
-
-      <form className="replay-composer" onSubmit={send}>
-        <label className="sr-only" htmlFor="replay-question">Example question</label>
-        <input
-          id="replay-question"
-          readOnly
-          value={sent ? "" : QUESTION}
-          tabIndex={-1}
-        />
-        <button type="submit" disabled={sent} aria-label="Send the example question">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M10 4.5 15.5 10 10 15.5" /></svg>
-        </button>
-      </form>
+      <span className="sr-only" role="status">{hasReplayed ? playing ? "Playing recorded response." : "Replay finished." : ""}</span>
     </div>
   );
 }

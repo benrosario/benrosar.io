@@ -1,0 +1,18 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Static CS 61A exam practice site, served at practice.benrosar.io.
+  "name": "benrosar-io-practice",
+  "compatibility_date": "2026-09-16",
+  "account_id": "abfb73a975a267f55e5755d5cfc9be70",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "practice.benrosar.io",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "none"
+  }
+}

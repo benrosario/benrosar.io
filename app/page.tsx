@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProjectMetrics, ProjectOverview } from "@/components/project-overview";
 import { LiveDemo, LiveDemoLink } from "@/components/chat-demo";
 import { ThemePicker } from "@/components/theme-picker";
-import { Arrow, Document, GitHub, LinkedIn, Spark } from "@/components/icons";
+import { Arrow, Document, GitHub, LinkedIn } from "@/components/icons";
 import { projects, profile } from "@/lib/content";
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
         <div className="site-header-inner wrap">
           <div className="header-left">
             <a className="wordmark" href="#home" aria-label="Ben Rosario home">
-              ben rosario<span className="wordmark-mark" aria-hidden="true"><Spark weight={2.4} /></span>
+              ben rosario
             </a>
             <div className="profile-links">
               <a className="profile-link" href={profile.github} target="_blank" rel="noreferrer">
@@ -70,7 +70,6 @@ export default function Home() {
               <span className="sculpture-ring ring-two" />
               <span className="sculpture-ring ring-three" />
             </div>
-            <span className="art-spark spark-one"><Spark weight={1.2} /></span>
           </div>
         </section>
         <section
