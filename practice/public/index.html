@@ -61,7 +61,7 @@ aside .star{color:#d9a400;font-size:12px}aside .skp{font-size:10.5px;color:var(-
  .ddm li{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border-radius:7px;cursor:pointer;white-space:nowrap;font-size:14px}
  .ddm li .ck{width:14px;color:var(--acc);visibility:hidden}.ddm li[aria-selected=true] .ck{visibility:visible}.ddm li[aria-selected=true]{font-weight:600}
  .ddm li.hi{background:var(--code)}}
-.exh{font-size:20px;margin:26px 0 10px}#rs:disabled{opacity:.45;cursor:not-allowed}
+.fhint{font-size:12px;color:var(--mut);padding:4px 8px 8px}
 .blank{display:inline-block;min-width:3.2em;padding:0 6px;margin:0 1px;border:1.5px dashed var(--acc);border-radius:5px;color:var(--acc);text-align:center;font-weight:600;line-height:1.35}
 :root{--hk:#a626a4;--hs:#50a14f;--hn:#986801;--hc:#8a8f98;--hf:#4078f2;--hb:#0184bc;--hp:#c18401}
 :root[data-theme=dark]{--hk:#c678dd;--hs:#98c379;--hn:#d19a66;--hc:#7f848e;--hf:#61afef;--hb:#56b6c2;--hp:#e5c07b}
@@ -211,37 +211,43 @@ const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const OOS=b=>(b.g||[]).includes('oos');
 const TIPICON={dn:'★',csm:'◆',oos:'⊘'},BADGE={dn:'DeNero pick',csm:'CSM pick',oos:'Out of scope'};
 function counts(e,p){let n=0,ok=0;(p?[p]:e.p).forEach(p=>p.b.forEach(b=>{if(b.s||OOS(b))return;n++;const s=S[e.id+'|'+b.id];if(s&&s.ok)ok++}));return{n,ok}}
-function sidebar(){nav.innerHTML='';D.forEach((e,i)=>{const d=document.createElement('details'),c=counts(e);d.open=!!S._open[e.id];if(i==cur)d.className='cur';
-  d.innerHTML=`<summary><button class="tg" type="button" aria-label="Show or hide ${esc(e.t)} problems" aria-expanded="${d.open}"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="nm">${esc(e.t)}</span>${c.ok==c.n?'<span class="done" title="Complete" aria-label="Complete">✓</span>':`<span class="ct">${c.ok}/${c.n}</span>`}</summary>`;
+function sidebar(){nav.innerHTML='';const f=flt.value,fl=f!='all';let any=0;
+ if(fl){const h=document.createElement('div');h.className='fhint';h.textContent=`Showing ${FNAME[f]} questions from all exams`;nav.append(h)}
+ D.forEach((e,i)=>{const d=document.createElement('details'),c=counts(e);
+  const match=p=>fl?p.b.filter(b=>b.k&&keep(f,b,S[e.id+'|'+b.id])):null,em=fl?e.p.reduce((k,p)=>k+match(p).length,0):0;
+  if(fl&&!em)return;any++;
+  d.open=fl?((S._fo||{})[e.id]!==0):!!S._open[e.id];if(i==cur)d.className='cur';
+  d.innerHTML=`<summary><button class="tg" type="button" aria-label="Show or hide ${esc(e.t)} problems" aria-expanded="${d.open}"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="nm">${esc(e.t)}</span>${fl?`<span class="ct" title="${em} matching">${em}</span>`:c.ok==c.n?'<span class="done" title="Complete" aria-label="Complete">✓</span>':`<span class="ct">${c.ok}/${c.n}</span>`}</summary>`;
   const lst=document.createElement('div');lst.className='lst';
-  e.p.forEach((p,j)=>{const a=document.createElement('a'),pc=counts(e,p);a.href='#p-'+i+'-'+j;
-   a.innerHTML=`<span class="nm">${esc(p.t.replace(/\s*\([\d.?]+ pts\)$/,''))}</span>${!pc.n?'<span class="skp" title="Out of scope for Midterm 3">skip</span>':pc.ok==pc.n?'<span class="done sm" aria-label="Complete">✓</span>':''}${p.tips&&p.tips.some(t=>t.k!='oos')?'<span class="star" title="Recommended">★</span>':''}`;
-   a.onclick=ev=>{ev.preventDefault();if(cur!=i){cur=i;if(flt.value=='all')render();else sidebar()}document.getElementById('p-'+i+'-'+j)?.scrollIntoView({behavior:'smooth',block:'start'})};lst.append(a)});d.append(lst);
-  d.querySelector('summary').addEventListener('click',ev=>{ev.preventDefault();if(ev.target.closest('.tg')){toggleExam(d,e.id,!d.open);return}if(cur!=i){cur=i;S._open[e.id]=1;pendingOpen=e.id;render();scrollTo(0,0)}else toggleExam(d,e.id,!d.open)});
-  nav.append(d);if(pendingOpen==e.id){pendingOpen=null;d.open=false;toggleExam(d,e.id,true)}})}
+  e.p.forEach((p,j)=>{const mq=match(p);if(fl&&!mq.length)return;const a=document.createElement('a'),pc=counts(e,p);a.href='#p-'+i+'-'+j;
+   a.innerHTML=`<span class="nm">${esc(p.t.replace(/\s*\([\d.?]+ pts\)$/,''))}</span>${!pc.n?'<span class="skp" title="Out of scope for Midterm 3">skip</span>':pc.ok==pc.n?'<span class="done sm" aria-label="Complete">✓</span>':''}${p.tips&&p.tips.some(t=>t.k!='oos')?'<span class="star" title="Recommended">★</span>':''}${fl?`<span class="ct">${mq.length}</span>`:''}`;
+   a.onclick=ev=>{ev.preventDefault();goTo(i,j,fl?mq[0].id:null)};lst.append(a)});d.append(lst);
+  d.querySelector('summary').addEventListener('click',ev=>{ev.preventDefault();if(ev.target.closest('.tg')){toggleExam(d,e.id,!d.open);return}if(cur!=i){cur=i;if(!fl){S._open[e.id]=1;pendingOpen=e.id}render();scrollTo(0,0)}else toggleExam(d,e.id,!d.open)});
+  nav.append(d);if(pendingOpen==e.id){pendingOpen=null;d.open=false;toggleExam(d,e.id,true)}});
+ if(fl&&!any){const h=document.createElement('div');h.className='fhint';h.textContent=`No ${FNAME[f]} questions right now.`;nav.append(h)}}
 let pendingOpen=null;
-function toggleExam(d,id,open){S._open[id]=open?1:0;save();d.querySelector('.tg').setAttribute('aria-expanded',open);const l=d.querySelector('.lst');
+function toggleExam(d,id,open){if(flt.value!='all'){S._fo=S._fo||{};S._fo[id]=open?1:0}else S._open[id]=open?1:0;save();d.querySelector('.tg').setAttribute('aria-expanded',open);const l=d.querySelector('.lst');
  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!l.animate){d.open=open;return}
  l.getAnimations().forEach(a=>a.cancel());
  if(open){d.open=true;const h=l.scrollHeight;l.animate([{height:'0px',opacity:0},{height:h+'px',opacity:1}],{duration:220,easing:'cubic-bezier(.2,.8,.2,1)'})}
  else{const h=l.scrollHeight;l.animate([{height:h+'px',opacity:1},{height:'0px',opacity:0}],{duration:180,easing:'ease-in'}).onfinish=()=>{d.open=false}}}
 const FNAME={todo:'unanswered',no:'incorrect',rec:'recommended',scope:'in-scope'};
 const keep=(f,b,st)=>!(f=='todo'&&st||f=='no'&&(!st||st.ok)||f=='rec'&&!(b.g||[]).some(k=>k!='oos')||f=='scope'&&OOS(b));
-// "All questions" shows the selected exam; any other filter shows matches from every exam, grouped by exam.
-function render(){const f=flt.value,cross=f!='all';S._ex=cur;S._f=f;save();m.innerHTML='';FILLS.length=0;
- const nt=document.createElement('div');nt.className='note';const e0=D[cur];
- nt.innerHTML=cross?`<b>Showing ${FNAME[f]} questions from all exams.</b> <span class="mut">Choose “All questions” to go back to one exam at a time.</span>`
-  :`<b>${esc(e0.t)}</b> — ${esc(e0.note)} ${e0.skip.length?'Staff say to skip: '+e0.skip.map(x=>'<span class="ref">'+esc(x)+'</span>').join(', ')+'.':'Nothing is flagged to skip.'} <span class="mut">Out-of-scope questions don’t count toward your progress.</span>`;
- m.append(nt);$('#rs').disabled=cross;$('#rs').title=cross?'Pick “All questions” to reset one exam':'';
- let total=0;
- (cross?D.map((e,i)=>i):[cur]).forEach(ei=>{const e=D[ei];let examShown=0;const eh=document.createElement('h2');eh.className='exh';eh.textContent=e.t;
-  e.p.forEach((p,j)=>{const d=document.createElement('section');d.className='prob';d.id=`p-${ei}-${j}`;d.style.scrollMarginTop='64px';
-   d.innerHTML=`<h2>${esc((cross?e.t+' · ':'')+p.t)}</h2>`+(p.tips?`<div class="tips">${p.tips.map(t=>`<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>`:'');let shown=0;
-   p.b.forEach(b=>{if(b.s){const t=document.createElement('div');t.className='txt';t.innerHTML=segHTML(b.s);wireFills(t);d.append(t);return}
-    const id=e.id+'|'+b.id;if(!keep(f,b,S[id]))return;shown++;d.append(card(b,id,p))});
-   if(shown||!cross){if(cross&&!examShown++)m.append(eh);m.append(d);total+=shown}})});
- if(cross&&!total){const em=document.createElement('div');em.className='note';em.textContent=`No ${FNAME[f]} questions right now.`;m.append(em)}
+// The main area always shows the selected exam in full; the filter only narrows the sidebar.
+function render(){const e=D[cur];S._ex=cur;save();m.innerHTML='';FILLS.length=0;
+ const nt=document.createElement('div');nt.className='note';
+ nt.innerHTML=`<b>${esc(e.t)}</b> — ${esc(e.note)} ${e.skip.length?'Staff say to skip: '+e.skip.map(x=>'<span class="ref">'+esc(x)+'</span>').join(', ')+'.':'Nothing is flagged to skip.'} <span class="mut">Out-of-scope questions don’t count toward your progress.</span>`;
+ m.append(nt);
+ e.p.forEach((p,j)=>{const d=document.createElement('section');d.className='prob';d.id=`p-${cur}-${j}`;d.style.scrollMarginTop='64px';
+  d.innerHTML=`<h2>${esc(p.t)}</h2>`+(p.tips?`<div class="tips">${p.tips.map(t=>`<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>`:'');
+  p.b.forEach(b=>{if(b.s){const t=document.createElement('div');t.className='txt';t.innerHTML=segHTML(b.s);wireFills(t);d.append(t);return}
+   const w=card(b,e.id+'|'+b.id,p);w.id=`q-${cur}-${b.id}`;w.style.scrollMarginTop='72px';d.append(w)});
+  m.append(d)});
  stats()}
+// Jump to exam i, problem j (and optionally a question) without disturbing anything else.
+function goTo(i,j,qid){if(cur!=i){cur=i;render()}else sidebar();
+ const el=document.getElementById(qid!=null?`q-${i}-${qid}`:`p-${i}-${j}`)||document.getElementById(`p-${i}-${j}`);
+ el?.scrollIntoView({behavior:'smooth',block:'start'})}
 function card(q,id,p){const wrap=document.createElement('div');wrap.className='qw';const c=document.createElement('div'),st=S[id];c.className='q'+(st?st.ok?' ok':' no':'')+(OOS(q)?' oosq':'');
  const tag={mc:'Multiple choice',sata:'Select all that apply',blank:'Fill in the blank'}[q.k];
  let h=`<div class="tag">${tag}${(q.g||[]).map(k=>`<span class="badge ${k}">${TIPICON[k]} ${BADGE[k]}</span>`).join('')}</div><div class="ql">${segHTML(q.l)}</div>`;
@@ -263,7 +269,7 @@ function card(q,id,p){const wrap=document.createElement('div');wrap.className='q
   if(!g.ok){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}};
  c.addEventListener('animationend',()=>c.classList.remove('shake'));
  const sh=c.querySelector('.sh');confirmBtn(sh,()=>showKey(),()=>!an.hidden&&(an.hidden=true,true));
- confirmBtn(c.querySelector('.rst'),()=>{delete S[id];save();wrap.replaceWith(card(q,id,p));stats()});
+ confirmBtn(c.querySelector('.rst'),()=>{delete S[id];save();(()=>{const nw=card(q,id,p);nw.id=wrap.id;nw.style.scrollMarginTop=wrap.style.scrollMarginTop;wrap.replaceWith(nw)})();stats()});
  if(ta){ta.addEventListener('input',grow);requestAnimationFrame(grow)}
  if(ta)ta.onkeydown=ev=>{if(ev.key=='Enter'&&(ev.metaKey||ev.ctrlKey))ck.click()};wrap.append(c,an);return wrap}
 // Two-step button: first click asks "Are you sure?", second click within 3s acts. skip() can handle a click without asking.
@@ -275,9 +281,9 @@ function confetti(el){if(matchMedia('(prefers-reduced-motion: reduce)').matches)
  for(let i=0;i<26;i++){const p=document.createElement('span');p.className='cf';p.style.left=x+'px';p.style.top=y+'px';p.style.background=C[i%C.length];document.body.append(p);
   const a=Math.random()*Math.PI*2,v=40+Math.random()*60,dx=Math.cos(a)*v,dy=Math.sin(a)*v-30;
   p.animate([{transform:'translate(-50%,-50%) rotate(0)',opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy+70}px)) rotate(${Math.random()*540-270}deg)`,opacity:0}],{duration:700+Math.random()*300,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>p.remove()}}
-function stats(){sidebar();let n=0,a=0,ok=0;(flt.value=='all'?[D[cur]]:D).forEach(e=>e.p.forEach(p=>p.b.forEach(b=>{if(b.s||OOS(b))return;n++;const s=S[e.id+'|'+b.id];if(s){a++;if(s.ok)ok++}})));
+function stats(){sidebar();let n=0,a=0,ok=0;[D[cur]].forEach(e=>e.p.forEach(p=>p.b.forEach(b=>{if(b.s||OOS(b))return;n++;const s=S[e.id+'|'+b.id];if(s){a++;if(s.ok)ok++}})));
  $('#pb').style.width=(100*ok/n)+'%';$('#stat').textContent=`${ok}/${n} correct · ${a} answered`}
-flt.onchange=()=>{render();scrollTo(0,0);ddSync()};
+flt.onchange=()=>{S._f=flt.value;save();const t0=m.getBoundingClientRect().top;sidebar();ddSync();const dy=m.getBoundingClientRect().top-t0;if(dy)scrollBy({top:dy,behavior:'instant'})};
 // ---- custom filter dropdown (desktop / fine pointer only; touch devices keep the native picker) ----
 const dd=$('#dd'),ddb=dd.querySelector('.ddb'),ddm=dd.querySelector('.ddm');let ddi=0;
 const ddOpts=()=>[...flt.options];
