@@ -19,7 +19,7 @@ select{appearance:none;-webkit-appearance:none;padding-right:32px;background-ima
 .lst{overflow:hidden}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.5s;animation-timing-function:ease-in-out;mix-blend-mode:normal}
 @media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
-button.arm{font-weight:600}button.sh.arm{border-color:var(--no);color:var(--no)}
+button.arm,button.rst.arm,#rs.arm,.fa.arm{font-weight:600;background:var(--card);border-color:var(--no);color:var(--no)}button.arm:hover,#rs.arm:hover,button.rst.arm:hover{background:var(--nob)}button{transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s}button .lbl{display:inline-block;white-space:nowrap}button:has(>.lbl){white-space:nowrap;overflow:hidden}
 .grip{position:sticky;top:53px;flex:none;width:6px;margin-left:-3px;height:calc(100vh - 53px);cursor:col-resize;z-index:1;touch-action:none}
 .grip:hover,.grip.on{background:var(--acc);opacity:.35}body.drag{cursor:col-resize;user-select:none}
 aside{position:sticky;top:53px;width:var(--sw,270px);flex:none;height:calc(100vh - 53px);overflow-y:auto;border-right:1px solid var(--bd);background:var(--card);padding:10px 8px}
@@ -274,9 +274,16 @@ function card(q,id,p){const wrap=document.createElement('div');wrap.className='q
  if(ta){ta.addEventListener('input',grow);requestAnimationFrame(grow)}
  if(ta)ta.onkeydown=ev=>{if(ev.key=='Enter'&&(ev.metaKey||ev.ctrlKey))ck.click()};wrap.append(c,an);return wrap}
 // Two-step button: first click asks "Are you sure?", second click within 3s acts. skip() can handle a click without asking.
-function confirmBtn(btn,act,skip){const label=btn.textContent;let t;const disarm=()=>{clearTimeout(t);btn.classList.remove('arm');btn.textContent=label};
+// Swap a button's text with a short width + fade animation.
+function swapLabel(btn,text){if(btn.textContent===text)return;
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches||!btn.animate){btn.textContent=text;return}
+ btn.getAnimations().forEach(a=>a.cancel());const w0=btn.getBoundingClientRect().width;
+ btn.innerHTML=`<span class="lbl">${esc(text)}</span>`;const w1=btn.getBoundingClientRect().width;
+ btn.animate([{width:w0+'px'},{width:w1+'px'}],{duration:200,easing:'cubic-bezier(.2,.8,.2,1)'});
+ btn.firstChild.animate([{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'none'}],{duration:180,easing:'ease-out'})}
+function confirmBtn(btn,act,skip){const label=btn.textContent;let t;const disarm=()=>{clearTimeout(t);if(!btn.classList.contains('arm'))return;btn.classList.remove('arm');swapLabel(btn,label)};
  btn.onclick=()=>{if(skip&&skip())return disarm();if(btn.classList.contains('arm')){disarm();act();return}
-  btn.classList.add('arm');btn.textContent=label+' — are you sure?';t=setTimeout(disarm,3000)};btn.onblur=()=>setTimeout(()=>{if(document.activeElement!==btn)disarm()},150)}
+  btn.classList.add('arm');swapLabel(btn,label+' — are you sure?');t=setTimeout(disarm,3000)};btn.onblur=()=>setTimeout(()=>{if(document.activeElement!==btn)disarm()},150)}
 function confetti(el){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,C=['#1f8a4c','#2a5bd7','#f2b705','#e8505b','#8e5cd9','#14b8a6'];
  for(let i=0;i<26;i++){const p=document.createElement('span');p.className='cf';p.style.left=x+'px';p.style.top=y+'px';p.style.background=C[i%C.length];document.body.append(p);
