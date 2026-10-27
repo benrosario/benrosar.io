@@ -11,8 +11,17 @@
       "custom_domain": true
     }
   ],
+  // Only POST /e (usage events) runs the Worker; everything else is served as static files.
+  "main": "./worker.js",
   "assets": {
     "directory": "./public",
-    "not_found_handling": "none"
-  }
+    "not_found_handling": "none",
+    "run_worker_first": ["/e"]
+  },
+  "analytics_engine_datasets": [
+    {
+      "binding": "EVENTS",
+      "dataset": "practice_events"
+    }
+  ]
 }
