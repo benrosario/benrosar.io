@@ -1,0 +1,987 @@
+{
+ "id": "61a-sp26-mt2",
+ "t": "Spring 2026 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/sp26/mt2/61a-sp26-mt2.pdf",
+  "sol": "https://cs61a.org/resources/sp26/mt2/61a-sp26-mt2_sol.pdf",
+  "topics": "sp26-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-sp26-mt2/1",
+   "n": "1",
+   "t": "1. Finding Errors (2.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Sofia is trying to write some code to represent a rectangular prism in Python. This is her code:"
+      },
+      {
+       "c": "class RectangularPrism:\n    def __init__(self, width, length, height):\n        self.width = width\n        self.length = length\n        self.height = height\n\n    def base_area(self):\n        return self.width * self.length\n\n    def is_square_base(self):\n        return self.width == self.length\n\n    def volume(self):\n        return self.base_area * self.height",
+       "lang": "py",
+       "ln": true
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) Sofia runs the following code expecting to see it return approximately 400, the volume of a 10 by 10 by 4 rectangular prism."
+      },
+      {
+       "c": ">>> sq = RectangularPrism(10, 10, 4)\n>>> sq.volume()",
+       "lang": "py"
+      },
+      {
+       "p": "Unfortunately, the code results in this error instead:"
+      },
+      {
+       "c": "Traceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\n  File \"/Users/sofia/rectangularprism.py\", line 14, in volume\n    return self.base_area * self.height\nTypeError: unsupported operand type(s) for * : 'method' and 'int'",
+       "lang": "py"
+      },
+      {
+       "p": "According to this traceback, which method contains an error?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "__init__",
+      "base_area",
+      "is_square_base",
+      "volume"
+     ],
+     "a": 3,
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) Rewrite the buggy line of code from the method that you identified above to fix the error and return the correct value."
+      }
+     ],
+     "k": "blank",
+     "x": "return self.width * self.length * self.height was not given full credit as it just repeated logic\nof self.base_area() instead of just calling it",
+     "a": [
+      "return self.base_area() * self.height",
+      "return RectangularPrism.base_area(self) * self.height",
+      "return self.height * self.base_area()",
+      "return self.height * RectangularPrism.base_area(self)"
+     ],
+     "part": "b"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "OBJECTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/2",
+   "n": "2",
+   "t": "2. Hog Revisited (5.0 pts)",
+   "b": [
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(a) In the Hog project, the roll_dice(num_rolls, dice) function simulates rolling dice a given number of num_rolls times and returning the results. According to the standard rules of Hog, if any of the dice rolled shows a 1, the player’s score for that turn is exactly 1, regardless of the other dice. Otherwise, the player’s score is the sum of all the dice rolls."
+      },
+      {
+       "c": "def fixed_dice():\n    while True:\n        yield 3\n        yield 4\n        yield 1\n        yield 5\n\ndie = fixed_dice()\nresult1 = roll_dice(3, die)\nresult2 = roll_dice(3, die)\nresult = result1 + result2",
+       "lang": "py"
+      },
+      {
+       "p": "Assume roll_dice is implemented correctly and this code runs without any errors. What does result evaluate to?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "13"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(b) In Hog, a strategy is defined as a function that takes two arguments (the current player’s score and the opponent’s score) and returns the number of dice the current player decides to roll. Consider the following function that returns a strategy:"
+      },
+      {
+       "c": "def make_catch_up_strategy(base_rolls):\n    \"\"\"Returns a strategy that rolls more dice if the player is losing.\"\"\"\n    def strategy(score, opponent_score):\n        if score < opponent_score:\n            return base_rolls + 2\n        return base_rolls\n    return strategy\n\nmy_strat = make_catch_up_strategy(4)\ndice_to_roll = my_strat(25, 30)",
+       "lang": "py"
+      },
+      {
+       "p": "What does dice_to_roll evaluate to?"
+      }
+     ],
+     "k": "mc",
+     "a": 2,
+     "o": [
+      "2",
+      "4",
+      "6",
+      "This code errors because make_catch_up_strategy takes one argument but we passed two into my_strat."
+     ],
+     "part": "b"
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(c) In Hog, we implemented make_averaged, a higher-order function that takes in an original_function and a times_called, and returns a new function. We have simplified this returned function such that it repeatedly calls the original_function and returns the average of the results."
+      },
+      {
+       "p": "Note: This is slightly different from what you implemented in the project, with the code being simpler."
+      },
+      {
+       "c": "def make_averaged(original_function, times_called=1000):\n    def returned_function():\n        total = 0\n        for _ in range(times_called):\n            total += original_function()\n        return total / times_called\n    return returned_function\n\n# Assume this test dice alternates between returning 4 and 3\ndef alternating_dice():\n    # Implementation omitted, infinitely returns 4, 3, 4, 3...\n\naveraged_roll = make_averaged(alternating_dice)\nfinal_result = averaged_roll()",
+       "lang": "py"
+      },
+      {
+       "p": "What does final_result evaluate to? If an error occurs, write ERROR."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "3.5"
+     ],
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2a",
+     "t": [
+      "GENERATORS"
+     ]
+    },
+    {
+     "n": "2b",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS"
+     ]
+    },
+    {
+     "n": "2c",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/3",
+   "n": "3",
+   "t": "3. Branching Out (3.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Consider the following list-based construction (the full definition, including implementation of is_tree, is on Page 2 left column of Midterm 2 Study Guide):"
+      },
+      {
+       "c": "def tree(label, branches=[]):\n    for branch in branches:\n        assert is_tree(branch), 'branches must be trees'\n    return [label] + list(branches)\n\ndef label(tree):\n    return tree[0]\n\ndef branches(tree):\n    return tree[1:]\n\ndef is_leaf(tree):\n    return not branches(tree)",
+       "lang": "py"
+      },
+      {
+       "p": "Finish implementing the last_leaf function to return the label of the last leaf in the given tree. The last leaf is the rightmost leaf: the one reached by always following the last branch in a tree’s list of branches until a leaf is found."
+      },
+      {
+       "c": "def last_leaf(t):\n    \"\"\"\n    >>> t = tree('a', [tree('b', [tree('d'), tree('e')]), tree('c')])\n    >>> t\n    ['a', ['b', ['d'], ['e']], ['c']]\n    >>> last_leaf(t)\n    'c'\n    >>> t = tree(5, [\n    ...     tree(2, [tree(7), tree(1, [tree(0), tree(4)]), tree(9)]),\n    ...     tree(3, [tree(6), tree(8)])\n    ... ])\n    >>> t\n    [5, [2, [7], [1, [0], [4]], [9]], [3, [6], [8]]]\n    >>> last_leaf(t)\n    8\n    \"\"\"\n    if is_leaf(t):\n        ⟪a⟫\n    last_branch = ⟪b⟫\n    return last_leaf(last_branch)",
+       "lang": "py",
+       "f": {
+        "a": "return label(t)",
+        "b": "branches(t)[-1]"
+       }
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "return label(t)"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "branches(t)[-1]"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    }
+   ],
+   "run": {
+    "c": [
+     "def tree(label, branches=[]):\n    for branch in branches:\n        assert is_tree(branch), 'branches must be trees'\n    return [label] + list(branches)\ndef label(tree):\n    return tree[0]\ndef branches(tree):\n    return tree[1:]\ndef is_leaf(tree):\n    return not branches(tree)",
+     "def last_leaf(t):\n    \"\"\"\n    >>> t = tree('a', [tree('b', [tree('d'), tree('e')]), tree('c')])\n    >>> t\n    ['a', ['b', ['d'], ['e']], ['c']]\n    >>> last_leaf(t)\n    'c'\n    >>> t = tree(5, [\n    ...     tree(2, [tree(7), tree(1, [tree(0), tree(4)]), tree(9)]),\n    ...     tree(3, [tree(6), tree(8)])\n    ... ])\n    >>> t\n    [5, [2, [7], [1, [0], [4]], [9]], [3, [6], [8]]]\n    >>> last_leaf(t)\n    8\n    \"\"\"\n    if is_leaf(t):\n        ⟦B2_0⟧\n    last_branch = ⟦B2_1⟧\n    return last_leaf(last_branch)"
+    ],
+    "b": {
+     "B2_0": true,
+     "B2_1": false
+    },
+    "ch": {
+     "B2_0": 1,
+     "B2_1": 1
+    },
+    "v": {
+     "B2_0": "return label(t)",
+     "B2_1": "branches(t)[-1]"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "RECURSION",
+      "TREES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/4",
+   "n": "4",
+   "t": "4. Teaching Mutating Lists of Hurdles (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been run (you may find drawing box-and-pointer diagrams helpful). Recall the pop method of a list removes and returns the last element of the list; if it is provided an argument, pop(i) removes and returns the element at index i."
+      },
+      {
+       "c": "lst1 = [1, 2, 3, 4, 5]\nlst2 = lst1[:3]\nlst3 = lst1\nlst1.append(lst2)\nlst3.extend([lst2.pop() for _ in range(2)])\nlst2[0] = 'c'\nlst4 = lst1[:]\n\ndef mystery(lst):\n    for i in range(len(lst)):\n        print(lst[i])\n        if lst[i] < 0:\n            lst.pop(i)",
+       "lang": "py"
+      },
+      {
+       "p": "For each part below, write the output of running the given code."
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(a)"
+      },
+      {
+       "c": ">>> lst1 is lst3",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "True"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(b)"
+      },
+      {
+       "c": ">>> lst1 is lst4",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "False"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(c)"
+      },
+      {
+       "c": ">>> lst1 == lst4",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "True"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(d)"
+      },
+      {
+       "c": ">>> lst1",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[1, 2, 3, 4, 5, ['c'], 3, 2]"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "(e) Write what Python would print out from the following run of the mystery function."
+      },
+      {
+       "p": "If an error occurs, you should also include it. The error does not have to match exactly what Python prints out, but it should include the error type. e.g. SyntaxError, ZeroDivisionError, etc."
+      },
+      {
+       "c": ">>> mystery([-1, -3, 4, -2, 7, 3])",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "-1\n4\n-2\n3\nIndexError: list index out of range"
+     ],
+     "part": "e"
+    }
+   ],
+   "topics": [
+    {
+     "n": "4",
+     "t": [
+      "LISTS",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/5",
+   "n": "5",
+   "t": "5. Making Pen Friends! (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "A Pen has an attribute for the animals (dictionary) it holds. An Animal has attributes for its unique name (str), the pen (Pen) it belongs to, and a list of its friends."
+      },
+      {
+       "p": "An Animal may only befriend another Animal that belongs to the same Pen, in which case they become friends and are now on each other’s list of friends."
+      },
+      {
+       "c": "class Pen:\n    def __init__(self):\n        self.animals = {}\n\nclass Animal:\n    \"\"\"An Animal has a befriend method that allows animals to make friends.\n    >>> my_pen = Pen()\n    >>> other_pen = Pen()\n    >>> alice = Chicken(\"Alice\", my_pen)\n    >>> bob = Chicken(\"Bob\", other_pen)\n    >>> clarice = Chicken(\"Clarice\", my_pen)\n\n    >>> my_pen.animals\n    {'Alice': Chicken(Alice), 'Clarice': Chicken(Clarice)}\n    >>> other_pen.animals\n    {'Bob': Chicken(Bob)}\n    >>> clarice.friends\n    []\n    >>> clarice.befriend(bob)\n    Cannot befriend an animal that doesn't share a pen!\n\n    >>> clarice.befriend(alice)\n    Clarice made a new friend!\n    >>> alice.friends\n    ['Clarice']\n    \"\"\"\n    sound = \"silent\"\n    def __init__(self, name, pen):\n        self.name = name\n        self.pen = pen\n        ⟪c⟫\n        self.friends = ⟪d⟫\n\n    def befriend(self, other):\n        if ⟪e⟫:\n            print(\"Cannot befriend an animal that doesn't share a pen!\")\n        else:\n            ⟪f⟫\n            ⟪g⟫\n            print(f\"{self.name} made a new friend!\")\n\n    def describe(self):\n        return f'{self.name} goes {self.sound}'\n\n    def __repr__(self):\n        return f'Animal({self.name})'\n\nclass Chicken(Animal):\n    sound = 'bawk'\n\n    def __repr__(self):\n        return f'Chicken({self.name})'\n\nclass BabyChick(Chicken):\n    def __init__(self, name, pen, mother):\n        super().__init__(name, pen)\n        self.mother = mother\n\n    def describe(self):\n        return super().describe() + f', hatched by {self.mother}'",
+       "lang": "py",
+       "f": {
+        "c": "self.pen.animals[name] = self",
+        "d": "[]",
+        "e": "self.pen is not other.pen",
+        "f": "other.friends.append(self.name)",
+        "g": "self.friends.append(other.name)"
+       }
+      },
+      {
+       "p": "What would Python output if the following lines of code were run?"
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "(a)"
+      },
+      {
+       "c": ">>> my_pen = Pen()\n>>> bertha = Chicken(\"Bertha\", my_pen)\n>>> repr(bertha)",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'Chicken(Bertha)'"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "(b)"
+      },
+      {
+       "c": ">>> larry = BabyChick(\"Larry\", my_pen, bertha)\n>>> larry.describe()",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'Larry goes bawk, hatched by Chicken(Bertha)'"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.pen.animals[name] = self"
+     ],
+     "r": [
+      "B4_0"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[]"
+     ],
+     "r": [
+      "B4_1"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.pen is not other.pen"
+     ],
+     "r": [
+      "B4_2"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "(f) Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "other.friends.append(self.name)"
+     ],
+     "r": [
+      "B4_3"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "(g) Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.friends.append(other.name)"
+     ],
+     "r": [
+      "B4_4"
+     ],
+     "part": "g"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Pen:\n    def __init__(self):\n        self.animals = {}\nclass Animal:\n    \"\"\"An Animal has a befriend method that allows animals to make friends.\n    >>> my_pen = Pen()\n    >>> other_pen = Pen()\n    >>> alice = Chicken(\"Alice\", my_pen)\n    >>> bob = Chicken(\"Bob\", other_pen)\n    >>> clarice = Chicken(\"Clarice\", my_pen)\n    >>> my_pen.animals\n    {'Alice': Chicken(Alice), 'Clarice': Chicken(Clarice)}\n    >>> other_pen.animals\n    {'Bob': Chicken(Bob)}\n    >>> clarice.friends\n    []\n    >>> clarice.befriend(bob)\n    Cannot befriend an animal that doesn't share a pen!\n    >>> clarice.befriend(alice)\n    Clarice made a new friend!\n    >>> alice.friends\n    ['Clarice']\n    \"\"\"\n    sound = \"silent\"\n    def __init__(self, name, pen):\n        self.name = name\n        self.pen = pen\n        ⟦B4_0⟧\n        self.friends = ⟦B4_1⟧\n    def befriend(self, other):\n        if ⟦B4_2⟧:\n            print(\"Cannot befriend an animal that doesn't share a pen!\")\n        else:\n            ⟦B4_3⟧\n            ⟦B4_4⟧\n            print(f\"{self.name} made a new friend!\")\n    def describe(self):\n        return f'{self.name} goes {self.sound}'\n    def __repr__(self):\n        return f'Animal({self.name})'\nclass Chicken(Animal):\n    sound = 'bawk'\n    def __repr__(self):\n        return f'Chicken({self.name})'\nclass BabyChick(Chicken):\n    def __init__(self, name, pen, mother):\n        super().__init__(name, pen)\n        self.mother = mother\n    def describe(self):\n        return super().describe() + f', hatched by {self.mother}'"
+    ],
+    "b": {
+     "B4_0": true,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": true,
+     "B4_4": true
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0,
+     "B4_4": 0
+    },
+    "v": {
+     "B4_0": "self.pen.animals[name] = self",
+     "B4_1": "[]",
+     "B4_2": "self.pen is not other.pen",
+     "B4_3": "other.friends.append(self.name)",
+     "B4_4": "self.friends.append(other.name)"
+    }
+   },
+   "topics": [
+    {
+     "n": "5",
+     "t": [
+      "INHERITANCE",
+      "OBJECTS",
+      "REPRESENTATION",
+      "SEQUENCES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/6",
+   "n": "6",
+   "t": "6. When The Last Leaf Falls... (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Recall that the built-in iter function uses the __iter__ method of an object to return an iterator for that object. Consider the following tree class’s iteration method and the specific Tree instance that is created below (drawing it may be helpful)."
+      },
+      {
+       "c": "class Tree:\n    def __init__(self, label, branches=[]):\n        self.label = label\n        for branch in branches:\n            assert isinstance(branch, Tree)\n        self.branches = branches\n\n    def __iter__(self):\n        yield self.label\n\n        for branch in self.branches:\n            yield from iter(branch)\n\nt = Tree(5, [Tree(2, [Tree(7), Tree(1, [Tree(0), Tree(4)]), Tree(9)]), Tree(3, [Tree(6), Tree(8)])])\n\nit = iter(t)\nprint(next(it)) # FIRST PRINT STATEMENT\nnext(it)\nnext(it)\nnext(it)\nnext(it)\nprint(next(it)) # SECOND PRINT STATEMENT",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "(a) What is the output of the first print statement in the above code?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "5"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "(b) What is the output of the second print statement in the above code?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "4"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "(c) How many more times can next(it) be called after the second print statement before the StopIteration exception is raised?"
+      },
+      {
+       "p": "Write one of the following:"
+      },
+      {
+       "p": "• an integer"
+      },
+      {
+       "p": "• StopIteration if we’ve already hit the StopIteration exception"
+      },
+      {
+       "p": "• Infinitely many if it can be called an infinite number of times"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "4"
+     ],
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "6",
+     "t": [
+      "ITERATORS",
+      "TREES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/7",
+   "n": "7",
+   "t": "7. The Power of Friendship (13.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "You and your friends want to make friendship earrings of s beads. Each friend has uniquely colored beads and everyone sits in a circle taking turns putting beads onto the end of an earring. Each friend has their own speed that they can put beads on. The list limit records the top speed of each friend: On friend i’s turn, they put on at least 1 bead and up to and including their top speed limit[i] amount of beads. Formally,"
+      },
+      {
+       "p": "(a) An earring must have exactly s beads."
+      },
+      {
+       "p": "(b) Each friend i, where 0 <= i < len(limit), can place m beads onto the earring, where 1 <= m <= limit[i] on their turn."
+      },
+      {
+       "p": "Implement circle and earring to return the total number of ways to create an earring. Assume all friends have a limit[i] of at least 1 and len(limit) >= 2. You are friend 0 and put the first bead(s) on."
+      },
+      {
+       "c": "def circle(f, n):\n    \"\"\"Return the next friend given the current friend f and total people in the circle n.\n    >>> circle(0, 2)\n    1\n    >>> circle(4, 5)\n    0\n    >>> circle(3, 6)\n    4\n    \"\"\"\n    return ⟪a⟫\n\n\ndef earring(s, limit):\n    \"\"\"Return the total number of earrings of length s.\n\n    In the doctests, each dashed sequence represents a potential earring, where each dash separates\n    a friend's turn and the number of beads they put on in their turn.\n\n    >>> earring(3, [1, 2]) # 1-2, 1-1-1\n    2\n    >>> earring(4, [2, 1]) # 1-1-2, 2-1-1, 1-1-1-1\n    3\n    >>> earring(5, [1, 1, 1, 1, 1]) # 1-1-1-1-1\n    1\n    \"\"\"\n    def helper(friend, length_left):\n        if ⟪b⟫:\n            return 1\n\n        next_f = ⟪c⟫\n\n        return ⟪d⟫([⟪e⟫ for m in range(⟪f⟫, min(⟪g⟫) + 1)])\n\n    return ⟪h⟫",
+       "lang": "py",
+       "f": {
+        "a": "(f + 1) % n",
+        "b": "length_left == 0",
+        "c": "circle(friend, len(limit))",
+        "d": "sum",
+        "e": "helper(next_f, length_left - m)",
+        "f": "1",
+        "g": "limit[friend], length_left",
+        "h": "helper(0, s)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(f + 1) % n"
+     ],
+     "r": [
+      "B6_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "length_left == 0"
+     ],
+     "r": [
+      "B6_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "circle(friend, len(limit))"
+     ],
+     "r": [
+      "B6_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "len",
+      "sum",
+      "any",
+      "all",
+      "max",
+      "min"
+     ],
+     "a": 1,
+     "r": [
+      "B6_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "helper(next_f, length_left - m)"
+     ],
+     "r": [
+      "B6_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "(f) Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "r": [
+      "B6_5"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "(g) Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "limit[friend], length_left"
+     ],
+     "r": [
+      "B6_6"
+     ],
+     "part": "g"
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "(h) Fill in blank (h)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "helper(0, s)"
+     ],
+     "r": [
+      "B6_7"
+     ],
+     "part": "h"
+    }
+   ],
+   "run": {
+    "c": [
+     "def circle(f, n):\n    \"\"\"Return the next friend given the current friend f and total people in the circle n.\n    >>> circle(0, 2)\n    1\n    >>> circle(4, 5)\n    0\n    >>> circle(3, 6)\n    4\n    \"\"\"\n    return ⟦B6_0⟧\ndef earring(s, limit):\n    \"\"\"Return the total number of earrings of length s.\n    In the doctests, each dashed sequence represents a potential earring, where each dash separates\n    a friend's turn and the number of beads they put on in their turn.\n    >>> earring(3, [1, 2]) # 1-2, 1-1-1\n    2\n    >>> earring(4, [2, 1]) # 1-1-2, 2-1-1, 1-1-1-1\n    3\n    >>> earring(5, [1, 1, 1, 1, 1]) # 1-1-1-1-1\n    1\n    \"\"\"\n    def helper(friend, length_left):\n        if ⟦B6_1⟧:\n            return 1\n        next_f = ⟦B6_2⟧\n        return ⟦B6_3⟧([⟦B6_4⟧ for m in range(⟦B6_5⟧, min(⟦B6_6⟧) + 1)])\n    return ⟦B6_7⟧"
+    ],
+    "b": {
+     "B6_0": false,
+     "B6_1": false,
+     "B6_2": false,
+     "B6_3": false,
+     "B6_4": false,
+     "B6_5": false,
+     "B6_6": false,
+     "B6_7": false
+    },
+    "ch": {
+     "B6_0": 0,
+     "B6_1": 0,
+     "B6_2": 0,
+     "B6_3": 0,
+     "B6_4": 0,
+     "B6_5": 0,
+     "B6_6": 0,
+     "B6_7": 0
+    },
+    "v": {
+     "B6_0": "(f + 1) % n",
+     "B6_1": "length_left == 0",
+     "B6_2": "circle(friend, len(limit))",
+     "B6_3": "sum",
+     "B6_4": "helper(next_f, length_left - m)",
+     "B6_5": "1",
+     "B6_6": "limit[friend], length_left",
+     "B6_7": "helper(0, s)"
+    }
+   },
+   "topics": [
+    {
+     "n": "7",
+     "t": [
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/8",
+   "n": "8",
+   "t": "8. Linking A List (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Now that Angel has learned the efficiency of removing elements from linked lists, they have decided to convert all of their lists to linked lists. Write the function convert that takes in a list and returns a linked list with the elements in the same order. The Link class is defined on the Midterm 2 Study Guide (Page 2 left column)."
+      },
+      {
+       "p": "Implement the function below. It should return a linked list with the same elements as the input list as they are: If an element is a list, it should be put in the linked list as is and should not be converted to a linked list. Use the doctests to guide your implementation and recall that Link.empty = ():"
+      },
+      {
+       "c": "def convert(lst):\n    \"\"\"\n    >>> convert([1, 2, 3])\n    Link(1, Link(2, Link(3)))\n    >>> convert([1, [2, 3], 4])\n    Link(1, Link([2, 3], Link(4)))\n    >>> convert([])\n    ()\n    \"\"\"",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "(a) Complete the convert function."
+      }
+     ],
+     "k": "blank",
+     "x": "The official answer above is the recursive solution. Iterative solutions also work:\n\nForward:\nif not lst:\n    return Link.empty\nhead = Link(lst[0])\ncur = head\nfor item in lst[1:]:\n    cur.rest = Link(item)\n    cur = cur.rest\nreturn head\n\nBackward:\ntail = Link.empty\nfor item in reversed(lst):\n    tail = Link(item, tail)\nreturn tail",
+     "a": [
+      "if not lst:\n    return Link.empty\nreturn Link(lst[0], convert(lst[1:]))",
+      "if not lst:\n    return Link.empty\nhead = Link(lst[0])\ncur = head\nfor item in lst[1:]:\n    cur.rest = Link(item)\n    cur = cur.rest\nreturn head",
+      "tail = Link.empty\nfor item in reversed(lst):\n    tail = Link(item, tail)\nreturn tail"
+     ],
+     "part": "a"
+    }
+   ],
+   "topics": [
+    {
+     "n": "8",
+     "t": [
+      "LINKED_LISTS",
+      "RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp26-mt2/9",
+   "n": "9",
+   "t": "9. Off To The Races (3.0 pts)",
+   "b": [
+    {
+     "id": 32,
+     "l": [
+      {
+       "p": "(a) The goal of the remove_long_words1 function below is to remove all words in the linked list links whose length is greater than or equal to length (assume that each link’s first attribute is a string)."
+      },
+      {
+       "c": "def remove_long_words1(links, length):\n    \"\"\"\n    >>> links = Link(\"hi\", Link(\"hello\", Link(\"hey\", Link(\"howdy\"))))\n    >>> remove_long_words1(links, 4)\n    Link('hi', Link('hey'))\n    \"\"\"\n\n    if links is Link.empty:\n        return Link.empty\n    if len(links.first) >= length:\n        return remove_long_words1(links.rest, length)\n    return Link(links.first, remove_long_words1(links.rest, length))",
+       "lang": "py"
+      },
+      {
+       "p": "What is the order of growth of remove_long_words1 with respect to the length of links (i.e. the number of words linked together with links)?"
+      }
+     ],
+     "k": "mc",
+     "a": 2,
+     "o": [
+      "Constant",
+      "Logarithmic",
+      "Linear",
+      "Quadratic",
+      "Exponential"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 33,
+     "l": [
+      {
+       "p": "(b) The next function, remove_long_words2, serves the same purpose but is implemented slightly differently."
+      },
+      {
+       "c": "def remove_long_words2(links, length):\n    \"\"\"\n    >>> links = Link(\"hi\", Link(\"hello\", Link(\"hey\", Link(\"howdy\"))))\n    >>> remove_long_words2(links, 4)\n    Link('hi', Link('hey'))\n    \"\"\"\n\n    head = links\n    while head is not Link.empty and len(head.first) >= length:\n        head = head.rest\n\n    if head is Link.empty:\n        return Link.empty\n\n    prev = head\n    curr = head.rest\n\n    while curr is not Link.empty:\n        if len(curr.first) >= length:\n            prev.rest = curr.rest\n        else:\n            prev = curr\n        curr = curr.rest\n\n    return head",
+       "lang": "py"
+      },
+      {
+       "p": "What is the order of growth of the alternative function, remove_long_words2, with respect to the length of links?"
+      }
+     ],
+     "k": "mc",
+     "a": 2,
+     "o": [
+      "Constant",
+      "Logarithmic",
+      "Linear",
+      "Quadratic",
+      "Exponential"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 34,
+     "l": [
+      {
+       "p": "(c) Which of the functions requires more space to run?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "remove_long_words1",
+      "remove_long_words2",
+      "They both require the same amount of space."
+     ],
+     "a": 0,
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "9",
+     "t": [
+      "EFFICIENCY"
+     ]
+    }
+   ]
+  }
+ ]
+}

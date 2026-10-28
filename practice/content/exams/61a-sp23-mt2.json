@@ -1,0 +1,907 @@
+{
+ "id": "61a-sp23-mt2",
+ "t": "Spring 2023 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/sp23/mt2/61a-sp23-mt2.pdf",
+  "sol": "https://cs61a.org/resources/sp23/mt2/61a-sp23-mt2_sol.pdf",
+  "topics": "sp23-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-sp23-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed."
+      },
+      {
+       "c": "def chain(s):\n    return [s[0], s[1:]]\nsilver = [2, chain([3, 4, 5])]\ngold = [silver[0], silver[1].pop()]\nsilver[0] = 1\nplatinum = chain(chain([6, 7, 8]))",
+       "lang": "py"
+      },
+      {
+       "p": "Write the output displayed by the interactive Python interpreter when each expression below is evaluated. Hint: Try drawing an environment diagram!"
+      },
+      {
+       "p": "Reminder : s.pop() removes and returns the last item in list s."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) silver"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[1, [3]]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) gold"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[2, [4, 5]]"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) platinum"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[6, [[7, 8]]]"
+     ],
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "LISTS",
+      "MUTABILITY",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp23-mt2/2",
+   "n": "2",
+   "t": "2. Letter Grade (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (4.0 points)"
+      },
+      {
+       "p": "Implement the Letter class. A Letter has two instance attributes: contents (a str) and sent (a bool). Each Letter can only be sent once. The send method prints whether the letter was sent, and if it was, returns the reply, which is a new Letter instance with the same contents, but in all caps. Hint: 'hi'.upper() evaluates to 'HI'."
+      },
+      {
+       "c": "class Letter:\n    \"\"\"A letter receives an all-caps reply when sent successfully.\n    >>> hi = Letter('Hello, World!')\n    >>> hi.send()\n    Hello, World! has been sent.\n    HELLO, WORLD!\n    >>> hi.send()\n    Hello, World! was already sent.\n    >>> Letter('Hey').send().send()\n    Hey has been sent.\n    HEY has been sent.\n    HEY\n    \"\"\"\n    def __init__(self, contents):\n        self.contents = contents\n        ⟪a⟫\n    def send(self):\n        if self.sent:\n            print(self, 'was already sent.')\n        else:\n            print(self, 'has been sent.')\n            ⟪b⟫\n            return ⟪c⟫\n    def __repr__(self):\n        # Note: since no __str__ method is defined, the repr and str strings are the same.\n        return self.contents",
+       "lang": "py",
+       "f": {
+        "a": "self.sent = False",
+        "b": "self.sent = True",
+        "c": "Letter(self.contents.upper())"
+       }
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.sent = False"
+     ],
+     "r": [
+      "B1_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.sent = True"
+     ],
+     "r": [
+      "B1_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Letter(self.contents.upper())"
+     ],
+     "r": [
+      "B1_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)"
+      },
+      {
+       "p": "Implement the Numbered class. A Numbered letter has a number attribute equal to how many numbered letters have previously been constructed. This number appears in its repr string. Assume Letter is implemented correctly."
+      },
+      {
+       "c": "class Numbered(Letter):\n    \"\"\"A numbered letter has a different repr method that shows its number.\n    >>> hey = Numbered('Hello, World!')\n    >>> hey.send()\n    #0 has been sent.\n    HELLO, WORLD!\n    >>> Numbered('Hi!').send()\n    #1 has been sent.\n    HI!\n    >>> hey\n    #0\n    \"\"\"\n    number = 0\n    def __init__(self, contents):\n        super().__init__(contents)\n        ⟪d⟫\n        ⟪e⟫\n    def __repr__(self):\n        return '#' + ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "d": "self.number = Numbered.number",
+        "e": "Numbered.number += 1",
+        "f": "str(self.number)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "i. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Numbered.number = 0",
+      "Numbered.number = number",
+      "Numbered.number = self.number",
+      "self.number = 0",
+      "self.number = number",
+      "self.number = Numbered.number"
+     ],
+     "a": 5,
+     "r": [
+      "B1_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Numbered.number += 1"
+     ],
+     "r": [
+      "B1_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "iii. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "str(self.number)"
+     ],
+     "r": [
+      "B1_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Letter:\n    \"\"\"A letter receives an all-caps reply when sent successfully.\n    >>> hi = Letter('Hello, World!')\n    >>> hi.send()\n    Hello, World! has been sent.\n    HELLO, WORLD!\n    >>> hi.send()\n    Hello, World! was already sent.\n    >>> Letter('Hey').send().send()\n    Hey has been sent.\n    HEY has been sent.\n    HEY\n    \"\"\"\n    def __init__(self, contents):\n        self.contents = contents\n        ⟦B1_0⟧\n    def send(self):\n        if self.sent:\n            print(self, 'was already sent.')\n        else:\n            print(self, 'has been sent.')\n            ⟦B1_1⟧\n            return ⟦B1_2⟧\n    def __repr__(self):\n        # Note: since no __str__ method is defined, the repr and str strings are the same.\n        return self.contents",
+     "class Numbered(Letter):\n    \"\"\"A numbered letter has a different repr method that shows its number.\n    >>> hey = Numbered('Hello, World!')\n    >>> hey.send()\n    #0 has been sent.\n    HELLO, WORLD!\n    >>> Numbered('Hi!').send()\n    #1 has been sent.\n    HI!\n    >>> hey\n    #0\n    \"\"\"\n    number = 0\n    def __init__(self, contents):\n        super().__init__(contents)\n        ⟦B1_3⟧\n        ⟦B1_4⟧\n    def __repr__(self):\n        return '#' + ⟦B1_5⟧"
+    ],
+    "b": {
+     "B1_0": true,
+     "B1_1": true,
+     "B1_2": false,
+     "B1_3": true,
+     "B1_4": true,
+     "B1_5": false
+    },
+    "ch": {
+     "B1_0": 0,
+     "B1_1": 0,
+     "B1_2": 0,
+     "B1_3": 1,
+     "B1_4": 1,
+     "B1_5": 1
+    },
+    "v": {
+     "B1_0": "self.sent = False",
+     "B1_1": "self.sent = True",
+     "B1_2": "Letter(self.contents.upper())",
+     "B1_3": "self.number = Numbered.number",
+     "B1_4": "Numbered.number += 1",
+     "B1_5": "str(self.number)"
+    }
+   },
+   "topics": [
+    {
+     "n": "2b",
+     "t": [
+      "OBJECTS",
+      "REPRESENTATION"
+     ]
+    },
+    {
+     "n": "22.a.i",
+     "t": [
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "22.a.ii",
+     "t": [
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "22.a.iii",
+     "t": [
+      "OBJECTS",
+      "REPRESENTATION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp23-mt2/3",
+   "n": "3",
+   "t": "3. Prefixes (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. A prefix sum of a sequence of numbers is the sum of the first n elements for some positive length n."
+      },
+      {
+       "h": "(a) (4.0 points)"
+      },
+      {
+       "p": "Implement prefix, which takes a list of numbers s and returns a list of the prefix sums of s in increasing order of the length of the prefix."
+      },
+      {
+       "c": "def prefix(s):\n    \"\"\"Return a list of all prefix sums of list s.\n    >>> prefix([1, 2, 3, 0, 4, 5])\n    [1, 3, 6, 6, 10, 15]\n    >>> prefix([2, 2, 2, 0, -5, 5])\n    [2, 4, 6, 6, 1, 6]\n    \"\"\"\n    return [⟪a⟫ for k in ⟪b⟫]",
+       "lang": "py",
+       "f": {
+        "a": "sum(s[:k+1])",
+        "b": "range(len(s))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "sum(s[:k+1])"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "[s]",
+      "s[1:]",
+      "range(s)",
+      "range(len(s))"
+     ],
+     "a": 4,
+     "r": [
+      "B2_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "iii. What is the order of growth of the time to run this alternate implentation in terms of the"
+      },
+      {
+       "p": "length of s?"
+      },
+      {
+       "p": "Assume that the append method of a list takes just 1 step (constant time)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Linear"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "c": "def prefix(s):\n    \"\"\"Return a list of all prefix sums of list s.\"\"\"\n    t = 0\n    result = []\n    for x in s:\n        t = t + x\n        result.append(t)\n    return result\n# Constant\n# Logarithmic\n# Linear\n# Quadratic\n# Exponential",
+       "lang": "py"
+      },
+      {
+       "h": "(b) (5.0 points)"
+      },
+      {
+       "p": "Implement tens, which takes a non-empty linked list of numbers s represented as a Link instance. It prints all of the prefix sums of s that are multiples of 10 in increasing order of the length of the prefix. The Link class appears on the midterm 2 study guide."
+      },
+      {
+       "c": "def tens(s):\n    \"\"\"Print all prefix sums of Link s that are multiples of ten.\n    >>> tens(Link(3, Link(9, Link(8, Link(10, Link(0, Link(14, Link(6))))))))\n    20\n    30\n    30\n    50\n    \"\"\"\n    def f(suffix, total):\n        if total % 10 == 0:\n            print(total)\n        if ⟪d⟫:\n            ⟪e⟫\n    ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "d": "suffix is not Link.empty",
+        "e": "f(suffix.rest, total + suffix.first)",
+        "f": "f(s.rest, s.first)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "i. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s is not Link.empty",
+      "s.rest is not Link.empty",
+      "s.rest.rest is not Link.empty",
+      "suffix is not Link.empty",
+      "suffix.rest is not Link.empty",
+      "suffix.rest.rest is not Link.empty"
+     ],
+     "a": 3,
+     "r": [
+      "B2_2"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "f(suffix.rest, total + suffix.first)"
+     ],
+     "r": [
+      "B2_3"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "iii. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "f(s.rest, s.first)"
+     ],
+     "r": [
+      "B2_4"
+     ],
+     "part": "b",
+     "sub": "iii"
+    }
+   ],
+   "run": {
+    "c": [
+     "def prefix(s):\n    \"\"\"Return a list of all prefix sums of list s.\n    >>> prefix([1, 2, 3, 0, 4, 5])\n    [1, 3, 6, 6, 10, 15]\n    >>> prefix([2, 2, 2, 0, -5, 5])\n    [2, 4, 6, 6, 1, 6]\n    \"\"\"\n    return [⟦B2_0⟧ for k in ⟦B2_1⟧]",
+     "def prefix(s):\n    \"\"\"Return a list of all prefix sums of list s.\"\"\"\n    t = 0\n    result = []\n    for x in s:\n        t = t + x\n        result.append(t)\n    return result",
+     "def tens(s):\n    \"\"\"Print all prefix sums of Link s that are multiples of ten.\n    >>> tens(Link(3, Link(9, Link(8, Link(10, Link(0, Link(14, Link(6))))))))\n    20\n    30\n    30\n    50\n    \"\"\"\n    def f(suffix, total):\n        if total % 10 == 0:\n            print(total)\n        if ⟦B2_2⟧:\n            ⟦B2_3⟧\n    ⟦B2_4⟧"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": false,
+     "B2_3": true,
+     "B2_4": true
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 2,
+     "B2_3": 2,
+     "B2_4": 2
+    },
+    "v": {
+     "B2_0": "sum(s[:k+1])",
+     "B2_1": "range(len(s))",
+     "B2_2": "suffix is not Link.empty",
+     "B2_3": "f(suffix.rest, total + suffix.first)",
+     "B2_4": "f(s.rest, s.first)"
+    }
+   },
+   "topics": [
+    {
+     "n": "3b",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "LINKED_LISTS"
+     ]
+    },
+    {
+     "n": "33.a.i",
+     "t": [
+      "LISTS"
+     ]
+    },
+    {
+     "n": "33.a.ii",
+     "t": [
+      "LISTS"
+     ]
+    },
+    {
+     "n": "33.a.iii",
+     "t": [
+      "EFFICIENCY",
+      "LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp23-mt2/4",
+   "n": "4",
+   "t": "4. Tree Trimming (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (7.0 points)"
+      },
+      {
+       "p": "Implement exclude, which takes a Tree instance t and a value x. It returns a Tree containing the root node of t as well as each non-root node of t with a label not equal to x. The parent of a node in the result is its nearest ancestor node that is not excluded. The input t must not be modified. The Tree class appears on the midterm 2 study guide."
+      },
+      {
+       "c": "def exclude(t, x):\n    \"\"\"Return a Tree with the non-root nodes of t whose labels are not equal to x.\n    >>> t = Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4, [Tree(1)])])\n    >>> exclude(t, 2)\n    Tree(1, [Tree(3), Tree(4, [Tree(1)])])\n    >>> t              # t is not changed\n    Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4, [Tree(1)])])\n    >>> exclude(t, 1) # The root node cannot be excluded\n    Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4)])\n    \"\"\"\n    filtered_branches = map(lambda y: ⟪a⟫, t.branches)\n    bs = []\n    for b in filtered_branches:\n        if ⟪b⟫:\n            bs.⟪c⟫(⟪d⟫)\n        else:\n            bs.append(b)\n    return Tree(t.label, bs)",
+       "lang": "py",
+       "f": {
+        "a": "exclude(y, x)",
+        "b": "b.label == x",
+        "c": "extend",
+        "d": "b.branches"
+       }
+      }
+     ]
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "exclude(y, x)"
+     ],
+     "r": [
+      "B3_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "b.label == x"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "remove",
+      "pop",
+      "append",
+      "extend"
+     ],
+     "a": 3,
+     "r": [
+      "B3_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "b",
+      "b.branches",
+      "exclude(b, x)",
+      "Tree(b.label, [exclude(y, x) for y in b.branches])"
+     ],
+     "a": 1,
+     "r": [
+      "B3_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (3.0 points)"
+      },
+      {
+       "p": "Implement remove, which takes a Tree instance t and a value x. It removes all non-root nodes from t that have a label equal to x, then returns t. The parent of a node in t is its nearest ancestor that is not removed. Assume that exclude is implemented correctly."
+      },
+      {
+       "c": "def remove(t, x):\n    \"\"\"Remove all non-root nodes labeled x from t and return t.\n    >>> t = Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4)])\n    >>> remove(t, 2)\n    Tree(1, [Tree(3), Tree(4)])\n    >>> remove(t, 3) # t was changed, so both 2 and 3 are now removed.\n    Tree(1, [Tree(4)])\n    \"\"\"\n    ⟪e⟫\n    return t",
+       "lang": "py",
+       "f": {
+        "e": "t.branches = exclude(t, x).branches"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "i. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t.branches = exclude(t, x).branches"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "i"
+    }
+   ],
+   "run": {
+    "c": [
+     "def exclude(t, x):\n    \"\"\"Return a Tree with the non-root nodes of t whose labels are not equal to x.\n    >>> t = Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4, [Tree(1)])])\n    >>> exclude(t, 2)\n    Tree(1, [Tree(3), Tree(4, [Tree(1)])])\n    >>> t              # t is not changed\n    Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4, [Tree(1)])])\n    >>> exclude(t, 1) # The root node cannot be excluded\n    Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4)])\n    \"\"\"\n    filtered_branches = map(lambda y: ⟦B3_0⟧, t.branches)\n    bs = []\n    for b in filtered_branches:\n        if ⟦B3_1⟧:\n            bs.⟦B3_2⟧(⟦B3_3⟧)\n        else:\n            bs.append(b)\n    return Tree(t.label, bs)",
+     "def remove(t, x):\n    \"\"\"Remove all non-root nodes labeled x from t and return t.\n    >>> t = Tree(1, [Tree(2, [Tree(2), Tree(3)]), Tree(4)])\n    >>> remove(t, 2)\n    Tree(1, [Tree(3), Tree(4)])\n    >>> remove(t, 3) # t was changed, so both 2 and 3 are now removed.\n    Tree(1, [Tree(4)])\n    \"\"\"\n    ⟦B3_4⟧\n    return t"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": true
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 0,
+     "B3_4": 1
+    },
+    "v": {
+     "B3_0": "exclude(y, x)",
+     "B3_1": "b.label == x",
+     "B3_2": "extend",
+     "B3_3": "b.branches",
+     "B3_4": "t.branches = exclude(t, x).branches"
+    }
+   },
+   "topics": [
+    {
+     "n": "4",
+     "t": [
+      "MUTABILITY",
+      "MUTABLE_TREES",
+      "TREES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp23-mt2/5",
+   "n": "5",
+   "t": "5. Parking (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. When parking vehicles in a row, a motorcycle takes up 1 parking spot and a car takes up 2 adjacent parking spots. A string of length n can represent n adjacent parking spots using % for a motorcycle, <> for a car, and . for an empty spot. For example '.%%.<><>' represents an empty spot, then two spots containing motorcycles, then another empty spot, then four spots containing two cars. Thanks to the Berkeley Math Circle for introducing this question."
+      },
+      {
+       "h": "(a) (4.0 points)"
+      },
+      {
+       "p": "Implement count_park, which returns the number of ways that vehicles can be parked in n adjacent parking spots for positive integer n. Some or all spots can be empty."
+      },
+      {
+       "c": "def count_park(n):\n    \"\"\"Count the ways to park cars and motorcycles in n adjacent spots.\n    >>> count_park(1)       # '.' or '%'\n    2\n    >>> count_park(2)       # '..', '.%', '%.', '%%', or '<>'\n    5\n    >>> count_park(4)       # some examples: '<><>', '.%%.', '%<>%', '%.<>'\n    29\n    \"\"\"\n    if n < 0:\n        return 0\n    if n == 0:\n        return ⟪a⟫\n    return ⟪b⟫",
+       "lang": "py",
+       "f": {
+        "a": "1",
+        "b": "2 * count_park(n-1) + count_park(n-2)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "r": [
+      "B4_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "2 * count_park(n-1) + count_park(n-2)"
+     ],
+     "r": [
+      "B4_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)"
+      },
+      {
+       "p": "Implement park, a generator function that takes a non-negative integer n. It yields (in any order) all possible strings representing n adjacent parking spots."
+      },
+      {
+       "c": "def park(n):\n    \"\"\"Yield the ways to park cars and motorcycles in n adjacent spots.\n    >>> sorted(park(1))\n    ['%', '.']\n    >>> sorted(park(2))\n    ['%%', '%.', '.%', '..', '<>']\n    >>> sorted(park(3))\n    ['%%%', '%%.', '%.%', '%..', '%<>', '.%%', '.%.', '..%', '...', '.<>', '<>%', '<>.']\n    >>> len(list(park(4)))\n    29\n    \"\"\"\n    if n == 0:\n        yield ''\n    elif n > 0:\n        for s in park(n-1):\n            ⟪c⟫\n            ⟪d⟫\n        for s in ⟪e⟫:\n            ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "c": "yield s + '.'",
+        "d": "yield s + '%'",
+        "e": "park(n-2)",
+        "f": "yield s + '<>'"
+       }
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "i. Fill in blanks (c) and (d) with two lines of code. You may not use yield from."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "yield s + '.'\nyield s + '%'"
+     ],
+     "r": [
+      "B4_2",
+      "B4_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "park(n-2)"
+     ],
+     "r": [
+      "B4_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "iii. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "yield s + '<>'"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "p": "(c) This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      },
+      {
+       "p": "Implement pack, a generator function that takes a non-negative integer n. It yields (in any order) all possible strings representing n adjacent parking spots in which an equal number of cars and motorcycles are parked, no motorcycle is adjacent to a car, and no empty spot is adjacent to another empty spot."
+      },
+      {
+       "c": "def pack(n):\n    \"\"\"Yield the ways to park an equal number of cars and motorcycles\n    in n adjacent spots with no motorcycle adjacent to a car and no\n    empty spot adjacent to another empty spot.\n    >>> sorted(pack(4))\n    ['%.<>', '<>.%']\n    >>> sorted(pack(7))\n    ['%%.<><>', '<><>.%%']\n    >>> sorted(pack(8))\n    ['%%.<>.<>', '%%.<><>.', '%.%.<><>', '%.<><>.%', '.%%.<><>',\n    '.<><>.%%', '<>.%%.<>', '<>.<>.%%', '<><>.%%.', '<><>.%.%']\n    \"\"\"\n    def f(n, k):\n        if n == 0 and k == 0:\n            yield ''\n        elif n > 0:\n            yield from g(n-1, k-1, '<', '%' )\n            yield from g(n-1, k,   '.', '.' )\n            yield from g(n-2, k+1, '%', '<>')\n    def g(n, k, no, yes):\n        yield from ⟪⟫\n    yield from f(n, 0)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "i. Fill in the blank."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[yes + s for s in f(n, k) if not s or s[0] != no]",
+      "yes + s for s in f(n, k) if not s or s[0] != no"
+     ],
+     "x": "Omitting the surrounding [] is ok and in fact more efficient.",
+     "r": [
+      "B4_6"
+     ],
+     "part": "b",
+     "sub": "i"
+    }
+   ],
+   "run": {
+    "c": [
+     "def count_park(n):\n    \"\"\"Count the ways to park cars and motorcycles in n adjacent spots.\n    >>> count_park(1)       # '.' or '%'\n    2\n    >>> count_park(2)       # '..', '.%', '%.', '%%', or '<>'\n    5\n    >>> count_park(4)       # some examples: '<><>', '.%%.', '%<>%', '%.<>'\n    29\n    \"\"\"\n    if n < 0:\n        return 0\n    if n == 0:\n        return ⟦B4_0⟧\n    return ⟦B4_1⟧",
+     "def park(n):\n    \"\"\"Yield the ways to park cars and motorcycles in n adjacent spots.\n    >>> sorted(park(1))\n    ['%', '.']\n    >>> sorted(park(2))\n    ['%%', '%.', '.%', '..', '<>']\n    >>> sorted(park(3))\n    ['%%%', '%%.', '%.%', '%..', '%<>', '.%%', '.%.', '..%', '...', '.<>', '<>%', '<>.']\n    >>> len(list(park(4)))\n    29\n    \"\"\"\n    if n == 0:\n        yield ''\n    elif n > 0:\n        for s in park(n-1):\n            ⟦B4_2⟧\n            ⟦B4_3⟧\n        for s in ⟦B4_4⟧:\n            ⟦B4_5⟧",
+     "def pack(n):\n    \"\"\"Yield the ways to park an equal number of cars and motorcycles\n    in n adjacent spots with no motorcycle adjacent to a car and no\n    empty spot adjacent to another empty spot.\n    >>> sorted(pack(4))\n    ['%.<>', '<>.%']\n    >>> sorted(pack(7))\n    ['%%.<><>', '<><>.%%']\n    >>> sorted(pack(8))\n    ['%%.<>.<>', '%%.<><>.', '%.%.<><>', '%.<><>.%', '.%%.<><>',\n    '.<><>.%%', '<>.%%.<>', '<>.<>.%%', '<><>.%%.', '<><>.%.%']\n    \"\"\"\n    def f(n, k):\n        if n == 0 and k == 0:\n            yield ''\n        elif n > 0:\n            yield from g(n-1, k-1, '<', '%' )\n            yield from g(n-1, k,   '.', '.' )\n            yield from g(n-2, k+1, '%', '<>')\n    def g(n, k, no, yes):\n        yield from ⟦B4_6⟧\n    yield from f(n, 0)"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": true,
+     "B4_3": true,
+     "B4_4": false,
+     "B4_5": true,
+     "B4_6": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 1,
+     "B4_3": 1,
+     "B4_4": 1,
+     "B4_5": 1,
+     "B4_6": 2
+    },
+    "v": {
+     "B4_0": "1",
+     "B4_1": "2 * count_park(n-1) + count_park(n-2)",
+     "B4_2": "yield s + '.'",
+     "B4_3": "yield s + '%'",
+     "B4_4": "park(n-2)",
+     "B4_5": "yield s + '<>'",
+     "B4_6": "[yes + s for s in f(n, k) if not s or s[0] != no]"
+    }
+   },
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "GENERATORS"
+     ]
+    }
+   ]
+  }
+ ]
+}

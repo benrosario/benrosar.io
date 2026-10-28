@@ -1,0 +1,3151 @@
+{
+ "id": "61a-su23-final",
+ "t": "Summer 2023 Final",
+ "src": {
+  "exam": "https://cs61a.org/resources/su23/final/61a-su23-final.pdf",
+  "sol": "https://cs61a.org/resources/su23/final/61a-su23-final_sol.pdf",
+  "topics": "su23-final"
+ },
+ "p": [
+  {
+   "id": "61a-su23-final/1",
+   "n": "1",
+   "t": "1. What Would You Display (11.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (5.0 points)      WWPD"
+      },
+      {
+       "p": "For each expression below, choose the correct option or write the output displayed by the interactive Python interpreter when the expression is evaluated. The output may have multiple lines."
+      },
+      {
+       "p": "• If an error occurs, write “Error”, but include all output displayed before the error."
+      },
+      {
+       "p": "• If evaluation would run forever, write “Forever”."
+      },
+      {
+       "p": "• To display a function value, write “Function”."
+      },
+      {
+       "p": "• If the evaluated expression wouldn’t display anything, write “Nothing”. The interactive interpreter displays the value of a successfully evaluated expression, unless it is None."
+      },
+      {
+       "p": "• If you need to write a level of indentation, please draw an arrow, like –>, to represent one singular level of indentation. Draw one arrow for each level of indentation you want to indicate. This may be a tab (\\t) or multiple whitespaces."
+      },
+      {
+       "p": "• Assume the expressions are evaluated in order in the same interactive session, and so evaluating an earlier expression may affect the result of a later one."
+      },
+      {
+       "p": "• Assume the Tree class has been defined (as written on the Study Guide provided)"
+      },
+      {
+       "p": "• Assume the Tree data abstraction has been defined (as written on the Study Guide provided)"
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "i."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "good\nluck! None"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> print(\"luck!\", print(\"good\"))",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "ii."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "hi\n–> you\n–> there"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> t = Tree(\"hi\", [Tree(\"you\"), Tree(\"there\")])\n>>> print(t)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "iii."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Tree(\"hi\", [Tree(\"you\"), Tree(\"there\")])"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> t",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "iv."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Error"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> t.branches.append(Tree(\"hey\", [\"hello\"]))",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "v."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Nothing"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> t.label = \"hello\"\n>>> t.branches[0].label = \"friend\"",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "vi. Do any of the above expressions in this question break the abstraction barrier?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "YES",
+      "NO"
+     ],
+     "a": 1,
+     "part": "a",
+     "sub": "vi"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (3.0 points)    WWSD"
+      },
+      {
+       "p": "For each expression below, choose the correct option or write the output displayed by the interactive Scheme interpreter when the expression is evaluated. The output may have multiple lines."
+      },
+      {
+       "p": "• If an error occurs, write “Error”, but include all output displayed before the error."
+      },
+      {
+       "p": "• If evaluation would run forever, write “Forever”."
+      },
+      {
+       "p": "• To display a function value, write “Function”."
+      },
+      {
+       "p": "• If the evaluated expression wouldn’t display anything, write “Nothing”. The interactive interpreter displays the value of a successfully evaluated expression, unless it is undefined."
+      },
+      {
+       "p": "• Assume the Tree data abstraction has been defined (as written on the Study Guide provided)"
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "i."
+      },
+      {
+       "c": "scm> (define t (tree 4 (list (tree 6 nil) (tree 2 (list (tree 7 nil))))))",
+       "lang": "scm"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "ii."
+      },
+      {
+       "c": "scm> t",
+       "lang": "scm"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "(4 6 2 7)",
+      "(4 (6 2 (7)))",
+      "(4 (6) (2 (7)))",
+      "(tree 4 (list (tree 6 nil) (tree 2 (list (tree 7 nil)))))",
+      "(tree 4 (tree 6 nil) (tree 2 (tree 7 nil)))",
+      "Error",
+      "Forever",
+      "Function",
+      "Nothing"
+     ],
+     "a": 2,
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "iii."
+      },
+      {
+       "c": "scm> (define f (lambda (x) (if (null? (cdr x)) (car x) (+ (car x) (f (cdr x))))))",
+       "lang": "scm"
+      },
+      {
+       "p": "f"
+      },
+      {
+       "c": "scm> (f '(1 2 3))",
+       "lang": "scm"
+      },
+      {
+       "p": "6 Given this error, select all expressions that could have been the input to the interactive Scheme interpreter."
+      },
+      {
+       "p": "Traceback (most recent call last):"
+      },
+      {
+       "p": "0 (+ (car x) (f (cdr x))) Error: operand 0 ((quote hi)) is not a number"
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "(f '('hi))",
+      "(f '(hi))",
+      "(f (hi))",
+      "(f (quote ((quote hi))))",
+      "(f '('hi 'hello))",
+      "(f '('hi 2))",
+      "(f '(2 'hi))",
+      "(f (2 'hi))"
+     ],
+     "a": [
+      4,
+      5
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "iv."
+      },
+      {
+       "c": "scm> (or #f 0 2 (and 3 1 (or 5)))",
+       "lang": "scm"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "0"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (2.0 points)    WWRD"
+      },
+      {
+       "p": "For each RegEx expression below, choose all options that would fully match if put as test strings in Regex101."
+      }
+     ]
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "i."
+      },
+      {
+       "p": "^b[^b-z]{1}[arken]+(bi)*es?"
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "bakes",
+      "baarkenbie",
+      "barre",
+      "bbarbies",
+      "barbie",
+      "ken",
+      "barbiess",
+      "bakbie"
+     ],
+     "a": [
+      0,
+      1,
+      2,
+      4,
+      7
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (1.0 points)    WWSQLD"
+      },
+      {
+       "p": "Assume the records table that you’ve seen in lecture, discussion, and labs so far has been implemented in your interactive SQL interpreter so that it is this table:"
+      }
+     ]
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "i. Given this SQL query:"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "This shows the average salary for supervisors who are in the accounting and\nadministration divisions.",
+      "The first two rows of the average salary column of the records table joined\nwith the records table where the kept salary is from a supervisor grouped\nby the division ordered by the division in ascending order.\nAny attempt to describe a table, such as, “a table with two rows and 1\ncolumn of the average salary” will receive 0 points."
+     ],
+     "part": "d",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "c": "sql> SELECT AVG(a.salary) FROM records AS a, records AS b WHERE a.name = b.supervisor\n...> GROUP BY a.division ORDER BY a.division LIMIT 2;",
+       "lang": "py"
+      },
+      {
+       "p": "which outputs the table below, what is being displayed and represented by this new table? In other words, translate this SQL query into English pseudocode. Please summarize in 1-2 sentences. Responses with more than 2 sentences will be docked points."
+      }
+     ]
+    }
+   ],
+   "topics": [
+    {
+     "n": "1b",
+     "t": [
+      "SCHEME",
+      "SCHEME_LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1c",
+     "t": [
+      "REGEX",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1d",
+     "t": [
+      "SQL",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.i",
+     "t": [
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.ii",
+     "t": [
+      "MUTABLE_TREES",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.iii",
+     "t": [
+      "MUTABLE_TREES",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.iv",
+     "t": [
+      "MUTABILITY",
+      "MUTABLE_TREES",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.v",
+     "t": [
+      "MUTABILITY",
+      "MUTABLE_TREES",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "11.a.vi",
+     "t": [
+      "DATA_ABSTRACTION",
+      "MUTABILITY",
+      "MUTABLE_TREES",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/2",
+   "n": "2",
+   "t": "2. Slipknot (12.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (2.0 points)     Product"
+      },
+      {
+       "p": "Implement product, a function that takes in a linked list s and returns the product over all the values in the linked list. Assume that the initial list s is not Link.empty."
+      },
+      {
+       "c": "def product(s):\n    \"\"\"\n    Takes in a linked list S and returns the product over all the values\n    in the linked list.\n    >>> product(Link(2, Link(5))) # 2 * 5 = 10\n    10\n    >>> product(Link(7, Link(2, Link(7)))) # 7 * 2 * 7 = 98\n    98\n    >>> product(Link(5))\n    5\n    \"\"\"\n    if s is Link.empty:\n        return ⟪a⟫\n    return ⟪b⟫",
+       "lang": "py",
+       "f": {
+        "a": "1",
+        "b": "s.first * product(s.rest)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "r": [
+      "B1_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.first * product(s.rest)"
+     ],
+     "r": [
+      "B1_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (5.0 points)     Untangle"
+      },
+      {
+       "p": "Implement untangle, a function that takes in a linked list s with strictly positive values. The function mutates the linked list to only contain 1s, where the length of the resulting linked list is equal to the sum of the values in the original list. untangle potentially modifies the values in s and adds new Links to s. For example, calling untangle on <3 1 2> will mutate the linked list to become <1 1 1 1 1 1>. See the doctests for more examples."
+      },
+      {
+       "c": "def untangle(s):\n    \"\"\"\n    Takes in a linked list S and mutates S to only contain 1s.\n    The length of the resulting list is equal to the sum of the\n    values in the original list. Assume the values in S are strictly\n    positive.\n    >>> a = Link(5)\n    >>> untangle(a)\n    >>> print(a)\n    <1 1 1 1 1>\n    >>> b = Link(3, Link(2, Link(4)))\n    >>> untangle(b)\n    >>> print(b)\n    <1 1 1 1 1 1 1 1 1>\n    >>> c = Link(1)\n    >>> untangle(c)\n    >>> c\n    Link(1)\n    \"\"\"\n    if ⟪a⟫:\n        return\n    next = ⟪b⟫\n    while ⟪c⟫:\n        s.rest = ⟪d⟫\n        s.first = ⟪e⟫\n    ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "a": "s is Link.empty",
+        "b": "s.rest",
+        "c": "s.first > 1",
+        "d": "Link(1, s.rest)",
+        "e": "s.first - 1",
+        "f": "untangle(next)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s is Link.empty"
+     ],
+     "r": [
+      "B1_2"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.rest"
+     ],
+     "r": [
+      "B1_3"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s is not Link.empty",
+      "s.rest is not Link.empty",
+      "s is not Link.empty and s.rest is not Link.empty",
+      "s is not Link.empty or s.rest is not Link.empty",
+      "s.first > 0",
+      "s.first < 0",
+      "s.first > 1",
+      "s.first < 1"
+     ],
+     "a": 6,
+     "r": [
+      "B1_4"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "1",
+      "s",
+      "Link(1)",
+      "Link(1, s)",
+      "Link(1, s.rest)",
+      "Link(s, Link(1))",
+      "Link(s.first, Link(1))"
+     ],
+     "a": 4,
+     "r": [
+      "B1_5"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "s.rest",
+      "s.rest.first",
+      "s.first - 1",
+      "s.first + 1",
+      "-1 * s.first"
+     ],
+     "a": 3,
+     "r": [
+      "B1_6"
+     ],
+     "part": "b",
+     "sub": "v"
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "untangle(next)"
+     ],
+     "r": [
+      "B1_7"
+     ],
+     "part": "b",
+     "sub": "vi"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (5.0 points)     Knots"
+      },
+      {
+       "p": "Given a linked list with only 1s, we can create knots inside the list. A knot is formed by merging multiple Links with 1s into a single Link, where the resulting Link stores the number of 1 nodes that were merged together."
+      },
+      {
+       "p": "For example, given a linked list of <1 1 1 1>, we can generate the following knotted linked lists: <2 1 1> # Linked list with <(1 + 1), 1, 1> <1 2 1> # Linked list with <1, (1 + 1), 1> <1 1 2> # Linked list with <1, 1, (1 + 1)> <2 2> # Linked list with <(1 + 1), (1 + 1)> <3 1> # Linked list with <(1 + 1 + 1), 1> <1 3> # Linked list with <1, (1 + 1 + 1)> <4> # Linked list with <(1 + 1 + 1 + 1)> Implement knot, a function that takes in a linked list s with only 1s and returns a new linked list with one or more knots. knot should return the knotted linked list that has the largest product over all of its values. If there is a tie between multiple linked lists, return any list. Assume s has at least 2 nodes. You may use functions implemented in previous subparts (product, untangle) to solve this question."
+      },
+      {
+       "c": "def knot(s):\n    \"\"\"\n    Takes in a linked list S with only 1s and returns a new knotted linked list.\n    The returned knotted linked list has the largest product over all of its values.\n    If there is a tie between multiple linked lists, return any list.\n    Assume S has at least 2 nodes.\n    >>> a = Link(3)\n    >>> untangle(a) # <1 1 1>\n    >>> knot(a) # <1 1 1> --> <3>\n    Link(3)\n    >>> b = Link(5)\n    >>> untangle(b) # <1 1 1 1 1>\n    >>> knot(b) # <1 1 1 1 1> --> <2 3> or <3 2>\n    Link(2, Link(3))\n    >>> c = Link(10)\n    >>> untangle(c) # <1 1 1 1 1 1 1 1 1 1>\n    >>> knot(c) # <1 1 1 1 1 1 1 1 1 1> --> any list with two 2s and two 3s\n    Link(2, Link(2, Link(3, Link(3))))\n    \"\"\"\n    if ⟪a⟫:\n        return s\n    next = s.rest\n    keep_first = Link(⟪b⟫, ⟪c⟫)\n    merge_first = knot(⟪d⟫)\n    return ⟪e⟫([keep_first, merge_first], key=⟪f⟫)",
+       "lang": "py",
+       "f": {
+        "a": "s.rest is Link.empty",
+        "b": "s.first",
+        "c": "knot(next)",
+        "d": "Link(s.first + next.first, next.rest)",
+        "e": "max",
+        "f": "product"
+       }
+      }
+     ]
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s is Link.empty",
+      "s.rest is Link.empty",
+      "s is Link.empty and s.rest is Link.empty",
+      "s.first == 1",
+      "s.first != 1",
+      "s.first <= 1"
+     ],
+     "a": 1,
+     "r": [
+      "B1_8"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.first"
+     ],
+     "r": [
+      "B1_9"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "knot(next)",
+      "knot(s.rest)"
+     ],
+     "r": [
+      "B1_10"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Link(next.first, next)",
+      "Link(next.first, next.rest)",
+      "Link(s.first, next)",
+      "Link(s.first, next.rest)",
+      "Link(s.first + next.first, next)",
+      "Link(s.first + next.first, next.rest)",
+      "Link(next.first + next.rest.first, next)",
+      "Link(next.first + next.rest.first, next.rest)"
+     ],
+     "a": 5,
+     "r": [
+      "B1_11"
+     ],
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "knot",
+      "sum",
+      "max",
+      "min",
+      "map",
+      "filter"
+     ],
+     "a": 2,
+     "r": [
+      "B1_12"
+     ],
+     "part": "c",
+     "sub": "v"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "product"
+     ],
+     "r": [
+      "B1_13"
+     ],
+     "part": "c",
+     "sub": "vi"
+    }
+   ],
+   "run": {
+    "c": [
+     "def product(s):\n    \"\"\"\n    Takes in a linked list S and returns the product over all the values\n    in the linked list.\n    >>> product(Link(2, Link(5))) # 2 * 5 = 10\n    10\n    >>> product(Link(7, Link(2, Link(7)))) # 7 * 2 * 7 = 98\n    98\n    >>> product(Link(5))\n    5\n    \"\"\"\n    if s is Link.empty:\n        return ⟦B1_0⟧\n    return ⟦B1_1⟧",
+     "def untangle(s):\n    \"\"\"\n    Takes in a linked list S and mutates S to only contain 1s.\n    The length of the resulting list is equal to the sum of the\n    values in the original list. Assume the values in S are strictly\n    positive.\n    >>> a = Link(5)\n    >>> untangle(a)\n    >>> print(a)\n    <1 1 1 1 1>\n    >>> b = Link(3, Link(2, Link(4)))\n    >>> untangle(b)\n    >>> print(b)\n    <1 1 1 1 1 1 1 1 1>\n    >>> c = Link(1)\n    >>> untangle(c)\n    >>> c\n    Link(1)\n    \"\"\"\n    if ⟦B1_2⟧:\n        return\n    next = ⟦B1_3⟧\n    while ⟦B1_4⟧:\n        s.rest = ⟦B1_5⟧\n        s.first = ⟦B1_6⟧\n    ⟦B1_7⟧",
+     "def knot(s):\n    \"\"\"\n    Takes in a linked list S with only 1s and returns a new knotted linked list.\n    The returned knotted linked list has the largest product over all of its values.\n    If there is a tie between multiple linked lists, return any list.\n    Assume S has at least 2 nodes.\n    >>> a = Link(3)\n    >>> untangle(a) # <1 1 1>\n    >>> knot(a) # <1 1 1> --> <3>\n    Link(3)\n    >>> b = Link(5)\n    >>> untangle(b) # <1 1 1 1 1>\n    >>> knot(b) # <1 1 1 1 1> --> <2 3> or <3 2>\n    Link(2, Link(3))\n    >>> c = Link(10)\n    >>> untangle(c) # <1 1 1 1 1 1 1 1 1 1>\n    >>> knot(c) # <1 1 1 1 1 1 1 1 1 1> --> any list with two 2s and two 3s\n    Link(2, Link(2, Link(3, Link(3))))\n    \"\"\"\n    if ⟦B1_8⟧:\n        return s\n    next = s.rest\n    keep_first = Link(⟦B1_9⟧, ⟦B1_10⟧)\n    merge_first = knot(⟦B1_11⟧)\n    return ⟦B1_12⟧([keep_first, merge_first], key=⟦B1_13⟧)"
+    ],
+    "b": {
+     "B1_0": false,
+     "B1_1": false,
+     "B1_2": false,
+     "B1_3": false,
+     "B1_4": false,
+     "B1_5": false,
+     "B1_6": false,
+     "B1_7": true,
+     "B1_8": false,
+     "B1_9": false,
+     "B1_10": false,
+     "B1_11": false,
+     "B1_12": false,
+     "B1_13": false
+    },
+    "ch": {
+     "B1_0": 0,
+     "B1_1": 0,
+     "B1_2": 1,
+     "B1_3": 1,
+     "B1_4": 1,
+     "B1_5": 1,
+     "B1_6": 1,
+     "B1_7": 1,
+     "B1_8": 2,
+     "B1_9": 2,
+     "B1_10": 2,
+     "B1_11": 2,
+     "B1_12": 2,
+     "B1_13": 2
+    },
+    "v": {
+     "B1_0": "1",
+     "B1_1": "s.first * product(s.rest)",
+     "B1_2": "s is Link.empty",
+     "B1_3": "s.rest",
+     "B1_4": "s.first > 1",
+     "B1_5": "Link(1, s.rest)",
+     "B1_6": "s.first - 1",
+     "B1_7": "untangle(next)",
+     "B1_8": "s.rest is Link.empty",
+     "B1_9": "s.first",
+     "B1_10": "knot(next)",
+     "B1_11": "Link(s.first + next.first, next.rest)",
+     "B1_12": "max",
+     "B1_13": "product"
+    }
+   },
+   "topics": [
+    {
+     "n": "2a",
+     "t": [
+      "LINKED_LISTS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "2b",
+     "t": [
+      "LINKED_LISTS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "2c",
+     "t": [
+      "LINKED_LISTS",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/3",
+   "n": "3",
+   "t": "3. OOPeration",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (3.0 points)     Patient"
+      },
+      {
+       "p": "Leena is a hospitalist and is dissatisfied with the current system that organizes patient information at her hospitals, Kryser and Stanville, which have different admit and discharge protocols. Since some patients are admitted at multiple hospitals (somehow), the system gets confused. You suggest representing each patient with a specific set of attributes - name (a string), patient ID (an integer), age (an integer), and admitted, a boolean that indicates whether they are currently admitted at a hospital."
+      },
+      {
+       "p": "A valid patient ID must be a seven-digit number, with the first three digits being less than 4 and the last four digits being between 0-9."
+      },
+      {
+       "p": "Start by implementing the Patient class."
+      },
+      {
+       "c": "class Patient:\n    \"\"\"\n    >>> kim = Patient(\"Kim\", 212764, 12)\n    Invalid Patient ID entered. Try again.\n    >>> kim.ID\n    >>> kim.set_ID(3337656)\n    Valid Patient ID\n    >>> kim.ID\n    3337656\n    >>> tina = Patient(\"Tina\", 2219542, 93)\n    Valid Patient ID\n    \"\"\"\n    def __init__(self, name, ID, age):\n        self.name = name\n        self.age = age\n        self.admitted = False\n        ⟪a⟫\n    def set_ID(self, ID):\n        if re.match(⟪b⟫, f\"{ID}\"):\n            self.ID = ID\n            print(\"Valid Patient ID\")\n        else:\n            ⟪c⟫\n            print(\"Invalid Patient ID entered. Try again.\")",
+       "lang": "py",
+       "f": {
+        "a": "self.set_ID(ID)",
+        "b": "r\"^[0-3]{3}\\d{4}$\"",
+        "c": "self.ID = None"
+       }
+      }
+     ]
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.set_ID(ID)"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "r\"^[0-3]{3}\\d{4}$\"",
+      "\"^[0-3]{3}\\d{4}$\"",
+      "r'^[0-3]{3}\\d{4}$'"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.ID = None"
+     ],
+     "r": [
+      "B2_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)    Hospital"
+      },
+      {
+       "p": "Implement the Hospital class. A Hospital instance has two instance attributes: name and patient_list, which keeps track of all the patients (Patient instances) admitted to that hospital."
+      },
+      {
+       "c": "class Hospital:\n    \"\"\"\n    >>> clinic42 = Hospital(\"StanKrys\")\n    >>> neel = Patient(\"Neel\", 3125456, 63)\n    Valid Patient ID\n    >>> clinic42.admit(neel)\n    >>> clinic42.admit_from_list([Patient(\"Ne\", 3125456, 63), Patient(\"Sam\", 1125432, 14)])\n    Valid Patient ID\n    Valid Patient ID\n    Patient with ID 3125456 is already admitted\n    >>> clinic42.patient_IDs_list()\n    [3125456, 1125432]\n    >>> clinic42.discharge(clinic42.find_patient(3125456))\n    >>> clinic42.patient_IDs_list()\n    [1125432]\n    \"\"\"\n    hospitals = {}\n    def __init__(self, name):\n        self.patient_list = []\n        ⟪a⟫\n    def admit(self, patient):\n        IDs = ⟪b⟫\n        if patient.ID in IDs:\n            print(f\"Patient with ID {patient.ID} is already admitted\")\n        else:\n            ⟪c⟫\n            patient.admitted = True\n    def admit_from_list(self, patient_list):\n        for p in patient_list:\n            ⟪d⟫\n    def discharge(self, patient):\n        if patient.ID in self.patient_IDs_list():\n            ⟪e⟫\n            patient.admitted = False\n    def patient_IDs_list(self):\n        return ⟪f⟫\n    def find_patient(self, ID):\n        for p in self.patient_list:\n            if ID == p.ID:\n                return p",
+       "lang": "py",
+       "f": {
+        "a": "Hospital.hospitals[name] = self",
+        "b": "self.patient_IDs_list()",
+        "c": "self.patient_list.append(patient)",
+        "d": "self.admit(p)",
+        "e": "self.patient_list.remove(patient)",
+        "f": "[p.ID for p in self.patient_list]"
+       }
+      }
+     ]
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self.hospitals = self.hospitals.append(self)",
+      "hospitals[name] = self",
+      "Hospital.hospitals[name] = self",
+      "hospitals.append(self)",
+      "self.hospitals = self.hospitals.extend(self)",
+      "Hospital.hospitals = {self.name: self}"
+     ],
+     "a": 2,
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self.patient_list",
+      "patient_IDs_list(self)",
+      "self.patient_IDs_list",
+      "self.hospitals.extend(self)",
+      "self.patient_IDs_list(self.patient_list)",
+      "self.patient_IDs_list()"
+     ],
+     "a": 5,
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 32,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.patient_list.append(patient)"
+     ],
+     "r": [
+      "B2_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 33,
+     "l": [
+      {
+       "p": "iv. Select all that apply for blank (d)"
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "self.admit_from_list(p)",
+      "self.admit(p)",
+      "patient_IDs_list",
+      "self.patient_list.append(patient)",
+      "Hospital.admit(self,p)",
+      "self.patient_list.extend(patient)",
+      "p.admit(self)"
+     ],
+     "a": [
+      1,
+      4
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 34,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.patient_list.remove(patient)"
+     ],
+     "r": [
+      "B2_7"
+     ],
+     "part": "b",
+     "sub": "v"
+    },
+    {
+     "id": 35,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[p.ID for p in self.patient_list]"
+     ],
+     "r": [
+      "B2_8"
+     ],
+     "part": "b",
+     "sub": "vi"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (7.0 points)"
+      },
+      {
+       "p": "Implement the Kryser and Stanville classes."
+      },
+      {
+       "p": "Here are the protocols:"
+      },
+      {
+       "p": "• An ID is unique to each patient so Patient(\"Sam\", 1234511, 61) is the same as Patient(\"Samantha\", 1234511, 60). This ensures the system doesn’t have duplicate medical charts for a patient."
+      },
+      {
+       "p": "• Stanville will not discharge patients who are also admitted at Kryser"
+      },
+      {
+       "p": "• Kryser will not admit patients who are also admitted at Stanville"
+      },
+      {
+       "p": "• There is only one Kryser Hospital and one Stanville Hospital with the names “Kryser” and “Stanville,” respectively."
+      },
+      {
+       "p": "• Assume these are the only two hospitals that patients can be admitted to"
+      },
+      {
+       "c": "class Kryser(Hospital):\n    \"\"\"\n    >>> k = Kryser(\"Kryser\")\n    >>> s = Stanville(\"Stanville\")\n    >>> nora = Patient(\"Nora\", 3125456, 63)\n    Valid Patient ID\n    >>> jim = Patient(\"Jim\", 2125496, 34)\n    Valid Patient ID\n    >>> s.admit(nora)\n    >>> nora.admitted\n    True\n    >>> k.admit(nora) # Kryser will NOT admit Stanville patients\n    Error: Patient with ID 3125456 is already admitted at Stanville\n    >>> k.admit(jim)\n    >>> k.admit(Patient(\"Jimmy\", 2125496, 36)) # same patient\n    Valid Patient ID\n    Patient with ID 2125496 is already admitted\n    >>> k.patient_IDs_list()\n    [2125496]\n    >>> s.admit(jim) # Stanville is okay admitting Kryser patients\n    >>> s.discharge(jim)\n    Error: Patient with ID 2125496 hasn’t been discharged from Kryser\n    >>> k.discharge(jim)\n    >>> s.discharge(jim)\n    >>> jim.admitted\n    False\n    \"\"\"\n    def admit(self, patient):\n        if ⟪a⟫ and not patient in self.patient_list:\n            print(f\"Error: Patient with ID {patient.ID} is already admitted at Stanville\")\n        else:\n            ⟪b⟫.admit(patient)\n    def discharge(self, patient):\n        ⟪c⟫\nclass Stanville(⟪d⟫):\n    def admit(self, patient):\n        ⟪e⟫\n    def discharge(self, patient):\n        kryser = ⟪f⟫\n        if patient.admitted and patient.ID in kryser.patient_IDs_list():\n            print(f\"Error: Patient with ID {patient.ID} hasn’t been discharged from Kryser\")\n        else:\n            ⟪g⟫",
+       "lang": "py",
+       "f": {
+        "a": "patient.admitted",
+        "b": "super()",
+        "c": "super().discharge(patient)",
+        "d": "Hospital",
+        "e": "super().admit(patient)",
+        "f": "Hospital.hospitals[\"Kryser\"]",
+        "g": "super().discharge(patient)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 36,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "patient.admitted"
+     ],
+     "r": [
+      "B2_9"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 37,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self",
+      "Hospital",
+      "super()",
+      "self.Hospital",
+      "super"
+     ],
+     "a": 2,
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 38,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "super().discharge(patient)"
+     ],
+     "r": [
+      "B2_11"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 39,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Hospital",
+      "Kryser",
+      "Hospital, Kryser",
+      "Kryser, Hospital",
+      "None",
+      "Patient",
+      "None of the answers are correct"
+     ],
+     "a": 0,
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "id": 40,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "super().admit(patient)"
+     ],
+     "r": [
+      "B2_13"
+     ],
+     "part": "c",
+     "sub": "v"
+    },
+    {
+     "id": 41,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Hospital.hospitals[\"Kryser\"]"
+     ],
+     "r": [
+      "B2_14"
+     ],
+     "part": "c",
+     "sub": "vi"
+    },
+    {
+     "id": 42,
+     "l": [
+      {
+       "p": "vii. Fill in blank (g)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self.discharge(patient)",
+      "super().discharge(patient)",
+      "Kryser.discharge(patient)",
+      "Kryser.discharge(self, patient)",
+      "None",
+      "patient",
+      "None of the answers are correct"
+     ],
+     "a": 1,
+     "part": "c",
+     "sub": "vii"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (3.0 points)     Find Patient"
+      },
+      {
+       "p": "The system at Stanville glitched and some of the patient information (name, ID, and age) got shuffled. Leena urgently needs the ID of the patient she was going to see next. Luckily, she knows the patient’s age, that they were only admitted at Stanville, and that the product of their ID digits equals their age. Implement find_patient, which takes in the patient’s age age and returns a function, checker, to which Leena can feed in the shuffled IDs until she finds the correct ID to return the Patient object. You may use the Hospital class and assume the Stanville hospital object exists."
+      },
+      {
+       "c": "def find_patient(age):\n    \"\"\"\n    >>> s = Stanville(\"Stanville\")\n    >>> grace = s.admit(Patient(\"grace\", 1121717, 98))\n    Valid Patient ID\n    >>> marie = s.admit(Patient(\"marie\", 2121141, 16))\n    Valid Patient ID\n    >>> machine = find_patient(98)\n    >>> machine(1211311)(1023209)(1121717)           # 1 * 1 * 2 * 1 * 7 * 1 * 7 = 98\n    <__main__.Patient object>\n    >>> find_patient(16)(1211311)(1123113)(1111111)(2121141)\n    <__main__.Patient object>\n    \"\"\"\n    def checker(ID):\n        prod = 1\n        parse_digits = ID\n        while parse_digits > 0:\n            parse_digits, last = parse_digits // 10, parse_digits % 10\n            prod *= last\n        if prod == age:\n            stanville = ⟪a⟫\n            return stanville.⟪b⟫\n        else:\n            return ⟪c⟫\n    return checker",
+       "lang": "py",
+       "f": {
+        "a": "Hospital.hospitals[\"Stanville\"]",
+        "b": "find_patient(ID)",
+        "c": "find_patient(age)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 43,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Hospital.hospitals[\"Stanville\"]",
+      "Hospital.hospitals['Stanville']"
+     ],
+     "x": "The official solution reads Hospitals.hospitals[\"Stanville\"], a typo: the class is named Hospital.",
+     "r": [
+      "B2_16"
+     ],
+     "part": "d",
+     "sub": "i"
+    },
+    {
+     "id": 44,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "find_patient(ID)"
+     ],
+     "r": [
+      "B2_17"
+     ],
+     "part": "d",
+     "sub": "ii"
+    },
+    {
+     "id": 45,
+     "l": [
+      {
+       "p": "iii. Select all that apply for blank (c)"
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "checker(age)",
+      "find_patient",
+      "find_patient()",
+      "find_patient(age)",
+      "checker",
+      "checker(x)",
+      "find_patient(x)"
+     ],
+     "a": [
+      3,
+      4
+     ],
+     "part": "d",
+     "sub": "iii"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Patient:\n    \"\"\"\n    >>> kim = Patient(\"Kim\", 212764, 12)\n    Invalid Patient ID entered. Try again.\n    >>> kim.ID\n    >>> kim.set_ID(3337656)\n    Valid Patient ID\n    >>> kim.ID\n    3337656\n    >>> tina = Patient(\"Tina\", 2219542, 93)\n    Valid Patient ID\n    >>> _ = Patient(\"Max\", 12345678, 5)\n    Invalid Patient ID entered. Try again.\n    >>> _ = Patient(\"Lou\", 4123456, 5)\n    Invalid Patient ID entered. Try again.\n    \"\"\"\n    def __init__(self, name, ID, age):\n        self.name = name\n        self.age = age\n        self.admitted = False\n        ⟦B2_0⟧\n    def set_ID(self, ID):\n        if re.match(⟦B2_1⟧, f\"{ID}\"):\n            self.ID = ID\n            print(\"Valid Patient ID\")\n        else:\n            ⟦B2_2⟧\n            print(\"Invalid Patient ID entered. Try again.\")",
+     "class Hospital:\n    \"\"\"\n    >>> clinic42 = Hospital(\"StanKrys\")\n    >>> neel = Patient(\"Neel\", 3125456, 63)\n    Valid Patient ID\n    >>> clinic42.admit(neel)\n    >>> clinic42.admit_from_list([Patient(\"Ne\", 3125456, 63), Patient(\"Sam\", 1125432, 14)])\n    Valid Patient ID\n    Valid Patient ID\n    Patient with ID 3125456 is already admitted\n    >>> clinic42.patient_IDs_list()\n    [3125456, 1125432]\n    >>> clinic42.discharge(clinic42.find_patient(3125456))\n    >>> clinic42.patient_IDs_list()\n    [1125432]\n    \"\"\"\n    hospitals = {}\n    def __init__(self, name):\n        self.patient_list = []\n        ⟦B2_3⟧\n    def admit(self, patient):\n        IDs = ⟦B2_4⟧\n        if patient.ID in IDs:\n            print(f\"Patient with ID {patient.ID} is already admitted\")\n        else:\n            ⟦B2_5⟧\n            patient.admitted = True\n    def admit_from_list(self, patient_list):\n        for p in patient_list:\n            ⟦B2_6⟧\n    def discharge(self, patient):\n        if patient.ID in self.patient_IDs_list():\n            ⟦B2_7⟧\n            patient.admitted = False\n    def patient_IDs_list(self):\n        return ⟦B2_8⟧\n    def find_patient(self, ID):\n        for p in self.patient_list:\n            if ID == p.ID:\n                return p",
+     "class Kryser(Hospital):\n    \"\"\"\n    >>> k = Kryser(\"Kryser\")\n    >>> s = Stanville(\"Stanville\")\n    >>> nora = Patient(\"Nora\", 3125456, 63)\n    Valid Patient ID\n    >>> jim = Patient(\"Jim\", 2125496, 34)\n    Valid Patient ID\n    >>> s.admit(nora)\n    >>> nora.admitted\n    True\n    >>> k.admit(nora) # Kryser will NOT admit Stanville patients\n    Error: Patient with ID 3125456 is already admitted at Stanville\n    >>> k.admit(jim)\n    >>> k.admit(Patient(\"Jimmy\", 2125496, 36)) # same patient\n    Valid Patient ID\n    Patient with ID 2125496 is already admitted\n    >>> k.patient_IDs_list()\n    [2125496]\n    >>> s.admit(jim) # Stanville is okay admitting Kryser patients\n    >>> s.discharge(jim)\n    Error: Patient with ID 2125496 hasn’t been discharged from Kryser\n    >>> k.discharge(jim)\n    >>> s.discharge(jim)\n    >>> jim.admitted\n    False\n    >>> amy = Patient(\"Amy\", 1111111, 20)\n    Valid Patient ID\n    >>> s.admit(amy)\n    >>> s.discharge(amy)\n    >>> amy.admitted\n    False\n    \"\"\"\n    def admit(self, patient):\n        if ⟦B2_9⟧ and not patient in self.patient_list:\n            print(f\"Error: Patient with ID {patient.ID} is already admitted at Stanville\")\n        else:\n            ⟦B2_10⟧.admit(patient)\n    def discharge(self, patient):\n        ⟦B2_11⟧\nclass Stanville(⟦B2_12⟧):\n    def admit(self, patient):\n        ⟦B2_13⟧\n    def discharge(self, patient):\n        kryser = ⟦B2_14⟧\n        if patient.admitted and patient.ID in kryser.patient_IDs_list():\n            print(f\"Error: Patient with ID {patient.ID} hasn’t been discharged from Kryser\")\n        else:\n            ⟦B2_15⟧",
+     "def find_patient(age):\n    \"\"\"\n    >>> s = Stanville(\"Stanville\")\n    >>> grace = s.admit(Patient(\"grace\", 1121717, 98))\n    Valid Patient ID\n    >>> marie = s.admit(Patient(\"marie\", 2121141, 16))\n    Valid Patient ID\n    >>> machine = find_patient(98)\n    >>> machine(1211311)(1023209)(1121717)           # 1 * 1 * 2 * 1 * 7 * 1 * 7 = 98\n    <...Patient object at ...>\n    >>> find_patient(16)(1211311)(1123113)(1111111)(2121141)\n    <...Patient object at ...>\n    \"\"\"\n    def checker(ID):\n        prod = 1\n        parse_digits = ID\n        while parse_digits > 0:\n            parse_digits, last = parse_digits // 10, parse_digits % 10\n            prod *= last\n        if prod == age:\n            stanville = ⟦B2_16⟧\n            return stanville.⟦B2_17⟧\n        else:\n            return ⟦B2_18⟧\n    return checker"
+    ],
+    "b": {
+     "B2_0": true,
+     "B2_1": false,
+     "B2_2": true,
+     "B2_3": true,
+     "B2_4": false,
+     "B2_5": true,
+     "B2_6": true,
+     "B2_7": true,
+     "B2_8": false,
+     "B2_9": false,
+     "B2_10": false,
+     "B2_11": true,
+     "B2_12": false,
+     "B2_13": true,
+     "B2_14": false,
+     "B2_15": true,
+     "B2_16": false,
+     "B2_17": false,
+     "B2_18": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 1,
+     "B2_4": 1,
+     "B2_5": 1,
+     "B2_6": 1,
+     "B2_7": 1,
+     "B2_8": 1,
+     "B2_9": 2,
+     "B2_10": 2,
+     "B2_11": 2,
+     "B2_12": 2,
+     "B2_13": 2,
+     "B2_14": 2,
+     "B2_15": 2,
+     "B2_16": 3,
+     "B2_17": 3,
+     "B2_18": 3
+    },
+    "v": {
+     "B2_0": "self.set_ID(ID)",
+     "B2_1": "r\"^[0-3]{3}\\d{4}$\"",
+     "B2_2": "self.ID = None",
+     "B2_3": "Hospital.hospitals[name] = self",
+     "B2_4": "self.patient_IDs_list()",
+     "B2_5": "self.patient_list.append(patient)",
+     "B2_6": "self.admit(p)",
+     "B2_7": "self.patient_list.remove(patient)",
+     "B2_8": "[p.ID for p in self.patient_list]",
+     "B2_9": "patient.admitted",
+     "B2_10": "super()",
+     "B2_11": "super().discharge(patient)",
+     "B2_12": "Hospital",
+     "B2_13": "super().admit(patient)",
+     "B2_14": "Hospital.hospitals[\"Kryser\"]",
+     "B2_15": "super().discharge(patient)",
+     "B2_16": "Hospital.hospitals[\"Stanville\"]",
+     "B2_17": "find_patient(ID)",
+     "B2_18": "find_patient(age)"
+    }
+   },
+   "topics": [
+    {
+     "n": "3a",
+     "t": [
+      "OBJECTS",
+      "REGEX"
+     ]
+    },
+    {
+     "n": "3b",
+     "t": [
+      "LISTS",
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "3c",
+     "t": [
+      "INHERITANCE",
+      "LISTS",
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "3d",
+     "t": [
+      "LISTS",
+      "OBJECTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/4",
+   "n": "4",
+   "t": "4. Ratios (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "(a) Definition: The number of labels above tree t is the number of labels along the path from this node to the root of t excluding the current node."
+      },
+      {
+       "p": "Definition: The number of labels below tree t is the number of labels within a subtree t excluding the current node."
+      },
+      {
+       "p": "Implement ratio, which takes a Tree t and predicate function f, and mutates t into a Ratio Tree. A Ratio Tree replaces the value at each label with a 2-element list. Index 0 holds the number of labels above this node for which f(label) returns true. Index 1 holds the number of labels below this node for which f(label) returns true."
+      },
+      {
+       "p": "For example, consider the label 2 in the first branch of the root of the tree shown below. 2 has one label along the path to the root that is odd (1). 2 has one label within its subtrees that are odd (1). As a result, the label is replaced with the list [1, 1]"
+      },
+      {
+       "c": "def ratio(t, f):\n    \"\"\"Mutate each label of t to the ratio of the number of labels above\n    it to the number of labels below it, represented as a 2-element\n    list – provided that f(label) == true.\n    >>> t = Tree(15, [Tree(1, [Tree(8)]), Tree(5), (Tree(4, [Tree(6), Tree(7, [Tree(9)])]))])\n    >>> pred = lambda x: x % 2 == 1 # odd?\n    >>> ratio(t, pred)\n    >>> t\n    Tree([0, 4], [Tree([1, 0], [Tree([2, 0])]), Tree([1, 0]), Tree([1, 2],\n    [Tree([1, 0]), Tree([1, 1], [Tree([2, 0])])])])\n    \"\"\"\n    def helper(t, filtered_depth):\n        above = ⟪a⟫\n        if ⟪b⟫:\n            ⟪c⟫\n        below = ⟪d⟫\n        for b in t.branches:\n            ⟪e⟫\n        below += ⟪f⟫\n        t.label = [above, below]\n    return helper(t, 0)",
+       "lang": "py",
+       "f": {
+        "a": "filtered_depth",
+        "b": "f(t.label)",
+        "c": "filtered_depth += 1",
+        "d": "len([b for b in t.branches if f(b.label)])",
+        "e": "helper(b, filtered_depth)",
+        "f": "sum([b.label[1] for b in t.branches])"
+       }
+      }
+     ]
+    },
+    {
+     "id": 46,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "filtered_depth"
+     ],
+     "r": [
+      "B3_0"
+     ]
+    },
+    {
+     "id": 47,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "t.label",
+      "t.is_leaf()",
+      "f(t.label)",
+      "f(t.branches)",
+      "any([f(b.label) for b in t.branches])",
+      "all([f(b.label) for b in t.branches])"
+     ],
+     "a": 2,
+     "r": [
+      "B3_1"
+     ]
+    },
+    {
+     "id": 48,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "return f(t.label)",
+      "return above",
+      "t.label = [above, 0]",
+      "t.label = [0, 0]",
+      "filtered_depth += 1",
+      "above += 1"
+     ],
+     "a": 4,
+     "r": [
+      "B3_2"
+     ]
+    },
+    {
+     "id": 49,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "len([b for b in t.branches if f(b.label)])",
+      "sum([b for b in t.branches if f(b.label)])",
+      "sum([b.label for b in t.branches])",
+      "sum([helper(b, filtered_depth) for b in t.branches])",
+      "len([helper(b, filtered_depth) for b in t.branches])",
+      "all([helper(b, filtered_depth) for b in t.branches])"
+     ],
+     "a": 0,
+     "r": [
+      "B3_3"
+     ]
+    },
+    {
+     "id": 50,
+     "l": [
+      {
+       "p": "v. Fill in blank (e). You cannot use and, or, if, or else."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "helper(b, filtered_depth)"
+     ],
+     "r": [
+      "B3_4"
+     ]
+    },
+    {
+     "id": 51,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "len([b for b in t.branches if f(b.label)])",
+      "sum([b for b in t.branches if f(b.label)])",
+      "sum([b.label[1] for b in t.branches])",
+      "len([b.label[0] for b in t.branches if f(b.label)])",
+      "sum([helper(b, filtered_depth) for b in t.branches])",
+      "len([helper(b, filtered_depth) for b in t.branches])"
+     ],
+     "a": 2,
+     "r": [
+      "B3_5"
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def ratio(t, f):\n    \"\"\"Mutate each label of t to the ratio of the number of labels above\n    it to the number of labels below it, represented as a 2-element\n    list – provided that f(label) == true.\n    >>> t = Tree(15, [Tree(1, [Tree(8)]), Tree(5), (Tree(4, [Tree(6), Tree(7, [Tree(9)])]))])\n    >>> pred = lambda x: x % 2 == 1 # odd?\n    >>> ratio(t, pred)\n    >>> t\n    Tree([0, 4], [Tree([1, 0], [Tree([2, 0])]), Tree([1, 0]), Tree([1, 2],\n    [Tree([1, 0]), Tree([1, 1], [Tree([2, 0])])])])\n    \"\"\"\n    def helper(t, filtered_depth):\n        above = ⟦B3_0⟧\n        if ⟦B3_1⟧:\n            ⟦B3_2⟧\n        below = ⟦B3_3⟧\n        for b in t.branches:\n            ⟦B3_4⟧\n        below += ⟦B3_5⟧\n        t.label = [above, below]\n    return helper(t, 0)"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": true,
+     "B3_3": false,
+     "B3_4": true,
+     "B3_5": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 0,
+     "B3_4": 0,
+     "B3_5": 0
+    },
+    "v": {
+     "B3_0": "filtered_depth",
+     "B3_1": "f(t.label)",
+     "B3_2": "filtered_depth += 1",
+     "B3_3": "len([b for b in t.branches if f(b.label)])",
+     "B3_4": "helper(b, filtered_depth)",
+     "B3_5": "sum([b.label[1] for b in t.branches])"
+    }
+   },
+   "topics": [
+    {
+     "n": "4",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "LISTS",
+      "MUTABLE_TREES",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/5",
+   "n": "5",
+   "t": "5. Kirby Consume (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "(a) Consumable?"
+      },
+      {
+       "p": "Kirby is stuck in a forest of Whispy Woods. In order to get out, he needs to consume Maxim Tomatoes from vines along the way. However, tomato vines are picky about temperature and only grow tomatoes above or below a certain threshold temperature."
+      },
+      {
+       "p": "In fact, each vine can be represented using these three attributes: indicator, threshold, and tomatoes. A vine grows tomatoes if one of the following is true:"
+      },
+      {
+       "p": "• It has a positive indicator and the current temperature is strictly above the threshold."
+      },
+      {
+       "p": "• It has a negative indicator and the current temperature is strictly below the threshold. You may assume that an indicator is never 0."
+      },
+      {
+       "p": "If the vine can grow tomatoes, Kirby will consume a certain number of tomatoes from the vine, indicated by the third attribute of a vine object."
+      },
+      {
+       "p": "We choose to use the following Scheme data abstraction to represent a vine: Constructor: (make-vine ind thres tomatoes) creates an vine object with the given indicator, threshold, and tomatoes."
+      },
+      {
+       "p": "Selectors:"
+      },
+      {
+       "p": "• (get-ind vine) returns the vine’s indicator"
+      },
+      {
+       "p": "• (get-thres vine) returns the vine’s threshold"
+      },
+      {
+       "p": "• (get-tomatoes vine) returns the vine’s number of tomatoes Note: You may assume that the vine ADT has been properly implemented already. Implement consumable?, which takes in an vine object, vine, and the current temperature, temp. It returns"
+      },
+      {
+       "c": "#t if the vine can be consumed from given the current temperature, and #f otherwise. (consumable?\n(make-vine -1 31 10) 0) evaluates to #t, as the current temperature of 0 is below the threshold of 31",
+       "lang": "py"
+      },
+      {
+       "p": "and the indicator of -1 is negative."
+      },
+      {
+       "p": "; doctests"
+      },
+      {
+       "c": "(define v (make-vine -1 31 10))\n(expect (consumable? v 0) #t) ; -1 is negative and 0 < 31\n(expect (consumable? v 32) #f) ; -1 is negative and 32 > 31\n(define (consumable? vine temp)\n    ( ⟪⟫\n        temp\n        (get-thresh vine))\n)",
+       "lang": "scm"
+      }
+     ]
+    },
+    {
+     "id": 52,
+     "l": [
+      {
+       "p": "i. Fill in the blank. Hint: Your expression should evaluate to an operator."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(if (< (get-ind vine) 0) < >)"
+     ]
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)     Kirby Consume"
+      },
+      {
+       "p": "Implement kirby-consume, which takes in a list of vine objects vines, the current temperature temp, and min-tomatoes, the minimum amount of tomatoes Kirby needs to consume from the vines in order to get out. It returns #t if Kirby was able to consume enough tomatoes to get out and #f otherwise. Note: You may assume that consumable? has been implemented correctly regardless of your solution to the previous part, and you may call it in your implementation for this part. You may leave lines blank and can specify so by answering Blank for the question. Your implementation must be tail recursive. Any non-tail recursive solution will receive no credit."
+      },
+      {
+       "p": "Hint: First try writing a tail recursive solution without looking the multiple choice options. ; doctests"
+      },
+      {
+       "c": "(define v1 (make-vine 1 20 2))\n(define v2 (make-vine 1 25 5))\n(define v3 (make-vine -1 30 3))\n(define vines (list v1 v2 v3))\n(expect (kirby-consume vines 20 8) #f) ; 0 + 0 + 3 < 8\n(expect (kirby-consume vines 40 7) #t) ; 2 + 5 + 0 = 7\n(expect (kirby-consume vines 27 9) #t) ; 2 + 5 + 3 > 9\n(define (kirby-consume vines temp min-tomatoes)\n    (if (null? vines)\n        ⟪a⟫\n        (begin\n            (define v (car vines))\n            (⟪b⟫\n            ⟪c⟫\n            ⟪d⟫\n            ⟪e⟫))))",
+       "lang": "scm",
+       "f": {
+        "a": "(<= min-tomatoes 0)",
+        "b": "kirby-consume",
+        "c": "(cdr vines)",
+        "d": "temp",
+        "e": "(- min-tomatoes (if (consumable? v temp) (get-tomatoes v) 0))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 53,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "#t",
+      "#f",
+      "min-tomatoes",
+      "(> min-tomatoes 0)",
+      "(<= min-tomatoes 0)"
+     ],
+     "a": 5,
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 54,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "cons",
+      "kirby-consume",
+      "and",
+      "or",
+      "temp",
+      "<",
+      ">",
+      "Blank"
+     ],
+     "a": 1,
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 55,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "(cdr vines)",
+      "vines",
+      "(car vines)",
+      "nil",
+      "temp",
+      "(>= min-tomatoes 0)",
+      "(<= min-tomatoes 0)",
+      "Blank"
+     ],
+     "a": 0,
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 56,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "temp",
+      "(get-ind (car vines))",
+      "(get-tomatoes (car vines))",
+      "(kirby-consume (cdr vines) temp (- min-tomatoes (get-tomatoes v)))",
+      "(kirby-consume (cdr vines) temp min-tomatoes)",
+      "Blank"
+     ],
+     "a": 1,
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 57,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "(+ min-tomatoes (get-tomatoes v))",
+      "(- min-tomatoes (get-tomatoes v))",
+      "(if (consumable? v temp) min-tomatoes 0))",
+      "(and (consumable? v temp) (kirby-consume (cdr vines) temp min-tomatoes))",
+      "(or (consumable? v temp) (kirby-consume (cdr vines) temp min-tomatoes))",
+      "(- min-tomatoes (if (consumable? v temp) (get-tomatoes v) 0))",
+      "(+ min-tomatoes (if (consumable? v temp) (get-tomatoes v) 0))",
+      "Blank"
+     ],
+     "a": 5,
+     "part": "b",
+     "sub": "v"
+    }
+   ],
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "SCHEME",
+      "SCHEME_DATA_ABSTRACTION"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "SCHEME",
+      "SCHEME_DATA_ABSTRACTION",
+      "TAIL_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/6",
+   "n": "6",
+   "t": "6. Matchmaking (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (6.0 points)     do_match_form"
+      },
+      {
+       "p": "Modify scheme to support the new special form match. A match expression has the following form: (match <subject> <clause1> <clause2> ... ) A <clause> has the following form (<case> <consequent>). A <subject> is any expression. The match expression first evaluates <subject>."
+      },
+      {
+       "p": "Starting with the first clause, evaluates <case>. If it is scheme equal to the evaluated subject, i.e (equal? <subject> <case>) is true, evaluate the <consequent> and return it. If they are not scheme equal, proceed to the next clause. If there are no more clauses, the return value is undefined."
+      },
+      {
+       "c": "scm> (define op 'add)\nscm> (match op\n...>        ('mul (* 1 2))\n...>        ('add (+ 1 2))\n...>        ('sub (- 1 2)))",
+       "lang": "scm"
+      },
+      {
+       "p": "3"
+      },
+      {
+       "c": "scm> (match op\n...>        ((print 'mul) (print '2))\n...>        ('add (+ 1 2))\n...>        ('(print 'sub) (- 1 2)))",
+       "lang": "scm"
+      },
+      {
+       "p": "mul 3"
+      },
+      {
+       "c": "scm> (match op ('mul (* 1 2) (* 3 4))) ; More than two elements in a <clause>",
+       "lang": "scm"
+      },
+      {
+       "p": "Traceback (most recent call last):"
+      },
+      {
+       "p": "0     (match op ('mul (* 1 2) (* 3 4))) Error: too many operands in form Assume that the rest of the Scheme interpreter has been implemented correctly and only do_match_form needs to be implemented. You may use the following functions defined in the Scheme interpreter project: validate_form, scheme_equalp, scheme_eval"
+      },
+      {
+       "c": "def do_match_form(expressions, env):\n    \"\"\"Evaluate a match form.\n    >>> env = create_global_frame()\n    >>> do_match_form(read_line(\"( 'c ('a 1) ('b (+ 1 1)) ('c 3))\"), env)\n    3\n    \"\"\"\n    validate_form(expressions, 1) # Ensures there's at least 1 operand\n    subject = ⟪a⟫\n    val = scheme_eval(subject, env)\n    expressions = expressions.rest\n    while ⟪b⟫:\n        pair = expressions.first\n        ⟪c⟫\n        match_term = ⟪d⟫\n        if ⟪e⟫(val, match_term):\n            return scheme_eval(⟪f⟫, env)\n        expressions = expressions.rest",
+       "lang": "py",
+       "f": {
+        "a": "expressions.first",
+        "b": "expressions is not nil",
+        "c": "validate_form(pair, 2, 2)",
+        "d": "scheme_eval(pair.first, env)",
+        "e": "scheme_equalp",
+        "f": "pair.rest.first"
+       }
+      }
+     ]
+    },
+    {
+     "id": 58,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "expressions.first"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 59,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "expressions is not nil",
+      "expressions.rest is not nil",
+      "expressions.first",
+      "len(expressions) > 0",
+      "len(expressions) >= 0"
+     ],
+     "a": 0,
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 60,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "scheme_eval(subject, env)",
+      "scheme_eval(pair, env)",
+      "scheme_equal(expressions, val)",
+      "scheme_equal(pair, val)",
+      "validate_form(expressions, 2, 2)",
+      "validate_form(pair, 2, 2)"
+     ],
+     "a": 5,
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 61,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "scheme_eval(pair.first, env)"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 62,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "scheme_eval",
+      "validate_form",
+      "scheme_equalp",
+      "do_match_form",
+      "min"
+     ],
+     "a": 2,
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "id": 63,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "pair.rest.first"
+     ],
+     "part": "a",
+     "sub": "vi"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (3.0 points)    Match Counter"
+      },
+      {
+       "p": "Assume the interpreter supports the match special form and do_match_form is implemented correctly. Let us consider interpreting the following expressions:"
+      },
+      {
+       "c": "scm> (define op 'add)",
+       "lang": "scm"
+      },
+      {
+       "p": "op"
+      },
+      {
+       "c": "scm> (match op\n...>        ('mul (* 1 2))\n...>        ('add (+ 1 2))\n...>        ('sub (- 1 2)))",
+       "lang": "scm"
+      },
+      {
+       "p": "The following questions relate to the previous match expression. Each clause is in context of the given match expression."
+      }
+     ]
+    },
+    {
+     "id": 64,
+     "l": [
+      {
+       "p": "i. How many times is scheme_eval called for just this clause of the given match special form:"
+      },
+      {
+       "p": "('mul (* 1 2))"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 65,
+     "l": [
+      {
+       "p": "ii. How many times is scheme_eval called for just this clause of the given match special form:"
+      },
+      {
+       "p": "('add (+ 1 2))"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "5"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 66,
+     "l": [
+      {
+       "p": "iii. How many times is scheme_eval called for just this clause of the given match special form:"
+      },
+      {
+       "p": "('sub (- 1 2))"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "0"
+     ],
+     "part": "b",
+     "sub": "iii"
+    }
+   ],
+   "topics": [
+    {
+     "n": "6a",
+     "t": [
+      "SCHEME",
+      "SCHEME_DATA_ABSTRACTION"
+     ]
+    },
+    {
+     "n": "6b",
+     "t": [
+      "INTERPRETERS",
+      "SCHEME"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/7",
+   "n": "7",
+   "t": "7. Hills (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (9.0 points)     Hill"
+      },
+      {
+       "p": "Implement the generator function hill which takes in a positive integer n and returns a generator that yields every subsequence of n where each digit is exactly 1 away from its adjacent digits. The order in which numbers are yielded does not matter. Assume all digits in the number are unique."
+      },
+      {
+       "c": "def hill(n):\n    \"\"\"\n    Accepts a positive integer N, and returns a generator that\n    yields every subsequence of N where each digit is exactly 1\n    away from its adjacent digits.\n    >>> sorted(list(hill(354)))\n    [3, 4, 5, 34, 54]\n    >>> sorted(list(hill(246))) # individual digits are hills themselves\n    [2, 4, 6]\n    >>> sorted(list(hill(32451)))\n    [1, 2, 3, 4, 5, 21, 32, 34, 45, 321, 345]\n    \"\"\"\n    ⟪a⟫\n    if n >= 10:\n        ⟪b⟫:\n            ⟪c⟫\n            if ⟪d⟫ == 1:\n                ⟪e⟫",
+       "lang": "py",
+       "f": {
+        "a": "yield n % 10",
+        "b": "for x in hill(n // 10)",
+        "c": "yield x",
+        "d": "abs(x % 10 - n % 10)",
+        "e": "yield x * 10 + n % 10"
+       }
+      }
+     ]
+    },
+    {
+     "id": 67,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "yield n % 10"
+     ],
+     "r": [
+      "B6_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 68,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "for x in hill(n - 1)",
+      "for x in hill(n // 10)",
+      "for x in range(n)",
+      "for x in range(n + 1)",
+      "while True",
+      "while n > 0",
+      "if n > 0",
+      "if n % 10"
+     ],
+     "a": 1,
+     "r": [
+      "B6_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 69,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "yield x"
+     ],
+     "r": [
+      "B6_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 70,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "x // pow(10, n)",
+      "n // x",
+      "abs(x - n % 10)",
+      "abs(x // 10 - n % 10)",
+      "abs(x % 10 - n % 10)",
+      "abs(n)",
+      "x % 10 - n // 10"
+     ],
+     "a": 4,
+     "r": [
+      "B6_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 71,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "yield x * 10 + n % 10"
+     ],
+     "r": [
+      "B6_4"
+     ],
+     "part": "a",
+     "sub": "v"
+    }
+   ],
+   "run": {
+    "c": [
+     "def hill(n):\n    \"\"\"\n    Accepts a positive integer N, and returns a generator that\n    yields every subsequence of N where each digit is exactly 1\n    away from its adjacent digits.\n    >>> sorted(list(hill(354)))\n    [3, 4, 5, 34, 54]\n    >>> sorted(list(hill(246))) # individual digits are hills themselves\n    [2, 4, 6]\n    >>> sorted(list(hill(32451)))\n    [1, 2, 3, 4, 5, 21, 32, 34, 45, 321, 345]\n    \"\"\"\n    ⟦B6_0⟧\n    if n >= 10:\n        ⟦B6_1⟧:\n            ⟦B6_2⟧\n            if ⟦B6_3⟧ == 1:\n                ⟦B6_4⟧"
+    ],
+    "b": {
+     "B6_0": true,
+     "B6_1": false,
+     "B6_2": true,
+     "B6_3": false,
+     "B6_4": true
+    },
+    "ch": {
+     "B6_0": 0,
+     "B6_1": 0,
+     "B6_2": 0,
+     "B6_3": 0,
+     "B6_4": 0
+    },
+    "v": {
+     "B6_0": "yield n % 10",
+     "B6_1": "for x in hill(n // 10)",
+     "B6_2": "yield x",
+     "B6_3": "abs(x % 10 - n % 10)",
+     "B6_4": "yield x * 10 + n % 10"
+    }
+   },
+   "topics": [
+    {
+     "n": "7",
+     "t": [
+      "GENERATORS",
+      "RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/8",
+   "n": "8",
+   "t": "8. List Methods (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (5.0 points)     Pad"
+      },
+      {
+       "p": "Implement pad which takes in a list s of length m, and adds el to the end of the list until there are exactly n elements. If length m is greater than n, evaluate to the same list. Example: (pad '(1 2 3) 6 4) evaluates to (1 2 3 4 4 4). (pad '(1 2 3) 0 5) evaluates to (1 2 3). You cannot use and, or, begin, cond, or if in the blanks."
+      },
+      {
+       "c": "(define (pad s n el)\n    (cond\n        ((= n 0) ⟪a⟫)\n        ((null? s) (cons ⟪b⟫ ⟪c⟫))\n        (else (cons ⟪d⟫ ⟪e⟫))))",
+       "lang": "scm",
+       "f": {
+        "a": "s",
+        "b": "el",
+        "c": "(pad nil (- n 1) el)",
+        "d": "(car s)",
+        "e": "(pad (cdr s) (- n 1) el)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 72,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 73,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "(cdr s)",
+      "(car s)",
+      "el",
+      "n"
+     ],
+     "a": 3,
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 74,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(pad nil (- n 1) el)"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 75,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "(cdr s)",
+      "(car s)",
+      "el",
+      "n"
+     ],
+     "a": 2,
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 76,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(pad (cdr s) (- n 1) el)"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (5.0 points)     Shorten"
+      },
+      {
+       "p": "The list-concat procedure takes in a list a and a list b, and returns the result of appending each element from list b to the end of a. Below is the implementation for reference:"
+      },
+      {
+       "c": "(define (list-concat a b)\n    (if (null? a)\n    b\n    (cons (car a) (list-concat (cdr a) b))))",
+       "lang": "scm"
+      },
+      {
+       "p": "Implement shorten which takes in a list s of length m, and removes elements from the end of the list until there are exactly n elements. If length m is less than n, return the same list. (shorten (list 1 2 3 4 5) 3) evaluates to (1 2 3). You must use the list-concat procedure defined previously. You cannot use and, or, begin, cond, or if in the blanks."
+      },
+      {
+       "c": "(define (shorten s n)\n    (define (shorten-tail s n t)\n        (if ⟪a⟫\n            ⟪b⟫\n            (shorten-tail (cdr s) (- n 1) ⟪c⟫)))\n    (shorten-tail s n nil))",
+       "lang": "scm",
+       "f": {
+        "a": "(or (null? s) (= n 0))",
+        "b": "t",
+        "c": "(list-concat t (list (car s)))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 77,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "(or (null? s) (= n 0))",
+      "(and (null? s) (= n 0))",
+      "(and s (= n 0)",
+      "(null? s)",
+      "(= n 0)",
+      "(< n 0)"
+     ],
+     "a": 0,
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 78,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 79,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(list-concat t (list (car s)))"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 80,
+     "l": [
+      {
+       "p": "iv. What is the space complexity of shorten with respect n? Assume n < m."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "θ(log(n))",
+      "θ(1)",
+      "θ(n)",
+      "θ(n2 )",
+      "θ(2n )"
+     ],
+     "a": 2,
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 81,
+     "l": [
+      {
+       "p": "v. What is the time complexity of shorten with respect n? Assume n < m."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "θ(log(n))",
+      "θ(1)",
+      "θ(n)",
+      "θ(n2 )",
+      "θ(2n )"
+     ],
+     "a": 3,
+     "part": "b",
+     "sub": "v"
+    }
+   ],
+   "topics": [
+    {
+     "n": "8a",
+     "t": [
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "87.b.i",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "87.b.ii",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "87.b.iii",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "87.b.iv",
+     "t": [
+      "EFFICIENCY",
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "87.b.v",
+     "t": [
+      "EFFICIENCY",
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/9",
+   "n": "9",
+   "t": "9. S QUBE L (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (10.0 points)"
+      },
+      {
+       "p": "The (abridged version) of the table below is named ranks. It stores the best result that a competitor has achieved in competition for each event in official competitive Rubik’s Cube speedsolving competitions. The three columns have the following descriptions:"
+      },
+      {
+       "p": "• personId: An identifier for each individual person in the ranks table. All rows are stored as a string"
+      },
+      {
+       "p": "• eventId: The corresponding event of each row. 333 refers to regular 3x3x3 Cube speedsolving, while 333oh refers to 3x3x3 Cube speedsolving with one hand. All rows are stored as a string"
+      },
+      {
+       "p": "• result: The result (in centiseconds) of each row. All rows are stored as an integer | personId   | eventId | result | | ---------- | ------- | ------ | | 2018KHAN28 | 222     | 101    | | 2017TSVE02 | 222     | 112    | | 2022VISH01 | 222     | 113    | | ...        | ...     | ...    | | 2018WIDJ01 | 333     | 669    | | 2013BALI01 | 333     | 670    | | 2016OLZI01 | 333     | 670    | | ...        | ...     | ...    | | 2016SONG03 | 333oh   | 1276   | | 2015WILS05 | 333oh   | 1276   | | 2016SMUL01 | 333oh   | 1277   | | ...        | ...     | ...    | Write a query that outputs all competitors with a faster result in One-Handed solving (333oh) than regular 3x3x3 speedsolving (333). Your query should also output the following:"
+      },
+      {
+       "p": "• The personId corresponding to each result"
+      },
+      {
+       "p": "• The fastest 3x3x3 Cube One Handed result in seconds, with a column name of 333oh_best"
+      },
+      {
+       "p": "• The fastest 3x3x3 Cube result in seconds, with a column name of 333_best"
+      },
+      {
+       "p": "• The output should be ordered in ascending order by the fastest One Handed result. Your output will look similar to the following:"
+      },
+      {
+       "p": "| personId   | 333oh_best | 333_best | | ---------- | ---------- | -------- | | 2017TUNG13 | 9.28       | 9.35     | | 2021TAKA01 | 14.38      | 18.07    | | 2015HEER02 | 14.98      | 15.38    | | 2013ZHAN31 | 16.9       | 19.03    | | ...        | ...        | ...      | You may assume that every row in the ranks table will have a valid result. You may not use LIKE in your solution."
+      },
+      {
+       "p": "Hint: To convert centiseconds to seconds, you need to divide the column by 100."
+      },
+      {
+       "c": "SELECT ⟪a⟫, ⟪b⟫, ⟪c⟫\nFROM ⟪d⟫ AS reg, ⟪e⟫ AS oh\nWHERE ⟪f⟫\nORDER BY ⟪g⟫;",
+       "lang": "sql",
+       "f": {
+        "a": "reg.personId",
+        "b": "oh.result / 100 AS 333oh_best",
+        "c": "reg.result / 100 AS 333_best",
+        "d": "ranks",
+        "e": "ranks",
+        "f": "reg.personId = oh.personId AND reg.eventId = '333' AND oh.eventId =\n'333oh' AND reg.result > oh.result",
+        "g": "oh.result"
+       }
+      }
+     ]
+    },
+    {
+     "id": 82,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "reg.personId"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 83,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "oh.result / 100 AS 333oh_best"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 84,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "reg.result / 100 AS 333_best"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 85,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "ranks"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 86,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "ranks"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "id": 87,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "reg.personId = oh.personId AND reg.eventId = '333' AND oh.eventId =\n'333oh' AND reg.result > oh.result"
+     ],
+     "part": "a",
+     "sub": "vi"
+    },
+    {
+     "id": 88,
+     "l": [
+      {
+       "p": "vii. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "oh.result"
+     ],
+     "part": "a",
+     "sub": "vii"
+    }
+   ],
+   "topics": [
+    {
+     "n": "9",
+     "t": [
+      "SQL"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/10",
+   "n": "10",
+   "t": "10. Special Topics (3.0 pts)",
+   "b": [
+    {
+     "id": 89,
+     "l": [
+      {
+       "p": "(a) ComP(ile)ython"
+      },
+      {
+       "p": "In CPython, what is the order of intermediate results when going from source code to output?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "source->AST->output",
+      "source->bytecode->output",
+      "source->machine code->bytecode->output",
+      "source->AST->tokens->bytecode->output",
+      "source->tokens->AST->bytecode->output",
+      "source->tokens->AST->machine code->bytecode->output"
+     ],
+     "a": 4,
+     "part": "a"
+    },
+    {
+     "id": 90,
+     "l": [
+      {
+       "p": "(b) BlAST OFF"
+      },
+      {
+       "p": "Assume your query sequence is TACTGCGATA which encodes for the insulin gene. What is displayed when you run the BLAST algorithm (like we did on the NCBI website) on your query sequence and a database of 10 other insulin gene target sequences?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Sequence with the highest genetic similarity to the query sequence using local alignment",
+      "Sequence with the highest genetic similarity to the query sequence using global alignment",
+      "Sequence with the highest genetic similarity to the query sequence using local or global alignment",
+      "Highest genetic similarity of the query sequence with the target sequences using local alignment",
+      "Highest genetic similarity of the query sequence with the target sequences using global alignment",
+      "Genetic similarities of the query sequence with all target sequences using local alignment",
+      "Genetic similarities of the query sequence with all target sequences using global alignment",
+      "Top 3 highest genetic similarities of the query sequence with target sequences using global alignment"
+     ],
+     "a": 5,
+     "part": "b"
+    },
+    {
+     "id": 91,
+     "l": [
+      {
+       "p": "(c) Pickle Tree"
+      },
+      {
+       "p": "Given the Tree class on the Study Guide provided, select the option to fill in blank (a) the __reduce__ function that would be used by calling pickle.dumps(tree_obj):"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(self.__class__, (self.label, self.branches))"
+     ],
+     "part": "c"
+    },
+    {
+     "s": [
+      {
+       "c": "def __reduce__(self):\n    return ⟪a⟫\n# (self.__class__, (self.label, self.branches))\n# (__class__, (label, branches))\n# [self.__class__, [self.label, self.branches]]\n# [__class__, [label, branches]]\n# self\n# str(self)\n# repr(self)",
+       "lang": "py",
+       "f": {
+        "a": "(self.__class__, (self.label, self.branches))"
+       }
+      }
+     ]
+    }
+   ],
+   "topics": [
+    {
+     "n": "10",
+     "t": [
+      "UNTAGGED"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/11",
+   "n": "11",
+   "t": "11. A+ Questions (0.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (0.0 points)     A+ Levels"
+      },
+      {
+       "p": "This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      },
+      {
+       "p": "Definition: The level of a list refers to how deeply nested it is. Example: (1) has a level of 1. ((2)) has a level of 1. The inner list of (2) has a level of 2."
+      },
+      {
+       "p": "Implement levels that takes in a list s. It returns a new levelled list such that at each depth level L of the list there are exactly L elements. If there are more than L elements. Keep only the first L elements. If there are fewer than L elements. Add the depth level L as an element until there are exactly L elements. You can use shorten and pad in your implementation. You cannot use and, or, begin, cond, or if in the blanks. Examples:"
+      },
+      {
+       "c": "scm> (levels '(((8 1) (4 9 8) ()))) ; add 3 at depth 3. Remove empty list at depth 2.",
+       "lang": "scm"
+      },
+      {
+       "p": "(((8 1 3) (4 9 8)))"
+      },
+      {
+       "c": "scm> (levels '((()))) ; add 3s at depth 3. Add 2s at depth 2.",
+       "lang": "scm"
+      },
+      {
+       "p": "(((3 3 3) 2))"
+      },
+      {
+       "c": "(define (levels s)\n    (define (helper s level)\n        (cond\n            ((integer? s) ⟪a⟫)\n            ((null? s) ⟪b⟫)\n            (else\n                (begin\n                    (define first ⟪c⟫)\n                    (define rest ⟪d⟫)\n                    ⟪e⟫))))\n    (helper s 1))",
+       "lang": "scm",
+       "f": {
+        "a": "s",
+        "b": "(pad s level level)",
+        "c": "(helper (car s) (+ level 1))",
+        "d": "(helper (cdr s) level)",
+        "e": "(shorten (cons first rest) level)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 92,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 93,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(pad s level level)"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 94,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(helper (car s) (+ level 1))"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 95,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(helper (cdr s) level)"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 96,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(shorten (cons first rest) level)"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (0.0 points)     A+ SQL"
+      },
+      {
+       "p": "This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      },
+      {
+       "p": "You are given the following tables:"
+      },
+      {
+       "p": "results | eventId | result | personName      | personId   | | ------- | ------ | --------------- | ---------- | | ...     | ...    | ...             | ...        | | 333oh   | 1272   | Andrew Bae      | 2014BAEA01 | | 333oh   | 1318   | Justin Mallari | 2010MALL01 | | 333oh   | 1592   | Eric Zhao       | 2010ZHAO19 | | ...     | ...    | ...             | ...        | | 444     | 2917   | Sebastian Weyer | 2010WEYE02 | | 444     | 2995   | Sebastian Weyer | 2010WEYE02 | | 444     | 2973   | Feliks Zemdegs | 2009ZEMD01 | | ...     | ...    | ...             | ...        | | skewb   | 1205   | Riley Woo       | 2007WOOR01 | | skewb   | 1327   | Tiffany Chien   | 2012CHIE01 | | skewb   | 1347   | Jeong-Soo Park | 2014PARK03 | | ...     | ...    | ...             | ...        | persons | name         | country | id         | | ------------ | ------- | ---------- | | ...          | ...     | ...        | | Barrett Maun | USA     | 2022MAUN01 | | Ben Yin      | USA     | 2022YINB01 | | Bowen Wang   | USA     | 2022WANG56 | | ...          | ...     | ...        | results is a table that has 4 columns:"
+      },
+      {
+       "p": "• eventId: The corresponding event of each row. Similarly to the previous SQL question, 333oh refers to 3x3x3 Cube speedsolving with one hand. All rows are stored as a string"
+      },
+      {
+       "p": "• result: The result (in centiseconds) of each row. All rows are stored as an integer"
+      },
+      {
+       "p": "• personName: The name for each individual person in the results table. All rows are stored as a string"
+      },
+      {
+       "p": "• personId: A unique identifier for each individual person in the results table. All rows are stored as a string persons is a table that has 3 columns:"
+      },
+      {
+       "p": "• name: The name for each individual person in the persons table. All rows are stored as a string"
+      },
+      {
+       "p": "• country: The country that a person represents in competition. All results are stored as a string"
+      },
+      {
+       "p": "• id: A unique identifier for each individual person in the persons table. All results are stored as a string Assume that personId in results will always have a match for id in persons Write a query that outputs the number of times that a person has achieved a result strictly under 10 seconds (1000 centiseconds) for the 333oh eventId. Your query should also output the following:"
+      },
+      {
+       "p": "• The personName corresponding to each result."
+      },
+      {
+       "p": "• The personId corresponding to each result."
+      },
+      {
+       "p": "• The country that each person represents."
+      },
+      {
+       "p": "• The fastest 3x3x3 Cube One-Handed result that the corresponding competitor achieved in seconds, with a column name of best_result"
+      },
+      {
+       "p": "• The number of times that the corresponding competitor achieved a result under 10 seconds."
+      },
+      {
+       "p": "• The output should be sorted in descending order by the number of times someone has achieved a result under 10 seconds."
+      },
+      {
+       "p": "• There should be 8 rows outputted."
+      },
+      {
+       "p": "Your output will look similar to the following:"
+      },
+      {
+       "p": "| personName              | personId   | country     | best_result | num_times_sub_10 | | ----------------------- | ---------- | ----------- | ----------- | ---------------- | | Max Park                | 2012PARK03 | USA         | 8.76        | 63               | | Patrick Ponce           | 2012PONC02 | USA         | 8.65        | 18               | | Luke Garrett            | 2017GARR05 | USA         | 9.18        | 12               | | Dwyane Ramos            | 2019RAMO05 | New Zealand | 8.88        | 9                | | Sean Patrick Villanueva | 2017VILL41 | Philippines | 9.13        | 8                | | Juliette Sébastien      | 2014SEBA01 | France      | 9.23        | 7                | | Magnus Lensch           | 2019LENS01 | Germany     | 9.33        | 6                | | Zhouheng Sun            | 2008SUNZ01 | China       | 9.81        | 4                |"
+      },
+      {
+       "c": "SELECT ⟪a⟫\nFROM ⟪b⟫, ⟪c⟫\nWHERE ⟪d⟫\nGROUP BY ⟪e⟫\nORDER BY ⟪f⟫\nLIMIT ⟪g⟫;",
+       "lang": "sql",
+       "f": {
+        "a": "personName, personId, country, min(result) / 100 AS best_result,\ncount(*) AS num_times",
+        "b": "results",
+        "c": "persons",
+        "d": "results.personId = persons.id AND eventId='333oh' AND best_result < 1000",
+        "e": "personId",
+        "f": "count(*) DESC",
+        "g": "8"
+       }
+      }
+     ]
+    },
+    {
+     "id": 97,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "personName, personId, country, min(result) / 100 AS best_result,\ncount(*) AS num_times"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 98,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "results"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 99,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "persons"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 100,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "results.personId = persons.id AND eventId='333oh' AND best_result < 1000"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 101,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "personId"
+     ],
+     "part": "b",
+     "sub": "v"
+    },
+    {
+     "id": 102,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "count(*) DESC"
+     ],
+     "part": "b",
+     "sub": "vi"
+    },
+    {
+     "id": 103,
+     "l": [
+      {
+       "p": "vii. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "8"
+     ],
+     "part": "b",
+     "sub": "vii"
+    }
+   ],
+   "topics": [
+    {
+     "n": "11a",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "SCHEME",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "11b",
+     "t": [
+      "SQL"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su23-final/12",
+   "n": "12",
+   "t": "12. Fun Question (0.0 pts)",
+   "b": [
+    {
+     "id": 104,
+     "l": [
+      {
+       "p": "(a) WWYD with the Link.rest of your summer. (draw '(a picture)). Alternatively, feel free"
+      },
+      {
+       "p": "to draw a picture about 61A!"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      ":)"
+     ],
+     "part": "a"
+    }
+   ],
+   "topics": [
+    {
+     "n": "12",
+     "t": [
+      "UNTAGGED"
+     ]
+    }
+   ]
+  }
+ ]
+}

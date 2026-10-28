@@ -146,6 +146,9 @@ package or configuration changes. Both Workers have logs enabled and sample 1%
 of traces. After deployment, check the pages, resume, social previews, theme picker,
 and sign-in flow in a browser.
 
+The CS 61A practice site at practice.benrosar.io is a separate static Worker in `practice/`. Its build, tests,
+local preview and `npm run deploy:practice` are described in [practice/README.md](practice/README.md).
+
 ## Updating content
 
 | File | What to update |

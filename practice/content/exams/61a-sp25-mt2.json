@@ -1,0 +1,992 @@
+{
+ "id": "61a-sp25-mt2",
+ "t": "Spring 2025 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/sp25/mt2/61a-sp25-mt2.pdf",
+  "sol": "https://cs61a.org/resources/sp25/mt2/61a-sp25-mt2_sol.pdf",
+  "topics": "sp25-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-sp25-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed. The pop method of a list removes and returns its last element."
+      },
+      {
+       "c": "s = [2, [5, 8], 11]\nt = [1, 3, 5, 7, 9]\ndef add_t(x):\n    if isinstance(x, list):\n        return [add_t(y) for y in x]\n    else:\n        return x + t.pop()\nm = map(add_t, s)",
+       "lang": "py"
+      },
+      {
+       "p": "Write the value of each expression below or Error if an error occurs. Assume that each expression is evaluated in order and sequentially, so evaluating the first could affect the value of the second. Write Map for a map object and Function for a function."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) [x[1] for x in s if isinstance(x, list)]"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[8]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) next(m)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "3",
+      "5",
+      "7",
+      "9",
+      "11"
+     ],
+     "a": 4,
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) t.pop()"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "1",
+      "3",
+      "5",
+      "7",
+      "9"
+     ],
+     "a": 3,
+     "part": "c"
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(d) [next(m) for z in range(2)]"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[[10, 11], 12]"
+     ],
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "GENERATORS",
+      "ITERATORS",
+      "LISTS",
+      "RECURSION",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp25-mt2/2",
+   "n": "2",
+   "t": "2. This or That (7.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Answer the questions about the code below. Draw an environment diagram, but the diagram itself will not be scored."
+      },
+      {
+       "c": "def f(this):\n    that = this[1]\n    def g(copy):\n        that[0] = 4\n        copy[0] = 5\n        copy[1].append(6)\n        print(copy)\n    g(list(this))\n    this.append(that)\n    that.append(7)\n\nt = [1, [2], 3]\nf(t)\nprint(t)",
+       "lang": "py",
+       "ln": true
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(a) What is displayed by the call to print on line 7?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[5, [4, 6], 3]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(b) What is displayed by the call to print on line 14?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[1, [4, 6, 7], 3, [4, 6, 7]]"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(c) What is the order of growth of the time it takes to execute result = nest(n) in terms of positive"
+      },
+      {
+       "p": "integer n? Assume that append always takes one step (constant time)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "linear"
+     ],
+     "part": "c"
+    },
+    {
+     "s": [
+      {
+       "c": "def nest(n):\n    \"\"\"Create a nested list.\n    >>> nest(3)\n    [[[[], []], [[], []]], [[[], []], [[], []]]]\n    \"\"\"\n    s = []\n    first = s\n    for x in range(n):\n        next_s = []\n        s.append(next_s)\n        s.append(next_s)\n        s = next_s\n    return first\n# exponential\n# quadratic\n# linear\n# logarithmic\n# constant",
+       "lang": "py"
+      }
+     ]
+    }
+   ],
+   "topics": [
+    {
+     "n": "2a",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "HIGHER_ORDER_FUNCTIONS",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    },
+    {
+     "n": "2b",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "HIGHER_ORDER_FUNCTIONS",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    },
+    {
+     "n": "2c",
+     "t": [
+      "EFFICIENCY",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp25-mt2/3",
+   "n": "3",
+   "t": "3. Berkeley Time (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (5.0 points)"
+      },
+      {
+       "p": "An Event instance has start and end attributes that are positive integers representing the number of minutes after midnight that the Event begins and concludes."
+      },
+      {
+       "p": "Implement the Event class. The split method takes an integer k that evenly divides the difference between the end and start times. It is a generator function that yields k sequential events of equal length that together span the same time interval as the original event. Calling split does not change the event."
+      },
+      {
+       "c": "class Event:\n    \"\"\"An Event has a start and end time and can be split into equal-length shorter events.\n    >>> calapalooza = Event(980, 1180)\n    >>> list(calapalooza.split(4)) # Split it into 4 smaller events that go from 980 to 1180.\n    [Event(980, 1030), Event(1030, 1080), Event(1080, 1130), Event(1130, 1180)]\n    \"\"\"\n    def __init__(self, start, end):\n        self.start, self.end = start, end\n    def __repr__(self):\n        return f'Event({self.start}, {self.end})'\n    def split(self, k):\n        assert (self.end - self.start) % k == 0 # k evenly divides the duration of the event.\n        length = (self.end - self.start) // k\n        start = ⟪a⟫\n        for i in range(k):\n            yield ⟪b⟫\n            ⟪c⟫",
+       "lang": "py",
+       "f": {
+        "a": "self.start",
+        "b": "Event(start, start + length)",
+        "c": "start = start + length"
+       }
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "None",
+      "self",
+      "start",
+      "self.start"
+     ],
+     "a": 4,
+     "r": [
+      "B2_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Event(start, start + length)"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "start = start + length",
+      "start = self.start + length",
+      "self.start = start + length",
+      "self.start = self.start + length"
+     ],
+     "a": 0,
+     "r": [
+      "B2_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (5.0 points)"
+      },
+      {
+       "p": "A BerkeleyEvent is an Event with a modified split method. The first Event yielded by split starts at the same time as the original event, but all events after the first one are 10 minutes shorter and start 10 minutes after the previous event ends. Again, assume k evenly divides the difference between the end and start attributes."
+      },
+      {
+       "c": "class BerkeleyEvent(Event):\n    \"\"\"When a BerkeleyEvent is split, there is time between events.\n    >>> list(BerkeleyEvent(840, 930).split(3))\n    [Event(840, 870), Event(880, 900), Event(910, 930)]\n    \"\"\"\n    time = 10 # How much time between events\n    def split(self, k):\n        first = True\n        for e in ⟪d⟫:\n            if first:\n                first = False\n            else:\n                ⟪e⟫.start = ⟪f⟫ + ⟪g⟫\n            yield e",
+       "lang": "py",
+       "f": {
+        "d": "Event.split(self, k) or super().split(k)",
+        "e": "e",
+        "f": "e.start",
+        "g": "self.time"
+       }
+      }
+     ]
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "i. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Event.split(self, k) or super().split(k)"
+     ],
+     "r": [
+      "B2_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "e",
+      "self",
+      "self.e"
+     ],
+     "a": 0,
+     "r": [
+      "B2_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "iii. Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self",
+      "self.start",
+      "self.end",
+      "e",
+      "e.start",
+      "e.end"
+     ],
+     "a": 4,
+     "r": [
+      "B2_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "iv. Fill in blank (g). Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "time",
+      "self.time",
+      "self.BerkeleyEvent.time",
+      "BerkeleyEvent.time",
+      "Event.time"
+     ],
+     "a": [
+      1,
+      3
+     ],
+     "part": "b",
+     "sub": "iv"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Event:\n    \"\"\"An Event has a start and end time and can be split into equal-length shorter events.\n    >>> calapalooza = Event(980, 1180)\n    >>> list(calapalooza.split(4)) # Split it into 4 smaller events that go from 980 to 1180.\n    [Event(980, 1030), Event(1030, 1080), Event(1080, 1130), Event(1130, 1180)]\n    \"\"\"\n    def __init__(self, start, end):\n        self.start, self.end = start, end\n    def __repr__(self):\n        return f'Event({self.start}, {self.end})'\n    def split(self, k):\n        assert (self.end - self.start) % k == 0 # k evenly divides the duration of the event.\n        length = (self.end - self.start) // k\n        start = ⟦B2_0⟧\n        for i in range(k):\n            yield ⟦B2_1⟧\n            ⟦B2_2⟧",
+     "class BerkeleyEvent(Event):\n    \"\"\"When a BerkeleyEvent is split, there is time between events.\n    >>> list(BerkeleyEvent(840, 930).split(3))\n    [Event(840, 870), Event(880, 900), Event(910, 930)]\n    \"\"\"\n    time = 10 # How much time between events\n    def split(self, k):\n        first = True\n        for e in ⟦B2_3⟧:\n            if first:\n                first = False\n            else:\n                ⟦B2_4⟧.start = ⟦B2_5⟧ + ⟦B2_6⟧\n            yield e"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": true,
+     "B2_3": false,
+     "B2_4": false,
+     "B2_5": false,
+     "B2_6": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 1,
+     "B2_4": 1,
+     "B2_5": 1,
+     "B2_6": 1
+    },
+    "v": {
+     "B2_0": "self.start",
+     "B2_1": "Event(start, start + length)",
+     "B2_2": "start = start + length",
+     "B2_3": "Event.split(self, k) or super().split(k)",
+     "B2_4": "e",
+     "B2_5": "e.start",
+     "B2_6": "self.time"
+    }
+   },
+   "topics": [
+    {
+     "n": "3a",
+     "t": [
+      "GENERATORS",
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "3b",
+     "t": [
+      "GENERATORS",
+      "INHERITANCE",
+      "OBJECTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp25-mt2/4",
+   "n": "4",
+   "t": "4. DeepSeek (11.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. The depth of the root node of a tree is 0. The depth of each other node is one plus the depth of its parent."
+      },
+      {
+       "h": "(a) (5.0 points)"
+      },
+      {
+       "p": "Implement deepest, which takes a Tree instance t and a value x. It returns the largest depth of a node labeled x in t. If there are no nodes labeled x in t, then deepest(t, x) returns None. The Tree class appears on the Midterm 2 study guide (page 2, left column)."
+      },
+      {
+       "c": "def deepest(t, x):\n    \"\"\"Return the maximum depth of a node labeled x in Tree t.\n    Return None if x is not a label in t.\n    >>> example = Tree(30, [Tree(20), Tree(20, [Tree(30, [Tree(20)])])])\n    >>> deepest(example, 30)\n    2\n    >>> deepest(example, 20)\n    3\n    >>> print(deepest(example, 10))\n    None\n    \"\"\"\n    below = [deepest(b, x) for b in t.branches]\n    depths = [ ⟪a⟫ ]\n    if ⟪b⟫:\n        depths.⟪c⟫\n    if depths:\n        return max(depths)\n    else:\n        return None",
+       "lang": "py",
+       "f": {
+        "a": "y+1 for y in below if y is not None",
+        "b": "t.label == x",
+        "c": "append(0)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "i. Fill in blank (a). Include for and in and if in your answer."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "y+1 for y in below if y is not None"
+     ],
+     "r": [
+      "B3_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "x in depths",
+      "depths",
+      "not depths",
+      "t == x",
+      "t.label == x",
+      "t.is_leaf()"
+     ],
+     "a": 4,
+     "r": [
+      "B3_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "append(0)"
+     ],
+     "r": [
+      "B3_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)"
+      },
+      {
+       "p": "Implement deep, which takes a Tree instance t. It returns a dictionary containing each unique node label of t as a key. The value for each key k is the largest depth of any node in t labeled k. IMPORTANT: You may not call deepest in your implementation."
+      },
+      {
+       "p": "Hint: For a dictionary d, d.get(1, 2) returns the value for the key 1 if that key appears in d and 2 otherwise."
+      },
+      {
+       "c": "def deep(t):\n    \"\"\"Return a dictionary containing each unique label of t as a key\n    and the maximum depth of a node labeled with that key as its value.\n    >>> deep(Tree(30, [Tree(20), Tree(20, [Tree(30, [Tree(20)])])]))\n    {30: 2, 20: 3}\n    \"\"\"\n    result = {}\n    def visit(node, depth):\n        ⟪d⟫ = max(⟪e⟫, result.get(⟪f⟫, 0))\n        for b in node.branches:\n            ⟪g⟫\n    visit(t, 0)\n    return result",
+       "lang": "py",
+       "f": {
+        "d": "result[node.label]",
+        "e": "depth",
+        "f": "node.label",
+        "g": "visit(b, depth + 1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "i. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "result[node.label]"
+     ],
+     "r": [
+      "B3_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "1",
+      "depth",
+      "t.label",
+      "node.label"
+     ],
+     "a": 2,
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "iii. Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "depth",
+      "t",
+      "t.label",
+      "node",
+      "node.label"
+     ],
+     "a": 4,
+     "r": [
+      "B3_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "iv. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "visit(b, depth + 1)"
+     ],
+     "r": [
+      "B3_6"
+     ],
+     "part": "b",
+     "sub": "iv"
+    }
+   ],
+   "run": {
+    "c": [
+     "def deepest(t, x):\n    \"\"\"Return the maximum depth of a node labeled x in Tree t.\n    Return None if x is not a label in t.\n    >>> example = Tree(30, [Tree(20), Tree(20, [Tree(30, [Tree(20)])])])\n    >>> deepest(example, 30)\n    2\n    >>> deepest(example, 20)\n    3\n    >>> print(deepest(example, 10))\n    None\n    \"\"\"\n    below = [deepest(b, x) for b in t.branches]\n    depths = [ ⟦B3_0⟧ ]\n    if ⟦B3_1⟧:\n        depths.⟦B3_2⟧\n    if depths:\n        return max(depths)\n    else:\n        return None",
+     "def deep(t):\n    \"\"\"Return a dictionary containing each unique label of t as a key\n    and the maximum depth of a node labeled with that key as its value.\n    >>> deep(Tree(30, [Tree(20), Tree(20, [Tree(30, [Tree(20)])])]))\n    {30: 2, 20: 3}\n    \"\"\"\n    result = {}\n    def visit(node, depth):\n        ⟦B3_3⟧ = max(⟦B3_4⟧, result.get(⟦B3_5⟧, 0))\n        for b in node.branches:\n            ⟦B3_6⟧\n    visit(t, 0)\n    return result"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false,
+     "B3_6": true
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 1,
+     "B3_4": 1,
+     "B3_5": 1,
+     "B3_6": 1
+    },
+    "v": {
+     "B3_0": "y+1 for y in below if y is not None",
+     "B3_1": "t.label == x",
+     "B3_2": "append(0)",
+     "B3_3": "result[node.label]",
+     "B3_4": "depth",
+     "B3_5": "node.label",
+     "B3_6": "visit(b, depth + 1)"
+    }
+   },
+   "topics": [
+    {
+     "n": "4a",
+     "t": [
+      "LISTS",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "4b",
+     "t": [
+      "SEQUENCES",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp25-mt2/5",
+   "n": "5",
+   "t": "5. Just Add and Multiply (16.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. A plus-times-expression for a list (or linked list) of numbers inserts either + or * between each adjacent pair of numbers. For example, 2*3+4+5 is one possible plus-times-expression for [2, 3, 4, 5]."
+      },
+      {
+       "h": "(a) (5.0 points)"
+      },
+      {
+       "p": "Implement muladd, which takes a linked list of numbers s. It returns the value of the plus-times-expression that starts with * and then alternates between + and *. If s has only one element, muladd returns that element."
+      },
+      {
+       "p": "The Link class is defined on the left column of page 2 of the Midterm 2 Study Guide."
+      },
+      {
+       "c": "def muladd(s):\n    \"\"\"Combine the numbers in linked list s by alternately multiplying and adding.\n    >>> example = Link(9, Link(4, Link(7, Link(2, Link(0))))) # <9 4 7 2 0>\n    >>> muladd(example)           # 9 * 4 + 7 * 2 + 0, not 9 * (4 + 7 * (2 + 0))\n    50\n    >>> muladd(Link(2, example)) # 2 * 9 + 4 * 7 + 2 * 0\n    46\n    >>> muladd(Link(2))\n    2\n    \"\"\"\n    if s is Link.empty:\n        return 0\n    elif s.rest is Link.empty:\n        return ⟪a⟫\n    else:\n        return ⟪b⟫",
+       "lang": "py",
+       "f": {
+        "a": "s.first",
+        "b": "s.first * s.rest.first + muladd(s.rest.rest)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "1",
+      "s.first",
+      "s.rest",
+      "s.rest.first"
+     ],
+     "a": 2,
+     "r": [
+      "B4_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b). If your answer is too long, you can continue on another line."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.first * s.rest.first + muladd(s.rest.rest)"
+     ],
+     "r": [
+      "B4_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (5.0 points)"
+      },
+      {
+       "p": "Implement ways, which takes positive integers k and n. It returns the number of possible plus-times- expressions for a list of length n that have at most k *-symbols in a row. For example, 2+3*4*5*6+7*8*9+10+11 *12*13*14+15*16 has 3 in a row 3*4*5*6, then 2 in a row 7*8*9, then 3 in a row 11*12*13*14, then 1 in a row 15*16."
+      },
+      {
+       "c": "def ways(k, n):\n    \"\"\"Return the number of plus-times-expressions with at most k consecutive *'s for n numbers.\n    >>> ways(1, 4) # For [2, 3, 4, 5], these 5 ways: 2+3+4+5, 2+3+4*5, 2+3*4+5, 2*3+4+5, 2*3+4*5\n    5\n    >>> ways(2, 4) # For [2, 3, 4, 5], the 7 ways would also include 2+3*4*5 and 2*3*4+5\n    7\n    >>> ways(2, 5) # Some examples for [2, 3, 4, 5, 6]: 2+3*4+5*6 & 2*3*4+5*6 (but not 2+3*4*5*6)\n    13\n    \"\"\"\n    def f(left, n):\n        if ⟪c⟫:\n            return 1\n        result = f( ⟪d⟫ , n - 1)\n        if left:\n            result += ⟪e⟫\n        return result\n    return f(k, n)",
+       "lang": "py",
+       "f": {
+        "c": "n == 1",
+        "d": "k",
+        "e": "f(left - 1, n - 1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "i. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "left == 0",
+      "left == 1",
+      "n == 0",
+      "n == 1"
+     ],
+     "a": 3,
+     "r": [
+      "B4_2"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "ii. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "left",
+      "left - 1",
+      "k",
+      "k-1"
+     ],
+     "a": 2,
+     "r": [
+      "B4_3"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "iii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "f(left - 1, n - 1)"
+     ],
+     "r": [
+      "B4_4"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (6.0 points)"
+      },
+      {
+       "p": "Implement close, which takes a list of numbers s and a number x. It returns the number closest (in absolute value) to x that is the value of some plus-times-expression for s. Hint: A slice that starts past the end of a list is empty. For example, [2, 3, 4][3:] evalautes to []. The product function used to implement close is defined below."
+      },
+      {
+       "c": "def close(s, x):\n    \"\"\"Return the value of a plus-times-expression for s that is closest to x.\n    >>> print(close([1, 2, 3, 4], 10)) # 1 + 2 + 3 + 4 = 10\n    10\n    >>> print(close([1, 2, 3, 4], 20)) # 1 * 2 * 3 * 4 = 24 (4 away from 20)\n    24\n    >>> print(close([1, 2, 3, 4], 30)) # 1 + 2 * 3 * 4 = 25 (5 away from 30)\n    25\n    >>> print(close([3, 7, 5, 4, 2, 6], 66)) # 3 * 7 + 5 * 4 * 2 + 6 = 67 (1 away from 66)\n    67\n    \"\"\"\n    if not s:\n        return 0\n    choices = [product(s[:i]) + ⟪f⟫ for i in range(1, len(s) + 1)]\n    return min(choices, key=⟪g⟫)\ndef product(s):\n    \"\"\"Return the result of multiplying together the elements of a non-empty list of numbers s.\"\"\"\n    if len(s) == 1:\n        return s[0]\n    return s[0] * product(s[1:])",
+       "lang": "py",
+       "f": {
+        "f": "close(s[i:], x - product(s[:i]))",
+        "g": "lambda y: abs(x - y)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "i. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "close(s[i:], x - product(s[:i]))"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "ii. Fill in blank (g). Select all that apply. Assume sub has been imported from the operator"
+      },
+      {
+       "p": "module. The sub function takes two arguments and subtracts the second from the first."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "abs",
+      "sub",
+      "abs(sub)",
+      "sub(abs)",
+      "lambda y: abs(x - y)",
+      "lambda x, y: abs(x - y)"
+     ],
+     "a": [
+      4
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (0.0 points)"
+      },
+      {
+       "p": "This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      },
+      {
+       "p": "Fill in the blank of close_exp, which takes a list of numbers s and a number x. It returns a string containing a plus-times-expression for s that evaluates to a number that is as close (in absolute value) as possible to x. (If there is more than one such expression, return any of them.) The built-in eval function takes a string containing an expression and returns its value. For example, eval('2+2') evaluates to 4."
+      },
+      {
+       "c": "def close_exp(s, x):\n    \"\"\"Return the plus-times-expression of s that has a value closest to x.\n    >>> print(close_exp([1, 2, 3, 4], 10)) # 1 + 2 + 3 + 4 = 10\n    1+2+3+4\n    >>> print(close_exp([1, 2, 3, 4], 20)) # 1 * 2 * 3 * 4 = 24 (4 away from 20)\n    1*2*3*4\n    >>> print(close_exp([1, 2, 3, 4], 30)) # 1 + 2 * 3 * 4 = 25 (5 away from 30)\n    1+2*3*4\n    >>> print(close_exp([3, 7, 5, 4, 2, 6], 66)) # 3 * 7 + 5 * 4 * 2 + 6 = 67 (1 away from 66)\n    3*7+5*4*2+6\n    \"\"\"\n    goal = close(s, x)\n    term = ''\n    for i in range(len(s)):\n        if term:\n            term += '*'\n        term += str(s[i])\n        candidate = term\n        if i < len(s) - 1:\n            candidate += ⟪⟫\n        if eval(candidate) == goal:\n            return candidate",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "i. Fill in the blank. If your answer is too long, you can continue on another line."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'+' + close_exp(s[i+1:], x - eval(term))"
+     ],
+     "r": [
+      "B4_7"
+     ],
+     "part": "d",
+     "sub": "i"
+    }
+   ],
+   "run": {
+    "c": [
+     "def muladd(s):\n    \"\"\"Combine the numbers in linked list s by alternately multiplying and adding.\n    >>> example = Link(9, Link(4, Link(7, Link(2, Link(0))))) # <9 4 7 2 0>\n    >>> muladd(example)           # 9 * 4 + 7 * 2 + 0, not 9 * (4 + 7 * (2 + 0))\n    50\n    >>> muladd(Link(2, example)) # 2 * 9 + 4 * 7 + 2 * 0\n    46\n    >>> muladd(Link(2))\n    2\n    \"\"\"\n    if s is Link.empty:\n        return 0\n    elif s.rest is Link.empty:\n        return ⟦B4_0⟧\n    else:\n        return ⟦B4_1⟧",
+     "def ways(k, n):\n    \"\"\"Return the number of plus-times-expressions with at most k consecutive *'s for n numbers.\n    >>> ways(1, 4) # For [2, 3, 4, 5], these 5 ways: 2+3+4+5, 2+3+4*5, 2+3*4+5, 2*3+4+5, 2*3+4*5\n    5\n    >>> ways(2, 4) # For [2, 3, 4, 5], the 7 ways would also include 2+3*4*5 and 2*3*4+5\n    7\n    >>> ways(2, 5) # Some examples for [2, 3, 4, 5, 6]: 2+3*4+5*6 & 2*3*4+5*6 (but not 2+3*4*5*6)\n    13\n    \"\"\"\n    def f(left, n):\n        if ⟦B4_2⟧:\n            return 1\n        result = f( ⟦B4_3⟧ , n - 1)\n        if left:\n            result += ⟦B4_4⟧\n        return result\n    return f(k, n)",
+     "def close(s, x):\n    \"\"\"Return the value of a plus-times-expression for s that is closest to x.\n    >>> print(close([1, 2, 3, 4], 10)) # 1 + 2 + 3 + 4 = 10\n    10\n    >>> print(close([1, 2, 3, 4], 20)) # 1 * 2 * 3 * 4 = 24 (4 away from 20)\n    24\n    >>> print(close([1, 2, 3, 4], 30)) # 1 + 2 * 3 * 4 = 25 (5 away from 30)\n    25\n    >>> print(close([3, 7, 5, 4, 2, 6], 66)) # 3 * 7 + 5 * 4 * 2 + 6 = 67 (1 away from 66)\n    67\n    \"\"\"\n    if not s:\n        return 0\n    choices = [product(s[:i]) + ⟦B4_5⟧ for i in range(1, len(s) + 1)]\n    return min(choices, key=⟦B4_6⟧)\ndef product(s):\n    \"\"\"Return the result of multiplying together the elements of a non-empty list of numbers s.\"\"\"\n    if len(s) == 1:\n        return s[0]\n    return s[0] * product(s[1:])",
+     "def close_exp(s, x):\n    \"\"\"Return the plus-times-expression of s that has a value closest to x.\n    >>> print(close_exp([1, 2, 3, 4], 10)) # 1 + 2 + 3 + 4 = 10\n    1+2+3+4\n    >>> print(close_exp([1, 2, 3, 4], 20)) # 1 * 2 * 3 * 4 = 24 (4 away from 20)\n    1*2*3*4\n    >>> print(close_exp([1, 2, 3, 4], 30)) # 1 + 2 * 3 * 4 = 25 (5 away from 30)\n    1+2*3*4\n    >>> print(close_exp([3, 7, 5, 4, 2, 6], 66)) # 3 * 7 + 5 * 4 * 2 + 6 = 67 (1 away from 66)\n    3*7+5*4*2+6\n    \"\"\"\n    goal = close(s, x)\n    term = ''\n    for i in range(len(s)):\n        if term:\n            term += '*'\n        term += str(s[i])\n        candidate = term\n        if i < len(s) - 1:\n            candidate += ⟦B4_7⟧\n        if eval(candidate) == goal:\n            return candidate"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": false,
+     "B4_4": false,
+     "B4_5": false,
+     "B4_6": false,
+     "B4_7": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 1,
+     "B4_3": 1,
+     "B4_4": 1,
+     "B4_5": 2,
+     "B4_6": 2,
+     "B4_7": 3
+    },
+    "v": {
+     "B4_0": "s.first",
+     "B4_1": "s.first * s.rest.first + muladd(s.rest.rest)",
+     "B4_2": "n == 1",
+     "B4_3": "k",
+     "B4_4": "f(left - 1, n - 1)",
+     "B4_5": "close(s[i:], x - product(s[:i]))",
+     "B4_6": "lambda y: abs(x - y)",
+     "B4_7": "'+' + close_exp(s[i+1:], x - eval(term))"
+    }
+   },
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "LINKED_LISTS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "5c",
+     "t": [
+      "LAMBDAS",
+      "LISTS",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "5d",
+     "t": [
+      "LISTS",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  }
+ ]
+}

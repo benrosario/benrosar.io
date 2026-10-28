@@ -1,0 +1,196 @@
+{
+ "id": "final",
+ "label": "Final",
+ "ref": "the final",
+ "sub": "Comprehensive",
+ "coverage": {
+  "text": "Fall 2026 Final (Fri 12/18, 11:30am–2:30pm, 75 points, paper). The course pages don’t state its scope; this option assumes the whole course, using the course’s in-scope topic list.",
+  "url": "https://cs61a.org/fa26/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "VARS_AND_FUNCTIONS",
+   "CONTROL",
+   "HIGHER_ORDER_FUNCTIONS",
+   "ENVIRONMENT_DIAGRAMS",
+   "LAMBDAS",
+   "RECURSION",
+   "TREE_RECURSION",
+   "SEQUENCES",
+   "LISTS",
+   "DATA_ABSTRACTION",
+   "TREES",
+   "MUTABILITY",
+   "ITERATORS",
+   "GENERATORS",
+   "OBJECTS",
+   "INHERITANCE",
+   "REPRESENTATION",
+   "MUTABLE_TREES",
+   "LINKED_LISTS",
+   "GROWTH",
+   "EFFICIENCY",
+   "INTERPRETERS",
+   "SQL"
+  ],
+  "note": "Problems are included when every topic the course staff tagged them with is on the course’s current in-scope topic list (no Scheme, macros or tail recursion). That classification is this site’s, not a staff recommendation."
+ },
+ "noPicks": "Course staff haven’t published final exam question picks, so nothing is marked recommended.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 3
+   },
+   {
+    "min": 110,
+    "count": 6
+   },
+   {
+    "min": 180,
+    "count": 9
+   }
+  ],
+  "balanced": true,
+  "minBuckets": 4,
+  "buckets": [
+   {
+    "id": "sql",
+    "topics": [
+     "SQL"
+    ]
+   },
+   {
+    "id": "interp",
+    "topics": [
+     "INTERPRETERS"
+    ]
+   },
+   {
+    "id": "mt3",
+    "topics": [
+     "TREES",
+     "MUTABILITY",
+     "ITERATORS",
+     "GENERATORS",
+     "OBJECTS",
+     "INHERITANCE",
+     "REPRESENTATION",
+     "MUTABLE_TREES",
+     "EFFICIENCY",
+     "GROWTH"
+    ]
+   },
+   {
+    "id": "mt2",
+    "topics": [
+     "RECURSION",
+     "TREE_RECURSION",
+     "SEQUENCES",
+     "LISTS",
+     "DATA_ABSTRACTION",
+     "LINKED_LISTS"
+    ]
+   },
+   {
+    "id": "mt1",
+    "topics": [
+     "VARS_AND_FUNCTIONS",
+     "CONTROL",
+     "HIGHER_ORDER_FUNCTIONS",
+     "ENVIRONMENT_DIAGRAMS",
+     "LAMBDAS"
+    ]
+   }
+  ],
+  "intro": "Each exam draws original past exam problems from the whole course at random and balances them across topics: early material, recursion and lists, trees/objects/iterators/efficiency, and SQL. The 50-minute exam draws 3 problems from different topic groups. No more than one problem comes from the same source exam when there’s a choice. They aren’t modified, so you may have seen some of them."
+ },
+ "exams": [
+  {
+   "exam": "61a-fa25-final",
+   "note": "Last fall’s final, from the same instructors.",
+   "keep": [
+    25,
+    26
+   ],
+   "tips": {
+    "61a-fa25-final/5": [
+     {
+      "k": "note",
+      "t": "Classified by this site: the course staff haven’t tagged this asynchronous-programming problem. It was on the Fall 2025 final (same instructors), but the Fall 2026 course pages don’t confirm coroutines are on this final."
+     }
+    ]
+   }
+  },
+  {
+   "exam": "61a-sp25-final",
+   "note": "A past final."
+  },
+  {
+   "exam": "61a-su25-final",
+   "note": "A past final: Scheme questions are out of scope this semester."
+  },
+  {
+   "exam": "61a-su24-final",
+   "note": "A past final: Scheme questions are out of scope this semester."
+  },
+  {
+   "exam": "61a-su23-final",
+   "note": "A past final: Scheme questions are out of scope this semester."
+  },
+  {
+   "exam": "61a-fa25-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-sp25-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-fa24-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-sp24-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-fa23-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-sp23-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-sp26-mt2",
+   "note": "A past midterm: all of its topics are on the final."
+  },
+  {
+   "exam": "61a-fa26-mt1",
+   "note": "This semester’s Midterm 1."
+  },
+  {
+   "exam": "61a-fa25-mt1",
+   "note": "A past Midterm 1."
+  },
+  {
+   "exam": "61a-sp25-mt1",
+   "note": "A past Midterm 1."
+  },
+  {
+   "exam": "61a-fa24-mt1",
+   "note": "A past Midterm 1."
+  },
+  {
+   "exam": "61a-su25-midterm",
+   "note": "A summer midterm."
+  },
+  {
+   "exam": "61a-su23-midterm",
+   "note": "A summer midterm."
+  }
+ ]
+}

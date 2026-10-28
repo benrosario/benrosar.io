@@ -1,0 +1,1661 @@
+{
+ "id": "61a-su25-final",
+ "t": "Summer 2025 Final",
+ "src": {
+  "exam": "https://cs61a.org/resources/su25/final/61a-su25-final.pdf",
+  "sol": "https://cs61a.org/resources/su25/final/61a-su25-final_sol.pdf",
+  "topics": "su25-final"
+ },
+ "p": [
+  {
+   "id": "61a-su25-final/1",
+   "n": "1",
+   "t": "1. I Wish I Was Special (3.0 pts)",
+   "b": [
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) CS Theory"
+      },
+      {
+       "p": "What does NP stand for?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Non-computable Problem",
+      "Not Polynomial",
+      "Non-decidable Problem",
+      "Non-deterministic Polynomial"
+     ],
+     "a": 3,
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) Computational Biology"
+      },
+      {
+       "p": "What is the Central Dogma of Biology?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "DNA is transcribed into proteins, which is then translated into RNA.",
+      "DNA is transcribed into RNA, which is then translated into proteins.",
+      "DNA is translated into proteins, which is then transcribed into RNA.",
+      "DNA is translated into RNA, which is then transcribed into proteins."
+     ],
+     "a": 1,
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) AI Safety"
+      },
+      {
+       "p": "What is outer misalignment?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Model learns wrong goal through looking at data",
+      "Model tricks user into thinking that they achieved their goal",
+      "Whatever goals we specify doesn’t match our true intended goals",
+      "Unequal base rates between groups can lead to disparities in false positives and false negatives"
+     ],
+     "a": 2,
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "UNTAGGED"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/2",
+   "n": "2",
+   "t": "2. What Would Python Display? (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the code below has been executed."
+      },
+      {
+       "c": "def box():\n    items = [range(2, 8), ([[3, 5], [7, 11]], lambda s, t: t + s), 10]\n    for s in items:\n        yield iter(s)\ndef search(s):\n    if next(s) != 10:\n        find = list(next(s))\n        found = find[1]\n        yield from found(find[0][0], find[0][1])",
+       "lang": "py"
+      },
+      {
+       "p": "Write the output that would be displayed by printing the result of each expression."
+      },
+      {
+       "p": "• If an iterator object is returned, write ITERATOR."
+      },
+      {
+       "p": "• If an error occurs, write ERROR."
+      },
+      {
+       "p": "Each expression below should be evaluated independently of previously-evaluated expressions. For example, a call to next() in blank (a) will not affect blank (b)."
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(a) list(filter(lambda x: x % 2 == 0, next(box())))"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[2, 4, 6]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(b) next(box())"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "ITERATOR"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(c) list(search(box()))"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "ITERATOR",
+      "ERROR",
+      "[2, 3, 4, 5, 6, 7, 8]",
+      "[3, 5, 7, 11]",
+      "[7, 11, 3, 5]",
+      "8",
+      "[3, 7]",
+      "[5, 11]"
+     ],
+     "a": 4,
+     "part": "c"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(d) list(search(next(next(box()))))"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "ERROR"
+     ],
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2",
+     "t": [
+      "GENERATORS",
+      "ITERATORS",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/3",
+   "n": "3",
+   "t": "3. Balls (7.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Having been inspired by CS 70, Chris and Cedric are playing a game where there are n balls in a bin. The game works as follows:"
+      },
+      {
+       "p": "• Players take alternating turns."
+      },
+      {
+       "p": "• At every turn, a player can choose 1 to m balls to remove from the bin. If there are fewer than m balls currently in the bin, players can remove at most the number of current balls in the bin."
+      },
+      {
+       "p": "• A player wins if they remove the last ball from the bin."
+      },
+      {
+       "p": "– i.e., A player loses if it’s their turn and there’s no more balls (the opponent removed the last ball). Assuming Chris goes first and Cedric goes second, fill out num_ways to count the number of ways Chris can win. In other words, Chris is player 0 and Cedric is player 1."
+      },
+      {
+       "c": "def num_ways(n, m):\n    \"\"\"\n    Players take turns removing 1 to m balls. Return the number of ways Chris can win by\n    removing the last ball on his turn.\n    >>> num_ways(1, 1)\n    1\n    >>> num_ways(2, 1)\n    0\n    >>> num_ways(4, 2)\n    3\n    >>> num_ways(10, 3)\n    137\n    \"\"\"\n    def helper(player, balls):\n        if player == 1 and ⟪a⟫:\n            return 1\n        if ⟪b⟫:\n            return 0\n        return ⟪c⟫([helper(⟪d⟫, ⟪e⟫) ⟪f⟫])\n    return helper(0, n)",
+       "lang": "py",
+       "f": {
+        "a": "balls == 0",
+        "b": "balls <= 0",
+        "c": "sum",
+        "d": "1 - player",
+        "e": "balls - i",
+        "f": "for i in range(1, m + 1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "balls == 0"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "balls <= 0",
+      "balls == 0",
+      "helper(player, balls - m)",
+      "n<m"
+     ],
+     "a": 0,
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "sum",
+      "any",
+      "all",
+      "max"
+     ],
+     "a": 0,
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d). You may not use if or not."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1 - player"
+     ],
+     "r": [
+      "B2_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "balls - i"
+     ],
+     "r": [
+      "B2_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "for i in range(m)",
+      "for i in range(1, m + 1)",
+      "for i in range(m) if player == 0",
+      "for i in range(1, m + 1) if player == 0"
+     ],
+     "a": 1,
+     "r": [
+      "B2_5"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "(g) What is the order of growth of the time it takes to evaluate bins(n) in terms of positive integer"
+      },
+      {
+       "p": "n?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "exponential"
+     ],
+     "part": "g"
+    },
+    {
+     "s": [
+      {
+       "c": "def bins(n):\n    if n == 1:\n        return 1\n    if n < 1:\n        return 0\n    res = 0\n    for i in range(1, 5):\n        res *= bins(n-i)\n    return res\n# exponential\n# quadratic\n# linear\n# logarithmic\n# constant",
+       "lang": "py"
+      }
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def num_ways(n, m):\n    \"\"\"\n    Players take turns removing 1 to m balls. Return the number of ways Chris can win by\n    removing the last ball on his turn.\n    >>> num_ways(1, 1)\n    1\n    >>> num_ways(2, 1)\n    0\n    >>> num_ways(4, 2)\n    3\n    >>> num_ways(10, 3)\n    137\n    \"\"\"\n    def helper(player, balls):\n        if player == 1 and ⟦B2_0⟧:\n            return 1\n        if ⟦B2_1⟧:\n            return 0\n        return ⟦B2_2⟧([helper(⟦B2_3⟧, ⟦B2_4⟧) ⟦B2_5⟧])\n    return helper(0, n)",
+     "def bins(n):\n    if n == 1:\n        return 1\n    if n < 1:\n        return 0\n    res = 0\n    for i in range(1, 5):\n        res *= bins(n-i)\n    return res"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": false,
+     "B2_3": false,
+     "B2_4": false,
+     "B2_5": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 0,
+     "B2_4": 0,
+     "B2_5": 0
+    },
+    "v": {
+     "B2_0": "balls == 0",
+     "B2_1": "balls <= 0",
+     "B2_2": "sum",
+     "B2_3": "1 - player",
+     "B2_4": "balls - i",
+     "B2_5": "for i in range(1, m + 1)"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "EFFICIENCY",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/4",
+   "n": "4",
+   "t": "4. Valid Triel (9.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "You are given a list of strings, banned, and a tree, t, in which each node contains a letter, and paths from root to leaf create strings. Remove leaf nodes that cause a path to form a banned string. Your final tree should not contain any paths that form banned strings. Assume all nodes contain valid characters and the root is non-empty and its character is not a banned string."
+      },
+      {
+       "c": "def valid_triel(banned, t):\n    \"\"\"\n    Mutate the tree by removing leaf nodes such that it contains no banned strings.\n    \"\"\"\n    def helper(t, word):\n        for b in ⟪a⟫:\n            if not ⟪b⟫:\n                ⟪c⟫\n        if ⟪d⟫ and ⟪e⟫:\n            return False\n        return True\n    helper(t, t.label)",
+       "lang": "py",
+       "f": {
+        "a": "t.branches[:]",
+        "b": "helper(b, word + b.label)",
+        "c": "t.branches.remove(b)",
+        "d": "t.is_leaf()",
+        "e": "word in banned"
+       }
+      }
+     ]
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t.branches[:]"
+     ],
+     "r": [
+      "B3_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b). You may not use and or or."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "helper(b, word + b.label)"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "t.branches.remove(b)",
+      "t.branches.pop()",
+      "helper(b, word)",
+      "helper(b, word + b.label)"
+     ],
+     "a": 0,
+     "part": "c"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d). Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "t.is_leaf()",
+      "not t.is_leaf()",
+      "t.branches",
+      "not t.branches",
+      "t.label in banned",
+      "t.label not in banned"
+     ],
+     "a": [
+      0,
+      3
+     ],
+     "part": "d"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "word in banned"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "e"
+    }
+   ],
+   "run": {
+    "c": [
+     "def valid_triel(banned, t):\n    \"\"\"\n    Mutate the tree by removing leaf nodes such that it contains no banned strings.\n    >>> t = Tree('c', [Tree('a', [Tree('t'), Tree('r')]), Tree('o', [Tree('w')])])\n    >>> valid_triel(['cat', 'cow'], t)\n    >>> t\n    Tree('c', [Tree('a', [Tree('r')]), Tree('o')])\n    >>> t = Tree('c', [Tree('a', [Tree('t')]), Tree('o', [Tree('w')])])\n    >>> valid_triel(['cat', 'ca', 'cow'], t)\n    >>> t\n    Tree('c', [Tree('o')])\n    >>> t = Tree('a', [Tree('b'), Tree('c', [Tree('d')])])\n    >>> valid_triel(['ab', 'acd', 'xyz'], t)\n    >>> t\n    Tree('a', [Tree('c')])\n    \"\"\"\n    def helper(t, word):\n        for b in ⟦B3_0⟧:\n            if not ⟦B3_1⟧:\n                ⟦B3_2⟧\n        if ⟦B3_3⟧ and ⟦B3_4⟧:\n            return False\n        return True\n    helper(t, t.label)"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": true,
+     "B3_3": false,
+     "B3_4": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 0,
+     "B3_4": 0
+    },
+    "v": {
+     "B3_0": "t.branches[:]",
+     "B3_1": "helper(b, word + b.label)",
+     "B3_2": "t.branches.remove(b)",
+     "B3_3": "t.is_leaf()",
+     "B3_4": "word in banned"
+    }
+   },
+   "topics": [
+    {
+     "n": "4",
+     "t": [
+      "MUTABLE_TREES",
+      "RECURSION",
+      "TREES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/5",
+   "n": "5",
+   "t": "5. CS 61A Text Editor (14.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "A text editor can be implemented as a Linked List of characters. A character is a string of length 1. For each subpart, you may assume all the previous subparts have been implemented correctly. For example, when working on part (c), you may assume that parts (a) and (b) have been implemented correctly. link_from_program is implemented for you. link_from_program takes in a string, program, and returns a Linked List where each element of the Linked List is a character of program. Assume it is implemented correctly and you may use it in any subpart of this problem."
+      },
+      {
+       "c": "def link_from_program(program):\n    \"\"\"\n    >>> s = link_from_program('print(\"hello\")')\n    >>> print(s)\n    <p r i n t ( \" h e l l o \" )>\n    \"\"\"\n    # IMPLEMENTATION OMITTED",
+       "lang": "py"
+      },
+      {
+       "h": "(a) (5.0 points)"
+      },
+      {
+       "p": "Implement find, which takes in a Linked List of characters, s, and a string val and returns the index of the first occurrence of val in s. If val does not exist in s, return float('inf'). Assume len(val) >="
+      },
+      {
+       "p": "1. You can assume the characters of val will appear only consecutively in s, or not at all."
+      },
+      {
+       "c": "def find(s, val):\n    \"\"\"Assume len(val) >= 1. Return the index of the first occurrence of val\n    >>> s = link_from_program('print(\"pal\")')\n    >>> print(s)\n    <p r i n t ( \" p a l \" )>\n    >>> find(s, 'pal')\n    7\n    >>> find(s, 'pals')\n    inf\n    >>> find(s, 'p')\n    0\n    >>> find(s, '\"p')\n    6\n    >>> find(s, 'print(\"pal\")')\n    0\n    \"\"\"\n    if s is Link.empty:\n        return float('inf')\n    if s.first == val[0]:\n        if len(val) == 1:\n            return ⟪a⟫\n        else:\n            return ⟪b⟫(find(s.rest, ⟪c⟫), 1 + find(s.rest, ⟪d⟫))\n    return 1 + ⟪e⟫",
+       "lang": "py",
+       "f": {
+        "a": "0",
+        "b": "min",
+        "c": "val[1:]",
+        "d": "val",
+        "e": "find(s.rest, val)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "-1",
+      "0",
+      "1",
+      "val",
+      "val[0]"
+     ],
+     "a": 1,
+     "r": [
+      "B4_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "min",
+      "max",
+      "sum",
+      "find",
+      "len",
+      "list",
+      "any",
+      "all",
+      "pow"
+     ],
+     "a": 0,
+     "r": [
+      "B4_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "val[1:]"
+     ],
+     "r": [
+      "B4_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "val"
+     ],
+     "r": [
+      "B4_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "find(s.rest, val)"
+     ],
+     "r": [
+      "B4_4"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (3.0 points)"
+      },
+      {
+       "p": "Implement insert, which takes in a Linked List of characters, s, a string val, and an index i and mutates s such that val is inserted as a Linked List of characters in s starting at index i. insert returns None. Assume that i > 0."
+      },
+      {
+       "c": "def insert(s, val, i):\n    \"\"\"Assume i > 0.\n    >>> s = link_from_program('print(\"pal\")')\n    >>> insert(s, 'ace', 10)\n    >>> print(s)\n    <p r i n t ( \" p a l a c e \" )>\n    \"\"\"\n    while i > 1:\n        s = s.rest\n        i -= 1\n    tail = s.rest\n    s.rest = ⟪f⟫\n    while ⟪g⟫ is not Link.empty:\n        s = s.rest\n    ⟪h⟫ = tail",
+       "lang": "py",
+       "f": {
+        "f": "link_from_program(val)",
+        "g": "s.rest",
+        "h": "s.rest"
+       }
+      }
+     ]
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "i. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "link_from_program(val)"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "ii. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.rest"
+     ],
+     "r": [
+      "B4_6"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "iii. Fill in blank (h)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.rest"
+     ],
+     "r": [
+      "B4_7"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (2.0 points)"
+      },
+      {
+       "p": "Implement delete, which takes in a Linked List of characters, s, an index i, and a positive integer n and mutates s such that the first n characters of s starting at index i are removed. delete returns None. Assume that i > 0 and i + n is less than or equal to length of s."
+      },
+      {
+       "c": "def delete(s, i, n):\n    \"\"\"Assume i > 0 and (i + n) is less than or equal to the length of s.\n    >>> s = link_from_program('print(\"pal\")')\n    >>> delete(s, 7, 3)\n    >>> print(s)\n    <p r i n t ( \" \" )>\n    \"\"\"\n    while i > 1:\n        s = s.rest\n        i -= 1\n    tail = s.rest\n    while n > 0:\n        ⟪i⟫\n        n -= 1\n    ⟪j⟫",
+       "lang": "py",
+       "f": {
+        "i": "tail = tail.rest",
+        "j": "s.rest = tail"
+       }
+      }
+     ]
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "i. Fill in blank (i)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "tail = tail.rest"
+     ],
+     "r": [
+      "B4_8"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "ii. Fill in blank (j)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.rest = tail"
+     ],
+     "r": [
+      "B4_9"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (4.0 points)"
+      },
+      {
+       "p": "Implement find_and_replace, which takes in a Linked List of characters, s, a string, old, and a string new and mutates s such that the first occurrence of the characters of old are replaced with the characters of new. find_and_replace returns None. Assume that old exists in s and the first occurrence of old begins at an index greater than 0."
+      },
+      {
+       "c": "def find_and_replace(s, old, new):\n    \"\"\"Assume old exists in s and the first occurrence of old begins at an index\n    greater than 0.\n    >>> s = link_from_program('x=1+1')\n    >>> print(s)\n    <x = 1 + 1>\n    >>> find_and_replace(s, '1', '4')\n    >>> print(s)\n    <x = 4 + 1>\n    >>> find_and_replace(s, '+1', '-3')\n    >>> print(s)\n    <x = 4 - 3>\n    \"\"\"\n    i = ⟪k⟫\n    delete(s, i, ⟪l⟫)\n    insert(s, ⟪m⟫, ⟪n⟫)",
+       "lang": "py",
+       "f": {
+        "k": "find(s, old)",
+        "l": "len(old)",
+        "m": "new",
+        "n": "i"
+       }
+      }
+     ]
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "i. Fill in blank (k)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "find(s, old)"
+     ],
+     "r": [
+      "B4_10"
+     ],
+     "part": "d",
+     "sub": "i"
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "ii. Fill in blank (l)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "len(old)"
+     ],
+     "r": [
+      "B4_11"
+     ],
+     "part": "d",
+     "sub": "ii"
+    },
+    {
+     "id": 32,
+     "l": [
+      {
+       "p": "iii. Fill in blank (m)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "new"
+     ],
+     "r": [
+      "B4_12"
+     ],
+     "part": "d",
+     "sub": "iii"
+    },
+    {
+     "id": 33,
+     "l": [
+      {
+       "p": "iv. Fill in blank (n)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "i"
+     ],
+     "r": [
+      "B4_13"
+     ],
+     "part": "d",
+     "sub": "iv"
+    }
+   ],
+   "run": {
+    "c": [
+     "def find(s, val):\n    \"\"\"Assume len(val) >= 1. Return the index of the first occurrence of val\n    >>> s = link_from_program('print(\"pal\")')\n    >>> print(s)\n    <p r i n t ( \" p a l \" )>\n    >>> find(s, 'pal')\n    7\n    >>> find(s, 'pals')\n    inf\n    >>> find(s, 'p')\n    0\n    >>> find(s, '\"p')\n    6\n    >>> find(s, 'print(\"pal\")')\n    0\n    \"\"\"\n    if s is Link.empty:\n        return float('inf')\n    if s.first == val[0]:\n        if len(val) == 1:\n            return ⟦B4_0⟧\n        else:\n            return ⟦B4_1⟧(find(s.rest, ⟦B4_2⟧), 1 + find(s.rest, ⟦B4_3⟧))\n    return 1 + ⟦B4_4⟧",
+     "def insert(s, val, i):\n    \"\"\"Assume i > 0.\n    >>> s = link_from_program('print(\"pal\")')\n    >>> insert(s, 'ace', 10)\n    >>> print(s)\n    <p r i n t ( \" p a l a c e \" )>\n    \"\"\"\n    while i > 1:\n        s = s.rest\n        i -= 1\n    tail = s.rest\n    s.rest = ⟦B4_5⟧\n    while ⟦B4_6⟧ is not Link.empty:\n        s = s.rest\n    ⟦B4_7⟧ = tail",
+     "def delete(s, i, n):\n    \"\"\"Assume i > 0 and (i + n) is less than or equal to the length of s.\n    >>> s = link_from_program('print(\"pal\")')\n    >>> delete(s, 7, 3)\n    >>> print(s)\n    <p r i n t ( \" \" )>\n    \"\"\"\n    while i > 1:\n        s = s.rest\n        i -= 1\n    tail = s.rest\n    while n > 0:\n        ⟦B4_8⟧\n        n -= 1\n    ⟦B4_9⟧",
+     "def find_and_replace(s, old, new):\n    \"\"\"Assume old exists in s and the first occurrence of old begins at an index\n    greater than 0.\n    >>> s = link_from_program('x=1+1')\n    >>> print(s)\n    <x = 1 + 1>\n    >>> find_and_replace(s, '1', '4')\n    >>> print(s)\n    <x = 4 + 1>\n    >>> find_and_replace(s, '+1', '-3')\n    >>> print(s)\n    <x = 4 - 3>\n    \"\"\"\n    i = ⟦B4_10⟧\n    delete(s, i, ⟦B4_11⟧)\n    insert(s, ⟦B4_12⟧, ⟦B4_13⟧)"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": false,
+     "B4_4": false,
+     "B4_5": false,
+     "B4_6": false,
+     "B4_7": false,
+     "B4_8": true,
+     "B4_9": true,
+     "B4_10": false,
+     "B4_11": false,
+     "B4_12": false,
+     "B4_13": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0,
+     "B4_4": 0,
+     "B4_5": 1,
+     "B4_6": 1,
+     "B4_7": 1,
+     "B4_8": 2,
+     "B4_9": 2,
+     "B4_10": 3,
+     "B4_11": 3,
+     "B4_12": 3,
+     "B4_13": 3
+    },
+    "v": {
+     "B4_0": "0",
+     "B4_1": "min",
+     "B4_2": "val[1:]",
+     "B4_3": "val",
+     "B4_4": "find(s.rest, val)",
+     "B4_5": "link_from_program(val)",
+     "B4_6": "s.rest",
+     "B4_7": "s.rest",
+     "B4_8": "tail = tail.rest",
+     "B4_9": "s.rest = tail",
+     "B4_10": "find(s, old)",
+     "B4_11": "len(old)",
+     "B4_12": "new",
+     "B4_13": "i"
+    }
+   },
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "LINKED_LISTS",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    },
+    {
+     "n": "5c",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    },
+    {
+     "n": "5d",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/6",
+   "n": "6",
+   "t": "6. Major Debacle (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "A prospective transfer student wants to understand applications statistics at UC Berkeley. The majors has one row per major, and contains its corresponding discipline and college. The stats table has one row per major, and includes that major’s number of applicants, admits, and enrolled students. Create a new table yield, which has a column for each college, and a column yields, which contains the total yield rate of each college. Only include colleges that have greater than 1 major, and only keep majors with an acceptance rate greater than 10%."
+      },
+      {
+       "p": "Yield rate: enrolled divided by admitted. Acceptance rate: admitted divided by applicants."
+      },
+      {
+       "c": "CREATE TABLE yield AS\n    SELECT college, ⟪a⟫ AS yields FROM majors, stats WHERE ⟪b⟫ AND ⟪c⟫ ⟪d⟫;",
+       "lang": "sql",
+       "f": {
+        "a": "SUM(enrolled) / SUM(admitted)",
+        "b": "majors.major = stats.major",
+        "c": "admits / applicants > 0.1",
+        "d": "GROUP BY college HAVING COUNT(*) > 1"
+       }
+      }
+     ]
+    },
+    {
+     "id": 34,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "SUM(enrolled) / SUM(admitted)"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 35,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "majors.college = stats.major",
+      "majors.major = stats.major",
+      "majors.discipline = stats.major",
+      "stats.applicants > stats.admits"
+     ],
+     "a": 1,
+     "part": "b"
+    },
+    {
+     "id": 36,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "admits / applicants > 0.1"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 37,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d). You may write AND to continue the WHERE clause (but you don’t have to). You"
+      },
+      {
+       "p": "may also include other clauses such as GROUP BY, ORDER BY, HAVING, and LIMIT (but you don’t have to)."
+      }
+     ],
+     "k": "blank",
+     "x": "7. (8.0 points)     Rotation Situation",
+     "a": [
+      "GROUP BY college HAVING COUNT(*) > 1"
+     ],
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "6",
+     "t": [
+      "SQL"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/7",
+   "n": "7",
+   "t": "7. Rotation Situation (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Implement rotate, which takes in a list lst and shifts all elements to the left by k indices. For example,"
+      },
+      {
+       "c": "(rotate '(1 2 3 4 5) 2) returns (3 4 5 1 2) as we shift 1 and 2 by two indices to the left, pushing them",
+       "lang": "py"
+      },
+      {
+       "p": "to the back of the list."
+      },
+      {
+       "p": ";;; Rotate lst by k indices to the left ;;; ;;; scm> (rotate '(1 2 3 4 5) 0) ;;; (1 2 3 4 5) ;;; scm> (rotate '(1 2 3 4 5) 1) ;;; (2 3 4 5 1) ;;; scm> (rotate '(1 2 3 4 5) 2) ;;; (3 4 5 1 2) ;;; scm> (rotate '(1 2 3 4 5) 7) ;;; (3 4 5 1 2) ; should still work for k > (length list)!"
+      },
+      {
+       "c": "(define (rotate lst k)\n    (if (= k 0)\n        ⟪a⟫\n        (rotate (⟪⟫ ⟪⟫ ⟪⟫)        ⟪⟫)\n    )              (b)     (c)     (d)             (e)\n)",
+       "lang": "scm",
+       "f": {
+        "a": "lst"
+       }
+      }
+     ]
+    },
+    {
+     "id": 38,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "lst"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 39,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "car",
+      "cdr",
+      "cons",
+      "list",
+      "append"
+     ],
+     "a": 4,
+     "part": "b"
+    },
+    {
+     "id": 40,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(cdr lst)"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 41,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(list (car lst))",
+      "(cons (car lst) nil)"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 42,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(- k 1)"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 43,
+     "l": [
+      {
+       "p": "(f ) Is rotate tail recursive?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Yes, it is tail recursive.",
+      "No, it is not tail recursive."
+     ],
+     "a": 0,
+     "part": "f"
+    },
+    {
+     "id": 44,
+     "l": [
+      {
+       "p": "(g) Which expressions are passed to scheme_eval when evaluating (or (- 4 4) 'salutations)?"
+      },
+      {
+       "p": "Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "(or (- 4 4) 'salutations)",
+      "or",
+      "(- 4 4)",
+      "-",
+      "4",
+      "'salutations"
+     ],
+     "a": [
+      0,
+      2,
+      3,
+      4
+     ],
+     "part": "g"
+    }
+   ],
+   "topics": [
+    {
+     "n": "7",
+     "t": [
+      "INTERPRETERS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/8",
+   "n": "8",
+   "t": "8. Golden (11.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Hunters and Demons are rival idols who battle through song. Each idol stores enemies in the enemies dictionary, where keys are idol objects and values are lists of their enemies (also idol objects). When idols sing, they damage all of their enemies (if any). If an enemy’s health reaches 0, they’re removed from the enemies dictionary (both as keys and values). Hunters have a takedown method that reduces their highest-health enemy’s health to 0. Hint: The get method of a dictionary takes two arguments: key and default. If the key is in the dictionary, its value is returned. If not, default is returned. E.g., {1:2}.get(1, 3) evaluates to 2, but {1:2}.get(5, 3) is 3."
+      },
+      {
+       "c": "class Idol():\n    \"\"\"An idol who sings.\n    >>> rumi, mira, jinu, abby = Hunter('Rumi'), Hunter('Mira'), Demon('Jinu'), Demon('Abby')\n    >>> rumi\n    Rumi\n    >>> jinu.add_enemy(rumi); rumi.add_enemy(abby); rumi.add_enemy(jinu); mira.add_enemy(jinu)\n    >>> Idol.enemies\n    {Jinu: [Rumi], Rumi: [Abby, Jinu], Mira: [Jinu]}\n    >>> jinu.sing(); abby.sing();     # Semicolons run both lines, Abby sings without erroring\n    Join the Pride.\n    Join the Pride.\n    >>> rumi.health                                        # Only Jinu damages Rumi by singing\n    2\n    >>> mira.sing(); rumi.takedown(); Idol.enemies     # Abby removed as he had highest health\n    {Jinu: [Rumi], Rumi: [Jinu], Mira: [Jinu]}\n    >>> rumi.sing(); mira.sing(); Idol.enemies                        # Jinu ran out of health\n    {Rumi: [], Mira: []}\n    \"\"\"\n    enemies, health, damage = {}, 3, 1\n    def __init__(self, name):\n        self.name = name\n    def add_enemy(self, enemy):\n        Idol.enemies[self] = Idol.enemies[self] + [enemy] if self in Idol.enemies else [enemy]\n    def sing(self):\n        for target in ⟪a⟫:\n            target.reduce_health(self.damage)\n    def reduce_health(self, damage):\n        self.health -= damage\n        if self.health <= 0:\n            Idol.enemies.pop(self, None)                          # Removes the idol from keys\n            ⟪b⟫ = {⟪c⟫: [⟪d⟫] for t in Idol.enemies} # Removes the idol from values\n    def ⟪e⟫(self):\n        return self.name\nclass Hunter(Idol):\n    def takedown(self):\n        e = max(Idol.enemies[self], key=⟪f⟫)             # Find the top-health enemy. Assume it exists.\n        e.reduce_health(e.health)\nclass Demon(Idol):\n    def sing(self):\n        print(\"Join the Pride.\")\n        ⟪g⟫",
+       "lang": "py",
+       "f": {
+        "a": "Idol.enemies.get(self, [])",
+        "b": "Idol.enemies",
+        "c": "t",
+        "d": "enemy for enemy in Idol.enemies[t] if enemy != self",
+        "e": "__repr__",
+        "g": "Idol.sing(self)",
+        "f": "lambda x: x.health"
+       }
+      }
+     ]
+    },
+    {
+     "id": 45,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "x": "The .get is necessary if the idol does not have an enemy. This is why abby.sing() does not error.",
+     "a": [
+      "Idol.enemies.get(self, [])",
+      "self.enemies.get(self, [])"
+     ],
+     "r": [
+      "B7_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 46,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b). Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "x": "self.enemies does not work as it would create a new enemies object attribute, rather than modifying\nthe class attribute.",
+     "o": [
+      "self.enemies",
+      "self.enemies[self]",
+      "Idol.enemies",
+      "Idol.enemies[self]"
+     ],
+     "a": [
+      2
+     ],
+     "part": "b"
+    },
+    {
+     "id": 47,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t"
+     ],
+     "r": [
+      "B7_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 48,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d) by completing the list comprehension."
+      }
+     ],
+     "k": "blank",
+     "x": "You can use any loop variable. You can also use self.enemies[t]. You can also use is not instead of !=.",
+     "a": [
+      "enemy for enemy in Idol.enemies[t] if enemy != self"
+     ],
+     "r": [
+      "B7_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 49,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "__str__",
+      "__repr__"
+     ],
+     "a": 1,
+     "part": "e"
+    },
+    {
+     "id": 50,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "lambda x: x.health"
+     ],
+     "r": [
+      "B7_5"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 51,
+     "l": [
+      {
+       "p": "(g) Fill in blank (g). Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "Idol.sing()",
+      "Idol.sing(self)",
+      "Idol(self).sing()",
+      "super().sing(self)",
+      "super(self).sing()",
+      "super().sing()"
+     ],
+     "a": [
+      1,
+      5
+     ],
+     "part": "g"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Idol():\n    \"\"\"An idol who sings.\n    >>> rumi, mira, jinu, abby = Hunter('Rumi'), Hunter('Mira'), Demon('Jinu'), Demon('Abby')\n    >>> rumi\n    Rumi\n    >>> jinu.add_enemy(rumi); rumi.add_enemy(abby); rumi.add_enemy(jinu); mira.add_enemy(jinu)\n    >>> Idol.enemies\n    {Jinu: [Rumi], Rumi: [Abby, Jinu], Mira: [Jinu]}\n    >>> jinu.sing(); abby.sing();     # Semicolons run both lines, Abby sings without erroring\n    Join the Pride.\n    Join the Pride.\n    >>> rumi.health                                        # Only Jinu damages Rumi by singing\n    2\n    >>> mira.sing(); rumi.takedown(); Idol.enemies     # Abby removed as he had highest health\n    {Jinu: [Rumi], Rumi: [Jinu], Mira: [Jinu]}\n    >>> rumi.sing(); mira.sing(); Idol.enemies                        # Jinu ran out of health\n    {Rumi: [], Mira: []}\n    >>> zoey, gwi, baby = Hunter('Zoey'), Demon('Gwi'), Demon('Baby')\n    >>> zoey.add_enemy(gwi); zoey.add_enemy(baby); gwi.health = 1\n    >>> zoey.takedown(); Idol.enemies[zoey]\n    [Gwi]\n    \"\"\"\n    enemies, health, damage = {}, 3, 1\n    def __init__(self, name):\n        self.name = name\n    def add_enemy(self, enemy):\n        Idol.enemies[self] = Idol.enemies[self] + [enemy] if self in Idol.enemies else [enemy]\n    def sing(self):\n        for target in ⟦B7_0⟧:\n            target.reduce_health(self.damage)\n    def reduce_health(self, damage):\n        self.health -= damage\n        if self.health <= 0:\n            Idol.enemies.pop(self, None)                          # Removes the idol from keys\n            ⟦B7_1⟧ = {⟦B7_2⟧: [⟦B7_3⟧] for t in Idol.enemies} # Removes the idol from values\n    def ⟦B7_4⟧(self):\n        return self.name\nclass Hunter(Idol):\n    def takedown(self):\n        e = max(Idol.enemies[self], key=⟦B7_5⟧)             # Find the top-health enemy. Assume it exists.\n        e.reduce_health(e.health)\nclass Demon(Idol):\n    def sing(self):\n        print(\"Join the Pride.\")\n        ⟦B7_6⟧"
+    ],
+    "b": {
+     "B7_0": false,
+     "B7_1": false,
+     "B7_2": false,
+     "B7_3": false,
+     "B7_4": false,
+     "B7_5": false,
+     "B7_6": true
+    },
+    "ch": {
+     "B7_0": 0,
+     "B7_1": 0,
+     "B7_2": 0,
+     "B7_3": 0,
+     "B7_4": 0,
+     "B7_5": 0,
+     "B7_6": 0
+    },
+    "v": {
+     "B7_0": "Idol.enemies.get(self, [])",
+     "B7_1": "Idol.enemies",
+     "B7_2": "t",
+     "B7_3": "enemy for enemy in Idol.enemies[t] if enemy != self",
+     "B7_4": "__repr__",
+     "B7_5": "lambda x: x.health",
+     "B7_6": "Idol.sing(self)"
+    }
+   },
+   "topics": [
+    {
+     "n": "8",
+     "t": [
+      "INHERITANCE",
+      "OBJECTS",
+      "REPRESENTATION",
+      "SEQUENCES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/9",
+   "n": "9",
+   "t": "9. Getting Hyped Tonight (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Ved wants to throw a party tonight! Ved has a non-empty tree t and a list of strings hype_strings. We want to count the number of strings in hype_strings that are also in t. We say a string is in the tree if the labels of all nodes from left to right at the same depth form the string. Return the number of hype strings in the tree. Hint: The pop(index) method removes and returns the item at the specified index in a list; if no index is given, it removes and returns the last item."
+      },
+      {
+       "c": "def num_hype(t, hype_strings):\n    \"\"\"\n    Return the number of hype_strings that are in the tree.\n    \"\"\"\n    nodes_to_visit = [t, None]\n    res = 0\n    curr_str = \"\"\n    while nodes_to_visit:\n        curr_node = ⟪a⟫\n        if curr_node is None:   # None represents end of current depth\n            if ⟪b⟫:\n                ⟪c⟫\n            curr_str = \"\"\n            if nodes_to_visit:\n                nodes_to_visit.append(None)\n        else:\n            curr_str = ⟪d⟫\n            for b in curr_node.branches:\n                ⟪e⟫\n    return res",
+       "lang": "py",
+       "f": {
+        "a": "nodes_to_visit.pop(0)",
+        "b": "curr_str in hype_strings",
+        "c": "res += 1",
+        "d": "curr_str + curr_node.label",
+        "e": "nodes_to_visit.append(b)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 52,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "nodes_to_visit.pop(0)"
+     ],
+     "r": [
+      "B8_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 53,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "curr_str in hype_strings"
+     ],
+     "r": [
+      "B8_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 54,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "curr_str += curr_node",
+      "nodes_to_visit.append(curr_node)",
+      "nodes_to_visit.pop(curr_node)",
+      "res += 1"
+     ],
+     "a": 3,
+     "part": "c"
+    },
+    {
+     "id": 55,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "curr_str + curr_node.label"
+     ],
+     "r": [
+      "B8_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 56,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "num_hype(b, hype_strings)",
+      "num_hype(b, hype_strings[1:])",
+      "nodes_to_visit.append(b)",
+      "nodes_to_visit.extend([b, None])"
+     ],
+     "a": 2,
+     "part": "e"
+    }
+   ],
+   "run": {
+    "c": [
+     "def num_hype(t, hype_strings):\n    \"\"\"\n    Return the number of hype_strings that are in the tree.\n    >>> t = Tree('h', [Tree('y', [Tree('p'), Tree('e')]), Tree('i')])\n    >>> num_hype(t, ['h', 'yi', 'pe', 'hype'])\n    3\n    >>> num_hype(t, ['hy', 'yi'])\n    1\n    >>> num_hype(Tree('a', [Tree('b', [Tree('d')]), Tree('c', [Tree('e'), Tree('f')])]), ['a', 'bc', 'def', 'de'])\n    3\n    \"\"\"\n    nodes_to_visit = [t, None]\n    res = 0\n    curr_str = \"\"\n    while nodes_to_visit:\n        curr_node = ⟦B8_0⟧\n        if curr_node is None:   # None represents end of current depth\n            if ⟦B8_1⟧:\n                ⟦B8_2⟧\n            curr_str = \"\"\n            if nodes_to_visit:\n                nodes_to_visit.append(None)\n        else:\n            curr_str = ⟦B8_3⟧\n            for b in curr_node.branches:\n                ⟦B8_4⟧\n    return res"
+    ],
+    "b": {
+     "B8_0": false,
+     "B8_1": false,
+     "B8_2": true,
+     "B8_3": false,
+     "B8_4": true
+    },
+    "ch": {
+     "B8_0": 0,
+     "B8_1": 0,
+     "B8_2": 0,
+     "B8_3": 0,
+     "B8_4": 0
+    },
+    "v": {
+     "B8_0": "nodes_to_visit.pop(0)",
+     "B8_1": "curr_str in hype_strings",
+     "B8_2": "res += 1",
+     "B8_3": "curr_str + curr_node.label",
+     "B8_4": "nodes_to_visit.append(b)"
+    }
+   },
+   "topics": [
+    {
+     "n": "9",
+     "t": [
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su25-final/10",
+   "n": "10",
+   "t": "10. Plop, pop, plop (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Answer the questions about the code below. Use the free space or scratch paper to draw the diagram to help you answer the questions, however any drawn diagrams will not be graded."
+      },
+      {
+       "c": "def plop(f, lst):\n    while s and f(lst, lst.pop()):\n        print(lst)\n        lst = [f(lst, s.pop())] + lst\n    return lst\ns = [x + 1 for x in range(1, 4)]\nt = plop(lambda t, x: t[len(s) - 1] + x, s)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 57,
+     "l": [
+      {
+       "p": "(a) What’s displayed by executing the above code?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[2, 3]\n[5]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 58,
+     "l": [
+      {
+       "p": "(b) How many frames are opened? Assume list comprehensions and method calls like .pop() do not"
+      },
+      {
+       "p": "open new frames. Do not count the Global frame."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "5"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 59,
+     "l": [
+      {
+       "p": "(c) What would print(s) display in the Global frame after executing the above code?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "[2, 3, 4, 5]",
+      "[2, 3, 4]",
+      "[3, 4]",
+      "[4]",
+      "[]",
+      "[5]",
+      "[7]",
+      "[5, 7]",
+      "[7, 5]"
+     ],
+     "a": 4,
+     "part": "c"
+    },
+    {
+     "id": 60,
+     "l": [
+      {
+       "p": "(d) What would print(t) display in the Global frame after executing the above code?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "[2, 3, 4, 5]",
+      "[2, 3, 4]",
+      "[3, 4]",
+      "[4]",
+      "[]",
+      "[5]",
+      "[7]",
+      "[5, 7]",
+      "[7, 5]"
+     ],
+     "a": 8,
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "10",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "LAMBDAS",
+      "MUTABILITY"
+     ]
+    }
+   ]
+  }
+ ]
+}

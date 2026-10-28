@@ -1,0 +1,229 @@
+{
+ "id": "midterm2",
+ "label": "Midterm 2",
+ "sub": "Through linked lists",
+ "coverage": {
+  "text": "Fall 2026 Midterm 2 (computer-based, week of 10/5, one-hour slot, 20 points; retakes 10/19–10/20 and 11/5–11/6) covers content through Lecture 14: Linked Lists.",
+  "url": "https://cs61a.org/fa26/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "VARS_AND_FUNCTIONS",
+   "CONTROL",
+   "HIGHER_ORDER_FUNCTIONS",
+   "ENVIRONMENT_DIAGRAMS",
+   "LAMBDAS",
+   "RECURSION",
+   "TREE_RECURSION",
+   "SEQUENCES",
+   "LISTS",
+   "DATA_ABSTRACTION",
+   "LINKED_LISTS"
+  ],
+  "note": "Problems are included when every topic the course staff tagged them with is covered by Midterm 2 (through linked lists; trees, mutation and classes come later). That classification is this site’s, not a staff recommendation. Midterm 1 topics are fair game too; switch to Midterm 1 for those exams."
+ },
+ "noPicks": "Course staff haven’t published Midterm 2 question picks, so nothing is marked recommended. The staff practice midterm is on PrairieLearn.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 3,
+    "note": "CBTF slots are one hour"
+   }
+  ],
+  "balanced": true,
+  "minBuckets": 2,
+  "buckets": [
+   {
+    "id": "linked",
+    "topics": [
+     "LINKED_LISTS"
+    ]
+   },
+   {
+    "id": "treerec",
+    "topics": [
+     "TREE_RECURSION"
+    ]
+   },
+   {
+    "id": "lists",
+    "topics": [
+     "LISTS",
+     "SEQUENCES",
+     "DATA_ABSTRACTION"
+    ]
+   },
+   {
+    "id": "recursion",
+    "topics": [
+     "RECURSION"
+    ]
+   },
+   {
+    "id": "basics",
+    "topics": [
+     "CONTROL",
+     "HIGHER_ORDER_FUNCTIONS",
+     "LAMBDAS",
+     "ENVIRONMENT_DIAGRAMS"
+    ]
+   }
+  ],
+  "intro": "Each exam draws original past exam problems in Midterm 2’s scope at random, mixing recursion, tree recursion, lists and linked lists. They aren’t modified, so you may have seen some of them already."
+ },
+ "exams": [
+  {
+   "exam": "61a-su25-midterm",
+   "note": "A summer midterm that covered recursion, tree recursion and sequences.",
+   "drop": [
+    10,
+    13
+   ],
+   "dropWhy": {
+    "10": "Uses list mutation (insert or extend), which is taught after Midterm 2",
+    "13": "Uses dictionary assignment, which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-su23-midterm",
+   "note": "A summer midterm that covered recursion and tree recursion."
+  },
+  {
+   "exam": "61a-fa25-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    20,
+    21,
+    22,
+    23,
+    29
+   ],
+   "dropWhy": {
+    "20": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "21": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "22": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "23": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "29": "Uses generators (yield), which are taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-sp25-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+  },
+  {
+   "exam": "61a-fa24-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+  },
+  {
+   "exam": "61a-sp24-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    5,
+    6,
+    7,
+    19,
+    20,
+    21,
+    22
+   ],
+   "dropWhy": {
+    "5": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "6": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "7": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "19": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "20": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "21": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "22": "Uses list mutation (append, pop or remove), which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-fa23-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    5,
+    6
+   ],
+   "dropWhy": {
+    "5": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "6": "Uses list mutation (append, pop or remove), which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-sp23-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+  },
+  {
+   "exam": "61a-sp26-mt2",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "dropWhy": {
+    "8": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "9": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "10": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "11": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
+    "12": "Uses list mutation (append, pop or remove), which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-su25-final",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33
+   ],
+   "dropWhy": {
+    "25": "Mutates a linked list, which is taught after Midterm 2",
+    "26": "Mutates a linked list, which is taught after Midterm 2",
+    "27": "Mutates a linked list, which is taught after Midterm 2",
+    "28": "Mutates a linked list, which is taught after Midterm 2",
+    "29": "Mutates a linked list, which is taught after Midterm 2",
+    "30": "Mutates a linked list, which is taught after Midterm 2",
+    "31": "Mutates a linked list, which is taught after Midterm 2",
+    "32": "Mutates a linked list, which is taught after Midterm 2",
+    "33": "Mutates a linked list, which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-su24-final",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+  },
+  {
+   "exam": "61a-su23-final",
+   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "drop": [
+    1,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+   ],
+   "dropWhy": {
+    "1": "Part of a what-would-Python-display session that uses classes and trees from later in the course",
+    "15": "Mutates a linked list, which is taught after Midterm 2",
+    "16": "Mutates a linked list, which is taught after Midterm 2",
+    "17": "Mutates a linked list, which is taught after Midterm 2",
+    "18": "Mutates a linked list, which is taught after Midterm 2",
+    "19": "Mutates a linked list, which is taught after Midterm 2",
+    "20": "Mutates a linked list, which is taught after Midterm 2"
+   }
+  }
+ ]
+}

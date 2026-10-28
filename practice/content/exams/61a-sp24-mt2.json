@@ -1,0 +1,971 @@
+{
+ "id": "61a-sp24-mt2",
+ "t": "Spring 2024 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/sp24/mt2/61a-sp24-mt2.pdf",
+  "sol": "https://cs61a.org/resources/sp24/mt2/61a-sp24-mt2_sol.pdf",
+  "topics": "sp24-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-sp24-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (7.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed. The Link class appears on the midterm 2 study guide (page 2, left side)."
+      },
+      {
+       "c": "def shake(it):\n    if it is not Link.empty and it.rest is not Link.empty:\n        if it.first + 1 < it.rest.first:\n            it.rest = Link(it.rest.first-1, it.rest)\n            shake(it)\n        else:\n            shake(it.rest)\nit = Link(2, Link(5, Link(7)))\noff = Link(1, it.rest)",
+       "lang": "py"
+      },
+      {
+       "p": "shake(it)"
+      },
+      {
+       "c": "def cruel(summer):\n    while summer is not Link.empty:\n        yield summer.first\n        summer = summer.rest\n        if summer is not Link.empty:\n            summer = summer.rest\nsummer = Link(1, Link(2, Link(3, Link(4))))",
+       "lang": "py"
+      },
+      {
+       "p": "Write the output printed for each expression below or Error if an error occurs."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) print(it)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "<2 5 7>",
+      "<2 4 5 7>",
+      "<2 4 5 6 7>",
+      "<2 3 4 5 7>",
+      "<2 4 3 5 7>",
+      "<2 3 4 5 6 7>",
+      "<2 4 3 5 6 7>"
+     ],
+     "a": 5,
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) print(off)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "<1 5 6 7>"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) print([x*x for x in cruel(summer)])"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[1, 9]"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(d) What is the order of growth of the time it takes to evaluate shake(Link(1, Link(n))) in terms"
+      },
+      {
+       "p": "of n?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "exponential",
+      "quadratic",
+      "linear",
+      "constant"
+     ],
+     "a": 2,
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1a",
+     "t": [
+      "LINKED_LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1b",
+     "t": [
+      "LINKED_LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1c",
+     "t": [
+      "GENERATORS",
+      "LINKED_LISTS",
+      "LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1d",
+     "t": [
+      "EFFICIENCY",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp24-mt2/2",
+   "n": "2",
+   "t": "2. Spin Cycle (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Complete the environment diagram below and then answer the questions that follow. Do not add frames for calls to built-in functions (such as print)."
+      },
+      {
+       "c": "def cycle(a):\n    def f(rest):\n        rest.append(a.pop())\n        return [rest.append(a)]\n    b = []\n    a = f(b)\n    b = b + [5]\n    print(a)\n    print(b)\n\nc = [2, 3, 4]\ncycle(c)\nprint(c)",
+       "lang": "py",
+       "ln": true
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(a) What would be printed by the expression print(a) on line 8?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[None]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(b) What would be printed by the expression print(b) on line 9?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[4, [2, 3], 5]"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(c) What would be printed by the expression print(c) on line 13?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[2, 3]"
+     ],
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "HIGHER_ORDER_FUNCTIONS",
+      "LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp24-mt2/3",
+   "n": "3",
+   "t": "3. Fearless (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "If you sing lyrics into a mic, every connected speaker repeats them."
+      },
+      {
+       "p": "A Mic instance has a dictionary speakers containing Speaker instances as values, each with its location (str) as its key. Its sing method takes a string lyrics and invokes the repeat method of each Speaker instance connected to it."
+      },
+      {
+       "p": "A Speaker takes a transform function that takes and returns a string. To connect a Speaker instance to m (Mic) in a location (str), add that instance to the speakers dictionary of m in that location. To repeat a signal s (str), return the result of calling the speaker’s transform function on s. Every Mic starts connected to a Speaker in the Front location that repeats the exact same signal it receives. Implement the Mic and Speaker classes to match the doctests. The str.lower and str.upper functions return lowercased and uppercased versions of a string, respectively."
+      },
+      {
+       "c": "class Mic:\n    \"\"\"A microphone connected to speakers.\n    >>> m = Mic() # Front is connected automatically\n    >>> m.sing('Is this thing on?')\n    Front - Is this thing on?\n    >>> Speaker(str.lower).connect(m, 'Left Side')\n    >>> Speaker(str.upper).connect(m, 'Right Side')\n    >>> m.sing(\"You belong with me.\")\n    Front - You belong with me.\n    Left Side - you belong with me.\n    Right Side - YOU BELONG WITH ME.\n    \"\"\"\n    def __init__(self):\n        self.speakers = ⟪a⟫\n    def sing(self, lyrics):\n        for k in self.speakers.keys(): # iterate over the keys of a dictionary\n            print(k, '-', ⟪b⟫.repeat(lyrics))\nclass Speaker:\n    def __init__(self, transform):\n        self.transform = transform\n    def connect(self, m, location):\n        ⟪c⟫\n    def repeat(self, s):\n        return ⟪d⟫",
+       "lang": "py",
+       "f": {
+        "a": "{'Front': Speaker(lambda x: x)}",
+        "b": "self.speakers[k]",
+        "c": "m.speakers[location] = self",
+        "d": "self.transform(s)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "{'Front': Speaker(lambda x: x)}"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(b)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "self",
+      "self.speaker",
+      "self.speakers",
+      "self.speakers[k]",
+      "self.speakers[k].self",
+      "speaker",
+      "speakers",
+      "speakers[k]",
+      "speakers[k].self"
+     ],
+     "a": 3,
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "m.speakers[location] = self"
+     ],
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(d)"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "lyrics",
+      "transform",
+      "transform(s)",
+      "transform(lyrics)",
+      "self.transform",
+      "self.transform(s)",
+      "self.transform(lyrics)"
+     ],
+     "a": 6,
+     "r": [
+      "B2_3"
+     ],
+     "part": "d"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Mic:\n    \"\"\"A microphone connected to speakers.\n    >>> m = Mic() # Front is connected automatically\n    >>> m.sing('Is this thing on?')\n    Front - Is this thing on?\n    >>> Speaker(str.lower).connect(m, 'Left Side')\n    >>> Speaker(str.upper).connect(m, 'Right Side')\n    >>> m.sing(\"You belong with me.\")\n    Front - You belong with me.\n    Left Side - you belong with me.\n    Right Side - YOU BELONG WITH ME.\n    \"\"\"\n    def __init__(self):\n        self.speakers = ⟦B2_0⟧\n    def sing(self, lyrics):\n        for k in self.speakers.keys(): # iterate over the keys of a dictionary\n            print(k, '-', ⟦B2_1⟧.repeat(lyrics))\nclass Speaker:\n    def __init__(self, transform):\n        self.transform = transform\n    def connect(self, m, location):\n        ⟦B2_2⟧\n    def repeat(self, s):\n        return ⟦B2_3⟧"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": true,
+     "B2_3": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 0
+    },
+    "v": {
+     "B2_0": "{'Front': Speaker(lambda x: x)}",
+     "B2_1": "self.speakers[k]",
+     "B2_2": "m.speakers[location] = self",
+     "B2_3": "self.transform(s)"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "LAMBDAS",
+      "OBJECTS",
+      "SEQUENCES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-sp24-mt2/4",
+   "n": "4",
+   "t": "4. Who’s counting? (29.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. A strip is a list of integers in which each integer is one more than the last. For example, [3, 4, 5, 6] is a strip. Empty and one-element lists are strips."
+      },
+      {
+       "h": "(a) (4.0 points)"
+      },
+      {
+       "p": "Implement is_strip, which takes a list of integers s and returns whether it is a strip."
+      },
+      {
+       "c": "def is_strip(s):\n    \"\"\"Return whether list s is a strip.\n    >>> is_strip([3, 4, 5, 6])\n    True\n    >>> is_strip([3, 3, 3])        # 3 after 3\n    False\n    >>> is_strip([3, 4, 5, 4, 6]) # 4 after 5\n    False\n    >>> is_strip([3, 4, 5, 5, 6]) # 5 after 5\n    False\n    >>> is_strip([3, 4, 5, 6, 8]) # 8 after 6\n    False\n    >>> is_strip([5])\n    True\n    >>> is_strip([])\n    True\n    \"\"\"\n    assert type(s) == list\n    return ⟪a⟫ or s == list ( range ( ⟪b⟫ , ⟪c⟫ ))",
+       "lang": "py",
+       "f": {
+        "a": "len(s) == 0",
+        "b": "s[0]",
+        "c": "s[0] + len(s)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "len(s) == 0",
+      "s[0] + 1 == s[1]",
+      "s[0] + 1 in s",
+      "s[0] + 1 in s[1:]"
+     ],
+     "a": 0,
+     "r": [
+      "B3_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s[0]"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "s[0]",
+      "s[1]",
+      "s[0] + 1",
+      "s[0] + len(s)",
+      "s[len(s) - 1]",
+      "s[1] - s[0]"
+     ],
+     "a": 4,
+     "r": [
+      "B3_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (7.0 points)"
+      },
+      {
+       "p": "Implement drip, which takes two non-empty lists of integers s and t. It returns True if there is a strip containing all and only the elements of s and t starting with s[0] in which the elements of s appear in order and the elements of t appear in order. It returns False otherwise."
+      },
+      {
+       "c": "def drip(s, t):\n    \"\"\"Return whether there is a strip made out of interleaving s and t.\n    >>> drip([1, 3, 5], [2, 4, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([1, 4, 5], [2, 3, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([1, 2, 3], [4, 5, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([2, 4, 5], [1, 3, 6])     # No strip starting with 2 can contain 1\n    False\n    >>> drip([1, 2, 4, 5], [1, 3, 6]) # No strip can contain 1 and 1\n    False\n    >>> drip([1, 4, 5], [2, 3, 7])     # No strip can contain 5 and 7 but no 6\n    False\n    >>> drip([1, 5, 4], [2, 3, 6])     # No strip can contain 5 before 4\n    False\n    >>> drip([2], [3, 4, 5])           # 2 3 4 5\n    True\n    >>> drip([1], [2, 3, 5])           # No strip can contain 3 and 5 but no 4\n    False\n    \"\"\"\n    while s and t:\n        if s[0] + 1 == t[0]:\n            s, t = ⟪a⟫ # The next element of the strip is in t\n        elif ⟪b⟫:\n            s = s[1:]        # The next element of the strip is in s\n        else:\n            return ⟪c⟫\n    return ⟪d⟫",
+       "lang": "py",
+       "f": {
+        "a": "t, s[1:]",
+        "b": "len(s) > 1 and s[0] + 1 == s[1]",
+        "c": "False",
+        "d": "is_strip(s) and is_strip(t)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "t, s",
+      "t, s[1:]",
+      "t[1:], s"
+     ],
+     "a": 1,
+     "r": [
+      "B3_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "len(s) > 1 and s[0] + 1 == s[1]"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "False",
+      "s[0] != t[0]",
+      "is_strip(s) or is_strip(t)",
+      "not (is_strip(s) or is_strip(t))",
+      "is_strip(s) and is_strip(t)",
+      "not (is_strip(s) and is_strip(t))"
+     ],
+     "a": 0,
+     "r": [
+      "B3_5"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "True",
+      "is_strip(s)",
+      "is_strip(t)",
+      "is_strip(s) or is_strip(t)",
+      "not (is_strip(s) or is_strip(t))",
+      "is_strip(s) and is_strip(t)",
+      "not (is_strip(s) and is_strip(t))"
+     ],
+     "a": 5,
+     "r": [
+      "B3_6"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (6.0 points)"
+      },
+      {
+       "p": "Implement longest, which takes a list of integers s. It returns the longest strip whose elements appear in s in order. If two such strips exist, return the one that starts earlier in s. Hint: s[-1] is the last element in list s."
+      },
+      {
+       "c": "def longest(s):\n    \"\"\"Return the longest strip whose elements appear in s in order.\n    >>> longest([4, 2, 3, 5, 6, 4, 6, 5]) # 2 3 4 5 is the longest strip in s\n    [2, 3, 4, 5]\n    >>> longest([4, 2, 3, 5, 6, 4]) # 4 5 6 is as long as 2 3 4 and is earlier\n    [4, 5, 6]\n    >>> longest([2, 4, 6])\n    [2]\n    \"\"\"\n    if len(s) == 0:\n        return []\n    return max([longest_with_s0(s), ⟪a⟫ ], key= ⟪b⟫ )\ndef longest_with_s0(s):\n    \"\"\"Return the longest strip in s that starts with s[0].\"\"\"\n    result = ⟪c⟫\n    for k in s[1:]:\n        if ⟪d⟫:\n            result.append(k)\n    return result",
+       "lang": "py",
+       "f": {
+        "a": "longest(s[1:])",
+        "b": "len",
+        "c": "s[:1]",
+        "d": "k == result[-1] + 1"
+       }
+      }
+     ]
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "longest(s[1:])"
+     ],
+     "r": [
+      "B3_7"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "len",
+      "len(s)",
+      "s[0]",
+      "lambda i: s[i]"
+     ],
+     "a": 0,
+     "r": [
+      "B3_8"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "[]",
+      "[s]",
+      "s[0]",
+      "s[:1]"
+     ],
+     "a": 3,
+     "r": [
+      "B3_9"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "k == result[-1] + 1"
+     ],
+     "r": [
+      "B3_10"
+     ],
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (5.0 points)"
+      },
+      {
+       "p": "Implement has_strip, which takes a Tree of integers t. It returns whether there is a strip containing the labels along some path from the root to a leaf of t. The Tree class is on the midterm 2 study guide (page 2 left side)."
+      },
+      {
+       "c": "def has_strip(t):\n    \"\"\"Return whether the elements of some root-to-leaf path form a strip.\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2), Tree(3)])])) # 1, 2, 3\n    True\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2, [Tree(3)])])]))\n    False\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2)])]))\n    False\n    >>> has_strip(Tree(1, [Tree(2, [Tree(4)]), Tree(3, [Tree(3)])]))\n    False\n    \"\"\"\n    if t.is_leaf():\n        return ⟪a⟫\n    for b in t.branches:\n        if ⟪b⟫\n        return True\n    return ⟪c⟫",
+       "lang": "py",
+       "f": {
+        "a": "True",
+        "b": "b.label == t.label + 1 and has_strip(b)",
+        "c": "False"
+       }
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "True",
+      "False",
+      "t",
+      "t.label",
+      "t.label == t + 1",
+      "t + 1 == t.label"
+     ],
+     "a": 0,
+     "r": [
+      "B3_11"
+     ],
+     "part": "d",
+     "sub": "i"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "b.label == t.label + 1 and has_strip(b)"
+     ],
+     "r": [
+      "B3_12"
+     ],
+     "part": "d",
+     "sub": "ii"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "True",
+      "False",
+      "t",
+      "t.label",
+      "t.label == t + 1",
+      "t + 1 == t.label"
+     ],
+     "a": 1,
+     "r": [
+      "B3_13"
+     ],
+     "part": "d",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(e) (7.0 points)"
+      },
+      {
+       "p": "Implement strips, a generator function that takes a Tree of integers t. It yields all strips that contain the labels along a path from the root to a leaf of t."
+      },
+      {
+       "c": "def strips(t):\n    \"\"\"Yield the paths from the root to a leaf of Tree t that form strips.\n    >>> list(strips(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2), Tree(3)])])))\n    [[1, 2, 3]]\n    >>> list(strips(Tree(1, [Tree(2), Tree(2, [Tree(2), Tree(3, [Tree(4)]), Tree(3)])])))\n    [[1, 2], [1, 2, 3, 4], [1, 2, 3]]\n    \"\"\"\n    if t.is_leaf():\n        yield ⟪a⟫\n    for b in t.branches:\n        if ⟪b⟫:\n            for s in ⟪c⟫:\n                yield ⟪d⟫",
+       "lang": "py",
+       "f": {
+        "a": "[t.label]",
+        "b": "b.label == t.label + 1",
+        "c": "strips(b)",
+        "d": "[t.label] + s"
+       }
+      }
+     ]
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "None",
+      "t",
+      "t.label",
+      "[t]",
+      "[t.label]"
+     ],
+     "a": 4,
+     "r": [
+      "B3_14"
+     ],
+     "part": "e",
+     "sub": "i"
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "t.label == b.label + 1",
+      "b.label == t.label + 1",
+      "t.label == b.label + 1 and is_strip(b)",
+      "b.label == t.label + 1 and is_strip(b)"
+     ],
+     "a": 1,
+     "r": [
+      "B3_15"
+     ],
+     "part": "e",
+     "sub": "ii"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "strips(t)",
+      "strips(b)",
+      "t.branches",
+      "b.branches",
+      "range(len(t.branches))",
+      "range(len(b.branches))"
+     ],
+     "a": 1,
+     "r": [
+      "B3_16"
+     ],
+     "part": "e",
+     "sub": "iii"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s",
+      "t",
+      "t+s",
+      "t.label + s",
+      "[t] + s",
+      "[t.label] + s",
+      "[t] + [s]",
+      "[t.label] + [s]"
+     ],
+     "a": 5,
+     "r": [
+      "B3_17"
+     ],
+     "part": "e",
+     "sub": "iv"
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "v. This A+ question is not worth any points. It can only affect your course grade if"
+      },
+      {
+       "p": "you have a high A and might receive an A+. Finish the rest of the exam first! Fill in the blank of only_strips, which takes a Tree of integers t. It removes all nodes that are not on a strip path. A strip path is a path from the root to a leaf whose labels form a strip. You may use functions implemented earlier in this question."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "has_strip(b) and (only_strips(b) or t.label + 1 == b.label)"
+     ],
+     "r": [
+      "B3_18"
+     ],
+     "part": "e",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "c": "def test_only_strips(t):\n    \"\"\"Call only_strips(t) and then return t. Assume has_strip(t) is True.\n    >>> test_only_strips(Tree(1, [Tree(2), Tree(2, [Tree(2), Tree(3, [Tree(4)]), Tree(3)])]))\n    Tree(1, [Tree(2), Tree(2, [Tree(3, [Tree(4)]), Tree(3)])])\n    >>> test_only_strips(Tree(5, [Tree(6), Tree(6, [Tree(7, [Tree(9)])]), Tree(7)]))\n    Tree(5, [Tree(6)])\n    \"\"\"\n    only_strips(t)\n    return t\ndef only_strips(t):\n    \"\"\"Remove all nodes of Tree t that are not on a path from the root to a leaf\n    whose labels form a strip. Assume has_strip(t) is True.\n    \"\"\"\n    t.branches = [b for b in t.branches if ⟪⟫]",
+       "lang": "py"
+      }
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def is_strip(s):\n    \"\"\"Return whether list s is a strip.\n    >>> is_strip([3, 4, 5, 6])\n    True\n    >>> is_strip([3, 3, 3])        # 3 after 3\n    False\n    >>> is_strip([3, 4, 5, 4, 6]) # 4 after 5\n    False\n    >>> is_strip([3, 4, 5, 5, 6]) # 5 after 5\n    False\n    >>> is_strip([3, 4, 5, 6, 8]) # 8 after 6\n    False\n    >>> is_strip([5])\n    True\n    >>> is_strip([])\n    True\n    \"\"\"\n    assert type(s) == list\n    return ⟦B3_0⟧ or s == list ( range ( ⟦B3_1⟧ , ⟦B3_2⟧ ))",
+     "def drip(s, t):\n    \"\"\"Return whether there is a strip made out of interleaving s and t.\n    >>> drip([1, 3, 5], [2, 4, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([1, 4, 5], [2, 3, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([1, 2, 3], [4, 5, 6])     # 1 2 3 4 5 6\n    True\n    >>> drip([2, 4, 5], [1, 3, 6])     # No strip starting with 2 can contain 1\n    False\n    >>> drip([1, 2, 4, 5], [1, 3, 6]) # No strip can contain 1 and 1\n    False\n    >>> drip([1, 4, 5], [2, 3, 7])     # No strip can contain 5 and 7 but no 6\n    False\n    >>> drip([1, 5, 4], [2, 3, 6])     # No strip can contain 5 before 4\n    False\n    >>> drip([2], [3, 4, 5])           # 2 3 4 5\n    True\n    >>> drip([1], [2, 3, 5])           # No strip can contain 3 and 5 but no 4\n    False\n    \"\"\"\n    while s and t:\n        if s[0] + 1 == t[0]:\n            s, t = ⟦B3_3⟧ # The next element of the strip is in t\n        elif ⟦B3_4⟧:\n            s = s[1:]        # The next element of the strip is in s\n        else:\n            return ⟦B3_5⟧\n    return ⟦B3_6⟧",
+     "def longest(s):\n    \"\"\"Return the longest strip whose elements appear in s in order.\n    >>> longest([4, 2, 3, 5, 6, 4, 6, 5]) # 2 3 4 5 is the longest strip in s\n    [2, 3, 4, 5]\n    >>> longest([4, 2, 3, 5, 6, 4]) # 4 5 6 is as long as 2 3 4 and is earlier\n    [4, 5, 6]\n    >>> longest([2, 4, 6])\n    [2]\n    \"\"\"\n    if len(s) == 0:\n        return []\n    return max([longest_with_s0(s), ⟦B3_7⟧ ], key= ⟦B3_8⟧ )\ndef longest_with_s0(s):\n    \"\"\"Return the longest strip in s that starts with s[0].\"\"\"\n    result = ⟦B3_9⟧\n    for k in s[1:]:\n        if ⟦B3_10⟧:\n            result.append(k)\n    return result",
+     "def has_strip(t):\n    \"\"\"Return whether the elements of some root-to-leaf path form a strip.\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2), Tree(3)])])) # 1, 2, 3\n    True\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2, [Tree(3)])])]))\n    False\n    >>> has_strip(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2)])]))\n    False\n    >>> has_strip(Tree(1, [Tree(2, [Tree(4)]), Tree(3, [Tree(3)])]))\n    False\n    \"\"\"\n    if t.is_leaf():\n        return ⟦B3_11⟧\n    for b in t.branches:\n        if ⟦B3_12⟧:\n            return True\n    return ⟦B3_13⟧",
+     "def strips(t):\n    \"\"\"Yield the paths from the root to a leaf of Tree t that form strips.\n    >>> list(strips(Tree(1, [Tree(3, [Tree(4)]), Tree(2, [Tree(2), Tree(3)])])))\n    [[1, 2, 3]]\n    >>> list(strips(Tree(1, [Tree(2), Tree(2, [Tree(2), Tree(3, [Tree(4)]), Tree(3)])])))\n    [[1, 2], [1, 2, 3, 4], [1, 2, 3]]\n    \"\"\"\n    if t.is_leaf():\n        yield ⟦B3_14⟧\n    for b in t.branches:\n        if ⟦B3_15⟧:\n            for s in ⟦B3_16⟧:\n                yield ⟦B3_17⟧",
+     "def test_only_strips(t):\n    \"\"\"Call only_strips(t) and then return t. Assume has_strip(t) is True.\n    >>> test_only_strips(Tree(1, [Tree(2), Tree(2, [Tree(2), Tree(3, [Tree(4)]), Tree(3)])]))\n    Tree(1, [Tree(2), Tree(2, [Tree(3, [Tree(4)]), Tree(3)])])\n    >>> test_only_strips(Tree(5, [Tree(6), Tree(6, [Tree(7, [Tree(9)])]), Tree(7)]))\n    Tree(5, [Tree(6)])\n    \"\"\"\n    only_strips(t)\n    return t\ndef only_strips(t):\n    \"\"\"Remove all nodes of Tree t that are not on a path from the root to a leaf\n    whose labels form a strip. Assume has_strip(t) is True.\n    \"\"\"\n    t.branches = [b for b in t.branches if ⟦B3_18⟧]"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false,
+     "B3_6": false,
+     "B3_7": false,
+     "B3_8": false,
+     "B3_9": false,
+     "B3_10": false,
+     "B3_11": false,
+     "B3_12": false,
+     "B3_13": false,
+     "B3_14": false,
+     "B3_15": false,
+     "B3_16": false,
+     "B3_17": false,
+     "B3_18": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 1,
+     "B3_4": 1,
+     "B3_5": 1,
+     "B3_6": 1,
+     "B3_7": 2,
+     "B3_8": 2,
+     "B3_9": 2,
+     "B3_10": 2,
+     "B3_11": 3,
+     "B3_12": 3,
+     "B3_13": 3,
+     "B3_14": 4,
+     "B3_15": 4,
+     "B3_16": 4,
+     "B3_17": 4,
+     "B3_18": 5
+    },
+    "v": {
+     "B3_0": "len(s) == 0",
+     "B3_1": "s[0]",
+     "B3_2": "s[0] + len(s)",
+     "B3_3": "t, s[1:]",
+     "B3_4": "len(s) > 1 and s[0] + 1 == s[1]",
+     "B3_5": "False",
+     "B3_6": "is_strip(s) and is_strip(t)",
+     "B3_7": "longest(s[1:])",
+     "B3_8": "len",
+     "B3_9": "s[:1]",
+     "B3_10": "k == result[-1] + 1",
+     "B3_11": "True",
+     "B3_12": "b.label == t.label + 1 and has_strip(b)",
+     "B3_13": "False",
+     "B3_14": "[t.label]",
+     "B3_15": "b.label == t.label + 1",
+     "B3_16": "strips(b)",
+     "B3_17": "[t.label] + s",
+     "B3_18": "has_strip(b) and (only_strips(b) or t.label + 1 == b.label)"
+    }
+   },
+   "topics": [
+    {
+     "n": "4a",
+     "t": [
+      "LISTS"
+     ]
+    },
+    {
+     "n": "4b",
+     "t": [
+      "LISTS"
+     ]
+    },
+    {
+     "n": "4c",
+     "t": [
+      "LISTS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "4d",
+     "t": [
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "4e",
+     "t": [
+      "GENERATORS",
+      "LISTS",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  }
+ ]
+}

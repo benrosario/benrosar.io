@@ -1,0 +1,5 @@
+{
+ "order": ["midterm1", "midterm2", "midterm3", "final"],
+ "defaultCollection": "final",
+ "defaultNote": "New visitors start on the next exam for the whole class. Midterm 3 was 10/27/2026, so that is the final. People with saved progress from before study collections start on Midterm 3."
+}

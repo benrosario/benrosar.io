@@ -1,0 +1,1097 @@
+{
+ "id": "61a-fa25-mt2",
+ "t": "Fall 2025 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/fa25/mt2/61a-fa25-mt2.pdf",
+  "sol": "https://cs61a.org/resources/fa25/mt2/61a-fa25-mt2_sol.pdf",
+  "topics": "fa25-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-fa25-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed."
+      },
+      {
+       "c": "def weird(s):\n    if s:\n        if len(s) > 1:\n            yield s[1]\n        for x in weird(s[1:]):\n            yield x\n        yield s[0]\nt = weird([5, [6, 7], 8])\ndef even(s):\n    def weirder(t, i):\n        if i < len(s):\n            t.append(s[i-1])\n            t.append(s[i])\n            weirder(t, i * 2)\n        return t\n    return weirder([], 1)",
+       "lang": "py"
+      },
+      {
+       "p": "Write the output displayed by each expression below or Error if an error occurs. If some output is displayed before the error, include it. Assume that each expression is evaluated in order and sequentially, so evaluating the first could affect the value of the second. Write Generator for a generator object and Function for a function."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) print(next(t))"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "5",
+      "6",
+      "7",
+      "[6, 7]"
+     ],
+     "a": 3,
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) print([x for x in t])"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[8, 8, [6, 7], 5]"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) What is the order of growth of the time it takes to execute even(s) for a list of numbers s in"
+      },
+      {
+       "p": "terms of the length of s? Assume that len, list.append, accessing a list item using square brackets, and all arithmetic operators (such as -, <, and *) each takes a constant amount of time."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "exponential",
+      "quadratic",
+      "linear",
+      "logarithmic",
+      "constant"
+     ],
+     "a": 3,
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "EFFICIENCY",
+      "GENERATORS",
+      "HIGHER_ORDER_FUNCTIONS",
+      "ITERATORS",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa25-mt2/2",
+   "n": "2",
+   "t": "2. That’s a Wrap (4.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Answer the question below about this code. Draw an environment diagram, but the diagram itself will not be scored."
+      },
+      {
+       "c": "def wrap(s):\n    return [s[0], s]\n\ndef peel(f, s):\n    f(f(s)).append(2)\n    t = s[1]\n    t[0] = 3\n    t = [4]\n    return s\n\ns = [5, [6, [7]]]\nprint(peel(lambda s: s[1],\n           wrap(s)))",
+       "lang": "py",
+       "ln": false
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(a) What is displayed by running this code? If the code errors, write Error."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[5, [3, [6, [7], 2]]]"
+     ],
+     "part": "a"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "LAMBDAS",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa25-mt2/3",
+   "n": "3",
+   "t": "3. Inclusive (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition: A tree whole includes a tree part if it is possible to create a tree with the same repr string as part by removing some of the nodes of whole (but making no other changes). When a node is removed, all of its children are removed as well. The order of the nodes that remain must match, so that the repr string is the same."
+      },
+      {
+       "p": "Implement includes, which takes a Tree instance part and a Tree instance whole and returns whether whole includes part. The Tree class appears on the Midterm 2 Study Guide (Page 2 left column)."
+      },
+      {
+       "c": "def includes(part, whole):\n    \"\"\"Return whether the Tree part is included in the Tree whole.\n    >>> p1 = Tree(2, [Tree(20), Tree(22)])\n    >>> right = Tree(2, [Tree(19), Tree(20), Tree(21), Tree(22), Tree(23)])\n    >>> wrong = Tree(2, [Tree(19), Tree(22), Tree(20), Tree(23)])\n    >>> [includes(p1, right), includes(p1, wrong), includes(Tree(1, [right]), p1)]\n    [True, False, False]\n    >>> p2 = Tree(1, [Tree(6), p1])\n    >>> includes(p2, Tree(1, [Tree(5), Tree(6, [Tree(7)]), wrong, right]))\n    True\n    >>> includes(p2, Tree(1, [Tree(5), Tree(6, [Tree(7)]), wrong, Tree(8, [right])]))\n    False\n    \"\"\"\n    if whole.label != part.label:\n        return False\n    p, w = 0, 0\n    while ⟪a⟫:\n        if ⟪b⟫:\n            p += 1\n        w += 1\n    return ⟪c⟫",
+       "lang": "py",
+       "f": {
+        "a": "p < len(part.branches) and w < len(whole.branches)",
+        "b": "includes(part.branches[p], whole.branches[w])",
+        "c": "p == len(part.branches)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "p < len(part.branches)",
+      "w < len(whole.branches)",
+      "p < len(part.branches) or w < len(whole.branches)",
+      "p < len(part.branches) and w < len(whole.branches)"
+     ],
+     "a": 3,
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "includes(part.branches[p], whole.branches[w])"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "p == len(part.branches)"
+     ],
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    }
+   ],
+   "run": {
+    "c": [
+     "def includes(part, whole):\n    \"\"\"Return whether the Tree part is included in the Tree whole.\n    >>> p1 = Tree(2, [Tree(20), Tree(22)])\n    >>> right = Tree(2, [Tree(19), Tree(20), Tree(21), Tree(22), Tree(23)])\n    >>> wrong = Tree(2, [Tree(19), Tree(22), Tree(20), Tree(23)])\n    >>> [includes(p1, right), includes(p1, wrong), includes(Tree(1, [right]), p1)]\n    [True, False, False]\n    >>> p2 = Tree(1, [Tree(6), p1])\n    >>> includes(p2, Tree(1, [Tree(5), Tree(6, [Tree(7)]), wrong, right]))\n    True\n    >>> includes(p2, Tree(1, [Tree(5), Tree(6, [Tree(7)]), wrong, Tree(8, [right])]))\n    False\n    \"\"\"\n    if whole.label != part.label:\n        return False\n    p, w = 0, 0\n    while ⟦B2_0⟧:\n        if ⟦B2_1⟧:\n            p += 1\n        w += 1\n    return ⟦B2_2⟧"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0
+    },
+    "v": {
+     "B2_0": "p < len(part.branches) and w < len(whole.branches)",
+     "B2_1": "includes(part.branches[p], whole.branches[w])",
+     "B2_2": "p == len(part.branches)"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "OBJECTS",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa25-mt2/4",
+   "n": "4",
+   "t": "4. Exclusive (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a)"
+      },
+      {
+       "p": "Implement exclude, which takes a list s and a number x. It returns a list with all the elements of s that are not equal to x. The input list should not be modified. It is possible that s could be an empty list."
+      },
+      {
+       "p": "Write your answer directly in the blank below."
+      },
+      {
+       "c": "def exclude(s, x):\n    \"\"\"Return a list with all of the elements of s except those equal to x.\n    >>> a = [3, 4, 5, 3.0, 6, 5, 3]\n    >>> exclude(a, 3)\n    [4, 5, 6, 5]\n    >>> a # no change to a\n    [3, 4, 5, 3.0, 6, 5, 3]\n    \"\"\"\n    return ⟪a⟫",
+       "lang": "py",
+       "f": {
+        "a": "[y for y in s if y != x]"
+       }
+      }
+     ]
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "Fill in the blank."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[y for y in s if y != x]"
+     ],
+     "r": [
+      "B3_0"
+     ],
+     "part": "a"
+    },
+    {
+     "s": [
+      {
+       "h": "(b)"
+      },
+      {
+       "p": "Implement exclude_link, which takes a linked list of numbers s and a number x. It returns a linked list with all the elements of s that are not equal to x. The input linked list should not be modified. It is possible that s could be an empty linked list. The Link class appears on the Midterm 2 Study Guide (Page 2 left column)."
+      },
+      {
+       "p": "Write your answers directly in the blanks below."
+      },
+      {
+       "c": "def exclude_link(s, x):\n    \"\"\"Return a linked list with all of the elements of linked list s except those equal to x.\n    >>> a = Link(3, Link(4, Link(5, Link(3.0, Link(6, Link(5, Link(3)))))))\n    >>> exclude_link(a, 3)\n    Link(4, Link(5, Link(6, Link(5))))\n    >>> a # no change to a\n    Link(3, Link(4, Link(5, Link(3.0, Link(6, Link(5, Link(3)))))))\n    \"\"\"\n    if ⟪b⟫:\n        return ⟪c⟫\n    elif ⟪d⟫:\n        return ⟪e⟫\n    else:\n        return ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "b": "s is Link.empty",
+        "c": "s",
+        "d": "s.first == x",
+        "e": "exclude_link(s.rest, x)",
+        "f": "Link(s.first, exclude_link(s.rest, x))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "i. Fill in blank (b), the if condition."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s is Link.empty",
+      "s == Link.empty"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "ii. Fill in blank (c), the first return statement."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s",
+      "Link.empty"
+     ],
+     "r": [
+      "B3_2"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 32,
+     "l": [
+      {
+       "p": "iii. Fill in blank (d), the elif condition."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.first == x"
+     ],
+     "r": [
+      "B3_3"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 33,
+     "l": [
+      {
+       "p": "iv. Fill in blank (e), the elif return statement."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "exclude_link(s.rest, x)"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 34,
+     "l": [
+      {
+       "p": "v. Fill in blank (f), the else return statement."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link(s.first, exclude_link(s.rest, x))"
+     ],
+     "r": [
+      "B3_5"
+     ],
+     "part": "b",
+     "sub": "v"
+    }
+   ],
+   "run": {
+    "c": [
+     "def exclude(s, x):\n    \"\"\"Return a list with all of the elements of s except those equal to x.\n    >>> a = [3, 4, 5, 3.0, 6, 5, 3]\n    >>> exclude(a, 3)\n    [4, 5, 6, 5]\n    >>> a # no change to a\n    [3, 4, 5, 3.0, 6, 5, 3]\n    \"\"\"\n    return ⟦B3_0⟧",
+     "def exclude_link(s, x):\n    \"\"\"Return a linked list with all of the elements of linked list s except those equal to x.\n    >>> a = Link(3, Link(4, Link(5, Link(3.0, Link(6, Link(5, Link(3)))))))\n    >>> exclude_link(a, 3)\n    Link(4, Link(5, Link(6, Link(5))))\n    >>> a # no change to a\n    Link(3, Link(4, Link(5, Link(3.0, Link(6, Link(5, Link(3)))))))\n    \"\"\"\n    if ⟦B3_1⟧:\n        return ⟦B3_2⟧\n    elif ⟦B3_3⟧:\n        return ⟦B3_4⟧\n    else:\n        return ⟦B3_5⟧"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 1,
+     "B3_2": 1,
+     "B3_3": 1,
+     "B3_4": 1,
+     "B3_5": 1
+    },
+    "v": {
+     "B3_0": "[y for y in s if y != x]",
+     "B3_1": "s is Link.empty",
+     "B3_2": "s",
+     "B3_3": "s.first == x",
+     "B3_4": "exclude_link(s.rest, x)",
+     "B3_5": "Link(s.first, exclude_link(s.rest, x))"
+    }
+   },
+   "topics": [
+    {
+     "n": "4a",
+     "t": [
+      "CONTROL",
+      "LISTS"
+     ]
+    },
+    {
+     "n": "4b",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa25-mt2/5",
+   "n": "5",
+   "t": "5. Pizza Parlor (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "A Pizza Parlor has attributes for its name (str), the price (int) of each pizza it sells, the number of pizzas (int) it has available to cook, an alt (an alternative Parlor) to help with large orders, and its total profit (int). Its order method takes a positive integer quantity and optionally a Parlor instance source and processes an order as follows. A Parlor will cook at most its number of pizzas. If an order is larger than its number of pizzas, it will order the rest from its alt. Its profit increases by its price times the quantity of pizzas ordered, but decreases by its alt’s price times the quantity it orders from alt. A message is printed each time an order is completed or made with another Parlor as the source. A MegaParlor can cook any quantity of pizzas and has no alt."
+      },
+      {
+       "c": "class Parlor:\n    \"\"\"A Pizza Parlor has an alt(ernative) Parlor that helps it handle big orders.\n    >>> c = Parlor('Sliver', 3, 10, Parlor('Cheeseboard', 4, 10, MegaParlor(5)))\n    >>> c.order(6) # All $3*6 goes to Sliver; it has 4 pizzas left\n    Sliver now has $18 profit\n    >>> c.order(6) # Another $3*6 goes to Sliver, which pays $4*2 to Cheeseboard\n    Sliver forwarded an order of 2 to Cheeseboard\n    Cheeseboard now has $8 profit\n    Sliver now has $28 profit\n    >>> c.order(10) # Sliver gets $3*10 but pays Cheeseboard $4*10, which pays $5*2 to MEGA\n    Sliver forwarded an order of 10 to Cheeseboard\n    Cheeseboard forwarded an order of 2 to MEGA\n    MEGA now has $10 profit\n    Cheeseboard now has $38 profit\n    Sliver now has $18 profit\n    \"\"\"\n    def __init__(self, name, price, pizzas, alt):\n        self.name, self.price, self.pizzas, self.alt = name, price, pizzas, alt\n        self.profit = 0\n    def cook(self, q):\n        overload = ⟪a⟫                     # The quantity that must be ordered from alt\n        self.pizzas -= (q - overload)          # The quantity cooked by this Parlor\n        return overload\n    def order(self, quantity, source=None):\n        if isinstance(source, Parlor):\n            print(source.name, 'forwarded an order of', quantity, 'to', self.name)\n        self.profit += ⟪b⟫\n        rest = ⟪c⟫\n        if rest:\n            self.profit -= ⟪d⟫\n            ⟪e⟫\n        print(f'{self.name} now has ${self.profit} profit')\nclass MegaParlor(Parlor):\n    def __init__(self, price):\n        self.name, self.price, self.profit = \"MEGA\", price, 0\n    def cook(self, q):\n        return ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "a": "max(0, q - self.pizzas)",
+        "c": "self.cook(quantity)",
+        "e": "self.alt.order(rest, self)",
+        "f": "0",
+        "b": "self.price * quantity",
+        "d": "rest * self.alt.price"
+       }
+      }
+     ]
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "q - self.pizzas",
+      "abs(q - self.pizzas)",
+      "max(0, q - self.pizzas)",
+      "min(0, q - self.pizzas)"
+     ],
+     "a": 2,
+     "part": "a"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "price * quantity",
+      "price * self.quantity",
+      "price * pizzas",
+      "price * self.pizzas",
+      "self.price * quantity",
+      "self.price * self.quantity",
+      "self.price * pizzas",
+      "self.price * self.pizzas"
+     ],
+     "a": 4,
+     "part": "b"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c). IMPORTANT: You may not call type or isinstance."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.cook(quantity)"
+     ],
+     "r": [
+      "B4_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "rest * self.alt.price"
+     ],
+     "r": [
+      "B4_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e). IMPORTANT: You may not write =."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.alt.order(rest, self)"
+     ],
+     "r": [
+      "B4_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "0"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "f"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Parlor:\n    \"\"\"A Pizza Parlor has an alt(ernative) Parlor that helps it handle big orders.\n    >>> c = Parlor('Sliver', 3, 10, Parlor('Cheeseboard', 4, 10, MegaParlor(5)))\n    >>> c.order(6) # All $3*6 goes to Sliver; it has 4 pizzas left\n    Sliver now has $18 profit\n    >>> c.order(6) # Another $3*6 goes to Sliver, which pays $4*2 to Cheeseboard\n    Sliver forwarded an order of 2 to Cheeseboard\n    Cheeseboard now has $8 profit\n    Sliver now has $28 profit\n    >>> c.order(10) # Sliver gets $3*10 but pays Cheeseboard $4*10, which pays $5*2 to MEGA\n    Sliver forwarded an order of 10 to Cheeseboard\n    Cheeseboard forwarded an order of 2 to MEGA\n    MEGA now has $10 profit\n    Cheeseboard now has $38 profit\n    Sliver now has $18 profit\n    \"\"\"\n    def __init__(self, name, price, pizzas, alt):\n        self.name, self.price, self.pizzas, self.alt = name, price, pizzas, alt\n        self.profit = 0\n    def cook(self, q):\n        overload = ⟦B4_0⟧                     # The quantity that must be ordered from alt\n        self.pizzas -= (q - overload)          # The quantity cooked by this Parlor\n        return overload\n    def order(self, quantity, source=None):\n        if isinstance(source, Parlor):\n            print(source.name, 'forwarded an order of', quantity, 'to', self.name)\n        self.profit += ⟦B4_1⟧\n        rest = ⟦B4_2⟧\n        if rest:\n            self.profit -= ⟦B4_3⟧\n            ⟦B4_4⟧\n        print(f'{self.name} now has ${self.profit} profit')\nclass MegaParlor(Parlor):\n    def __init__(self, price):\n        self.name, self.price, self.profit = \"MEGA\", price, 0\n    def cook(self, q):\n        return ⟦B4_5⟧"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": false,
+     "B4_4": true,
+     "B4_5": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0,
+     "B4_4": 0,
+     "B4_5": 0
+    },
+    "v": {
+     "B4_0": "max(0, q - self.pizzas)",
+     "B4_1": "self.price * quantity",
+     "B4_2": "self.cook(quantity)",
+     "B4_3": "rest * self.alt.price",
+     "B4_4": "self.alt.order(rest, self)",
+     "B4_5": "0"
+    }
+   },
+   "topics": [
+    {
+     "n": "5",
+     "t": [
+      "OBJECTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa25-mt2/6",
+   "n": "6",
+   "t": "6. Two Topping Pizzas (20.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Kay and John want to share a pizza. Kay likes mushroom and John likes pineapple, but they won’t eat a pizza that has a mushroom slice next to a pineapple slice (eek!). A pizza with n slices is represented as a length-n string containing M for a mushroom slice, P for a pineapple slice, and _ for a slice with no topping. Slices are next to each other if they are adjacent in the string or are the first and last element of the string. Kay and John won’t eat MMMMPPPP (because MP) or MM__PP (because the first M is next to the last P), but will eat these: 'MM__M_PP_M', '_P_M_P_M', and '_PP_MM_P_M_'."
+      },
+      {
+       "h": "(a) (2.0 points)"
+      },
+      {
+       "p": "Implement symmetrical, which takes a dictionary d and returns True if for every pair (k, v) for which d[k] == v, it’s also true that d[v] == k, and returns False otherwise. Assume None is not a key or value in d."
+      },
+      {
+       "p": "The get method of a dict takes a key and returns the value for that key if the key is in the dictionary and otherwise returns None."
+      },
+      {
+       "c": "def symmetrical(d):\n    \"\"\"Return whether every key-value pair in d is also a value-key pair.\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'G'})\n    True\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'M'})            # No M->G\n    False\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'T'})            # No T->G\n    False\n    \"\"\"\n    return all([ ⟪a⟫ for k in d.keys()])",
+       "lang": "py",
+       "f": {
+        "a": "d.get(d[k]) == k"
+       }
+      }
+     ]
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "k in d and d[k] in d",
+      "k in d.keys() and d[k] in d.values()",
+      "k in d.keys() and v in d.values()",
+      "d[k] == d.get(k)",
+      "d[k] == d.get(v)",
+      "d[k] == v and d.get(v) == k",
+      "d[k] != v or d.get(v) == k",
+      "d[k].get(v) == v",
+      "d[k].get(v) == k",
+      "d[k].get(k) == v",
+      "d[k].get(k) == k",
+      "d.get(d[k]) == v",
+      "d.get(d[k]) == k",
+      "d.get(d[k]) == d.get(v)",
+      "d.get(d[k]) == d.get(k)"
+     ],
+     "a": 12,
+     "r": [
+      "B5_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (4.0 points)"
+      },
+      {
+       "p": "Implement acceptable, which takes a non-empty string pizza and a symmetrical dictionary of strings disallow. It returns whether pizza represents a pizza in which no slice that is next to another slice appears as a key-value pair in disallow. Assume that every key in disallow is not equal to its value."
+      },
+      {
+       "c": "def acceptable(pizza, disallow={'M': 'P', 'P': 'M'}):\n    \"\"\"Return whether there are no slices next to each other with a disallowed topping pair.\n    >>> acceptable(\"MM_PPP__M\")\n    True\n    >>> acceptable(\"MM__PPP\") # The first slice M and last slice P are next to each other.\n    False\n    >>> acceptable(\"MM__PPP_\")\n    True\n    >>> acceptable(\"MM__MPPP_\")\n    False\n    \"\"\"\n    assert symmetrical(disallow)\n    previous = ''\n    for slice in pizza:\n        if previous ⟪b⟫:\n            return False\n        ⟪c⟫\n    return ⟪d⟫",
+       "lang": "py",
+       "f": {
+        "b": "and disallow.get(previous) == slice",
+        "c": "previous = slice",
+        "d": "disallow.get(slice) != pizza[0]"
+       }
+      }
+     ]
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "i. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "or disallow.get(previous) == slice",
+      "and disallow.get(previous) == slice",
+      "or disallow.get(previous) == disallow.get(slice)",
+      "and disallow.get(previous) == disallow.get(slice)"
+     ],
+     "a": 1,
+     "r": [
+      "B5_1"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "ii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "previous = slice",
+      "previous = pizza[slice]",
+      "previous = previous + 1",
+      "slice = previous",
+      "slice = pizza[slice]",
+      "slice = disallow.get(previous)"
+     ],
+     "a": 0,
+     "r": [
+      "B5_2"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "iii. Fill in blank (d). IMPORTANT: You may not call acceptable."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "disallow.get(slice) != pizza[0]"
+     ],
+     "r": [
+      "B5_3"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (6.0 points)"
+      },
+      {
+       "p": "Implement count_pizzas, which takes a positive integer num_slices and returns the number of different pizzas that have mushroom (M), pineapple (P) or no topping (_) slices without M next to P. You may not call acceptable."
+      },
+      {
+       "c": "def count_pizzas(num_slices):\n    \"\"\"Return the number of ways to top a pizza with num_slices.\n    >>> count_pizzas(1) # One slice can have mushroom, or pineapple, or no topping.\n    3\n    >>> count_pizzas(2) # MM M_ _M __ PP P_ _P\n    7\n    >>> [count_pizzas(n) for n in range(3, 8)]\n    [15, 35, 83, 199, 479]\n    \"\"\"\n    def f(n, first, previous):\n        if ⟪e⟫:\n            if first == previous or ⟪f⟫:\n                return 1\n            return 0\n        allowed_next = ⟪g⟫\n        if previous == 'P':\n            allowed_next.remove('M')\n        if previous == 'M':\n            allowed_next.remove('P')\n        return sum([⟪h⟫ for x in allowed_next])\n    slice_types = ['_', 'M', 'P']\n    return sum([f(1, x, x) for x in slice_types])",
+       "lang": "py",
+       "f": {
+        "e": "n == num_slices",
+        "f": "'_' in [first, previous]",
+        "g": "list(slice_types)",
+        "h": "f(n+1, first, x)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "i. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "n == num_slices",
+      "num_slices == n"
+     ],
+     "r": [
+      "B5_4"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "ii. Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "'_' in [first, previous]",
+      "first in ['M', 'P']",
+      "first in ['M', 'P'] or previous in ['M', 'P']",
+      "first != previous"
+     ],
+     "a": 0,
+     "r": [
+      "B5_5"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "iii. Fill in blank (g)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "slice_types",
+      "list(slice_types)",
+      "[first, previous]",
+      "[first, previous, '_']"
+     ],
+     "a": 1,
+     "r": [
+      "B5_6"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "iv. Fill in blank (h)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "f(n+1, first, x)",
+      "f(n + 1, first, x)"
+     ],
+     "r": [
+      "B5_7"
+     ],
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(d) (8.0 points)"
+      },
+      {
+       "p": "Implement pizzas, which takes a positive integer n and returns a list of all different pizzas that have mushroom (M), pineapple (P) or no topping (_) slices and do not have M next to P. The check_ends argument indicates whether to check that the first and last slice are allowed to be next to each other. You may not call acceptable."
+      },
+      {
+       "c": "def pizzas(n, check_ends=True):\n    \"\"\"Ways to distribute M and P toppings on a pizza with n slices.\n    >>> pizzas(1)\n    ['_', 'M', 'P']\n    >>> pizzas(2)\n    ['__', '_M', '_P', 'M_', 'MM', 'P_', 'PP']\n    >>> pizzas(3)\n    ['___', '__M', '__P', '_M_', '_MM', '_P_', '_PP',\n    'M__', 'M_M', 'MM_', 'MMM', 'P__', 'P_P', 'PP_', 'PPP']\n    >>> '_M_P' in pizzas(4)\n    True\n    >>> [pizzas(8)[i*90] for i in range(1, 7)] # A few examples from pizzas(8)\n    ['___PP_M_', '__P__MMM', '_M__P__P', '_MM_M_P_', '_P_M___M', '_PP_P_MM']\n    \"\"\"\n    if n == 0:\n        return ⟪i⟫\n    recurse = pizzas(n-1, False)\n    ways = ⟪j⟫\n    for y, z in [['M', 'P'], ['P', 'M']]:\n        ⟪k⟫([y + x for x in recurse if not x or ⟪l⟫])\n    ok = lambda x: True\n    if check_ends:\n        ok = lambda x: x[0] + x[-1] not in ['MP', 'PM']\n    return ⟪m⟫      # Must be a call expression",
+       "lang": "py",
+       "f": {
+        "i": "[\"\"]",
+        "j": "[\"_\" + x for x in recurse]",
+        "k": "ways.extend",
+        "l": "x[0] != z",
+        "m": "list(filter(ok, ways))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "i. Fill in blank (i)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[\"\"]",
+      "['']"
+     ],
+     "r": [
+      "B5_8"
+     ],
+     "part": "d",
+     "sub": "i"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "ii. Fill in blank (j). IMPORTANT: You may not call pizzas in this blank."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[\"_\" + x for x in recurse]"
+     ],
+     "r": [
+      "B5_9"
+     ],
+     "part": "d",
+     "sub": "ii"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "iii. Fill in blank (k)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "yield",
+      "yield from",
+      "return",
+      "ways =",
+      "ways.append",
+      "ways.extend"
+     ],
+     "a": 5,
+     "r": [
+      "B5_10"
+     ],
+     "part": "d",
+     "sub": "iii"
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "iv. Fill in blank (l)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "x[0] != z"
+     ],
+     "r": [
+      "B5_11"
+     ],
+     "part": "d",
+     "sub": "iv"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "v. Fill in blank (m). IMPORTANT: You may only write names, parentheses, and commas. No [ ]."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "list(filter(ok, ways))"
+     ],
+     "r": [
+      "B5_12"
+     ],
+     "part": "d",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "h": "(e) A+ question (0 points)"
+      },
+      {
+       "p": "This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      },
+      {
+       "p": "Here are two examples of calling sum on a list of lists with an optional start argument."
+      },
+      {
+       "c": ">>> sum([[1, 2], [3]], start=[])\n[1, 2, 3]\n>>> sum([], start=[])\n[]",
+       "lang": "py"
+      },
+      {
+       "p": "Fill in the blank of this alternate implementation of pizzas. You may call acceptable and count_pizzas. If your answer is too long, you can write it on multiple lines."
+      },
+      {
+       "c": "def pizzas(n):\n    \"\"\"Ways to distribute M and P toppings on a pizza with n slices.\"\"\"\n    def g(pizzas):\n        yield from pizzas\n        yield from g(sum([[p + s for s in slices] for p in pizzas], start=[]))\n    slices = ['_', 'M', 'P']\n    t, u = ⟪n⟫\n    return [next(t) for _ in u]",
+       "lang": "py",
+       "f": {
+        "n": "filter(lambda p: len(p) == n and acceptable(p), g(slices)),\nrange(count_pizzas(n))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "i. Fill in the blank."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "filter(lambda p: len(p) == n and acceptable(p), g(slices)),\nrange(count_pizzas(n))"
+     ],
+     "r": [
+      "B5_13"
+     ],
+     "part": "e",
+     "sub": "i"
+    }
+   ],
+   "run": {
+    "c": [
+     "def symmetrical(d):\n    \"\"\"Return whether every key-value pair in d is also a value-key pair.\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'G'})\n    True\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'M'})            # No M->G\n    False\n    >>> symmetrical({'M': 'P', 'P': 'M', 'G': 'T'})            # No T->G\n    False\n    \"\"\"\n    return all([ ⟦B5_0⟧ for k in d.keys()])",
+     "def acceptable(pizza, disallow={'M': 'P', 'P': 'M'}):\n    \"\"\"Return whether there are no slices next to each other with a disallowed topping pair.\n    >>> acceptable(\"MM_PPP__M\")\n    True\n    >>> acceptable(\"MM__PPP\") # The first slice M and last slice P are next to each other.\n    False\n    >>> acceptable(\"MM__PPP_\")\n    True\n    >>> acceptable(\"MM__MPPP_\")\n    False\n    \"\"\"\n    assert symmetrical(disallow)\n    previous = ''\n    for slice in pizza:\n        if previous ⟦B5_1⟧:\n            return False\n        ⟦B5_2⟧\n    return ⟦B5_3⟧",
+     "def count_pizzas(num_slices):\n    \"\"\"Return the number of ways to top a pizza with num_slices.\n    >>> count_pizzas(1) # One slice can have mushroom, or pineapple, or no topping.\n    3\n    >>> count_pizzas(2) # MM M_ _M __ PP P_ _P\n    7\n    >>> [count_pizzas(n) for n in range(3, 8)]\n    [15, 35, 83, 199, 479]\n    \"\"\"\n    def f(n, first, previous):\n        if ⟦B5_4⟧:\n            if first == previous or ⟦B5_5⟧:\n                return 1\n            return 0\n        allowed_next = ⟦B5_6⟧\n        if previous == 'P':\n            allowed_next.remove('M')\n        if previous == 'M':\n            allowed_next.remove('P')\n        return sum([⟦B5_7⟧ for x in allowed_next])\n    slice_types = ['_', 'M', 'P']\n    return sum([f(1, x, x) for x in slice_types])",
+     "def pizzas(n, check_ends=True):\n    \"\"\"Ways to distribute M and P toppings on a pizza with n slices.\n    >>> pizzas(1)\n    ['_', 'M', 'P']\n    >>> pizzas(2)\n    ['__', '_M', '_P', 'M_', 'MM', 'P_', 'PP']\n    >>> pizzas(3)\n    ['___', '__M', '__P', '_M_', '_MM', '_P_', '_PP',\n    'M__', 'M_M', 'MM_', 'MMM', 'P__', 'P_P', 'PP_', 'PPP']\n    >>> '_M_P' in pizzas(4)\n    True\n    >>> [pizzas(8)[i*90] for i in range(1, 7)] # A few examples from pizzas(8)\n    ['___PP_M_', '__P__MMM', '_M__P__P', '_MM_M_P_', '_P_M___M', '_PP_P_MM']\n    \"\"\"\n    if n == 0:\n        return ⟦B5_8⟧\n    recurse = pizzas(n-1, False)\n    ways = ⟦B5_9⟧\n    for y, z in [['M', 'P'], ['P', 'M']]:\n        ⟦B5_10⟧([y + x for x in recurse if not x or ⟦B5_11⟧])\n    ok = lambda x: True\n    if check_ends:\n        ok = lambda x: x[0] + x[-1] not in ['MP', 'PM']\n    return ⟦B5_12⟧      # Must be a call expression",
+     "def pizzas_alt(n):\n    \"\"\"Ways to distribute M and P toppings on a pizza with n slices.\n    >>> pizzas_alt(1)\n    ['_', 'M', 'P']\n    >>> pizzas_alt(4) == pizzas(4)\n    True\n    \"\"\"\n    def g(pizzas):\n        yield from pizzas\n        yield from g(sum([[p + s for s in slices] for p in pizzas], start=[]))\n    slices = ['_', 'M', 'P']\n    t, u = ⟦B5_13⟧\n    return [next(t) for _ in u]"
+    ],
+    "b": {
+     "B5_0": false,
+     "B5_1": false,
+     "B5_2": true,
+     "B5_3": false,
+     "B5_4": false,
+     "B5_5": false,
+     "B5_6": false,
+     "B5_7": false,
+     "B5_8": false,
+     "B5_9": false,
+     "B5_10": false,
+     "B5_11": false,
+     "B5_12": false,
+     "B5_13": false
+    },
+    "ch": {
+     "B5_0": 0,
+     "B5_1": 1,
+     "B5_2": 1,
+     "B5_3": 1,
+     "B5_4": 2,
+     "B5_5": 2,
+     "B5_6": 2,
+     "B5_7": 2,
+     "B5_8": 3,
+     "B5_9": 3,
+     "B5_10": 3,
+     "B5_11": 3,
+     "B5_12": 3,
+     "B5_13": 4
+    },
+    "v": {
+     "B5_0": "d.get(d[k]) == k",
+     "B5_1": "and disallow.get(previous) == slice",
+     "B5_2": "previous = slice",
+     "B5_3": "disallow.get(slice) != pizza[0]",
+     "B5_4": "n == num_slices",
+     "B5_5": "'_' in [first, previous]",
+     "B5_6": "list(slice_types)",
+     "B5_7": "f(n+1, first, x)",
+     "B5_8": "[\"\"]",
+     "B5_9": "[\"_\" + x for x in recurse]",
+     "B5_10": "ways.extend",
+     "B5_11": "x[0] != z",
+     "B5_12": "list(filter(ok, ways))",
+     "B5_13": "filter(lambda p: len(p) == n and acceptable(p), g(slices)),\nrange(count_pizzas(n))"
+    }
+   },
+   "topics": [
+    {
+     "n": "6a",
+     "t": [
+      "CONTROL",
+      "SEQUENCES"
+     ]
+    },
+    {
+     "n": "6b",
+     "t": [
+      "CONTROL",
+      "SEQUENCES"
+     ]
+    },
+    {
+     "n": "6c",
+     "t": [
+      "CONTROL",
+      "RECURSION",
+      "SEQUENCES",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "6d",
+     "t": [
+      "CONTROL",
+      "LAMBDAS",
+      "RECURSION"
+     ]
+    }
+   ]
+  }
+ ]
+}

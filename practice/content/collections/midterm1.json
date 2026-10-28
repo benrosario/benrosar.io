@@ -1,0 +1,115 @@
+{
+ "id": "midterm1",
+ "label": "Midterm 1",
+ "sub": "Lectures 1–6",
+ "coverage": {
+  "text": "Fall 2026 Midterm 1 (Mon 9/14, 8–9pm, 20 points, paper) covered lectures 1–6 and textbook sections 1.1–1.6, not including the Newton’s Method example.",
+  "url": "https://cs61a.org/fa26/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "VARS_AND_FUNCTIONS",
+   "CONTROL",
+   "HIGHER_ORDER_FUNCTIONS",
+   "ENVIRONMENT_DIAGRAMS",
+   "LAMBDAS"
+  ],
+  "note": "Problems are included when every topic the course staff tagged them with is on Midterm 1. That classification is this site’s, not a staff recommendation."
+ },
+ "noPicks": "Course staff haven’t published Midterm 1 question picks, so nothing is marked recommended. The Fall 2026 Midterm 1 itself is the closest practice.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 4
+   }
+  ],
+  "balanced": true,
+  "minBuckets": 3,
+  "buckets": [
+   {
+    "id": "env",
+    "topics": [
+     "ENVIRONMENT_DIAGRAMS"
+    ]
+   },
+   {
+    "id": "wwpd",
+    "topics": [
+     "WWPD"
+    ]
+   },
+   {
+    "id": "hof",
+    "topics": [
+     "HIGHER_ORDER_FUNCTIONS",
+     "LAMBDAS"
+    ]
+   },
+   {
+    "id": "control",
+    "topics": [
+     "CONTROL",
+     "VARS_AND_FUNCTIONS"
+    ]
+   }
+  ],
+  "intro": "Each exam draws original past Midterm 1 problems from this study option at random, mixing environment diagrams, what-would-Python-display, control, and higher-order functions like the real exam. They aren’t modified, so you may have seen some of them already."
+ },
+ "exams": [
+  {
+   "exam": "61a-fa26-mt1",
+   "note": "This semester’s Midterm 1 itself (Mon 9/14/2026)."
+  },
+  {
+   "exam": "61a-fa25-mt1",
+   "note": "A past Midterm 1 from the same instructors."
+  },
+  {
+   "exam": "61a-sp25-mt1",
+   "note": "A past Midterm 1."
+  },
+  {
+   "exam": "61a-fa24-mt1",
+   "note": "A past Midterm 1."
+  },
+  {
+   "exam": "61a-su25-midterm",
+   "note": "From a summer midterm: only the problems that cover Midterm 1 material are shown.",
+   "drop": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "dropWhy": {
+    "6": "Uses lists, which come after Midterm 1",
+    "7": "Uses lists, which come after Midterm 1",
+    "8": "Uses lists, which come after Midterm 1",
+    "9": "Uses lists, which come after Midterm 1",
+    "10": "Uses lists, which come after Midterm 1",
+    "11": "Uses lists, which come after Midterm 1"
+   }
+  },
+  {
+   "exam": "61a-su23-midterm",
+   "note": "From a summer midterm: only the problems that cover Midterm 1 material are shown."
+  },
+  {
+   "exam": "61a-su24-final",
+   "note": "From a final exam: only the problems that cover Midterm 1 material are shown."
+  },
+  {
+   "exam": "61a-fa24-mt2",
+   "note": "From a later midterm: only the problems that cover Midterm 1 material are shown."
+  },
+  {
+   "exam": "61a-sp26-mt2",
+   "note": "From a later midterm: only the problems that cover Midterm 1 material are shown."
+  }
+ ]
+}

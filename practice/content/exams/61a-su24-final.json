@@ -1,0 +1,2075 @@
+{
+ "id": "61a-su24-final",
+ "t": "Summer 2024 Final",
+ "src": {
+  "exam": "https://cs61a.org/resources/su24/final/61a-su24-final.pdf",
+  "sol": "https://cs61a.org/resources/su24/final/61a-su24-final_sol.pdf",
+  "topics": "su24-final"
+ },
+ "p": [
+  {
+   "id": "61a-su24-final/1",
+   "n": "1",
+   "t": "1. Phrase Phonetics (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed. No error occurs when executing this code block."
+      },
+      {
+       "c": "phrases = ['sweet', 'dreams', 'good', 'night', '!']\ndef crowdstrike():\n    while phrases:\n        yield phrases.pop()\ni1 = iter(phrases)\ni2 = iter(phrases[1:])",
+       "lang": "py"
+      },
+      {
+       "p": "What Would Python Display? Write the output displayed by evaluating each expression below."
+      },
+      {
+       "p": "• If an error occurs, write \"Error\", but include all output displayed before the error."
+      },
+      {
+       "p": "• If evaluation would run forever, write \"Forever\"."
+      },
+      {
+       "p": "• To display an iterator object, write \"Iterator\"."
+      },
+      {
+       "p": "• To display a generator object, write \"Generator\"."
+      },
+      {
+       "p": "Assume the expressions are evaluated in order in the same interactive session, and so evaluating an earlier expression may affect the result of a later one."
+      },
+      {
+       "p": "Hint: Draw it out!"
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'sweetdreams'"
+     ],
+     "part": "a"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> next(i1) + next(i2)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'goodquestion'"
+     ],
+     "part": "b"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> phrases.insert(1, 'question')\n>>> next(i2) + next(i1)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "'nightdreams!'"
+     ],
+     "part": "c"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> c = crowdstrike()\n>>> next(i2) + next(i1) + next(c)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(d)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "['night', 'good', 'dreams', 'question', 'sweet']"
+     ],
+     "part": "d"
+    },
+    {
+     "s": [
+      {
+       "c": ">>> list(c)",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(e)"
+      },
+      {
+       "c": "print(next(i2)) or print(next(i1))",
+       "lang": "py"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "!\nStopIteration"
+     ],
+     "part": "e"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1a",
+     "t": [
+      "ITERATORS",
+      "LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1b",
+     "t": [
+      "ITERATORS",
+      "LISTS",
+      "MUTABILITY",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1c",
+     "t": [
+      "GENERATORS",
+      "ITERATORS",
+      "LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1d",
+     "t": [
+      "GENERATORS",
+      "LISTS",
+      "WWPD"
+     ]
+    },
+    {
+     "n": "1e",
+     "t": [
+      "ITERATORS",
+      "LISTS",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/2",
+   "n": "2",
+   "t": "2. Sweet Diadreams (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Draw the environment diagram for the code block below and then answer the questions that follow. Your diagram will not be graded."
+      },
+      {
+       "p": "If an error occurs, answer the following questions according to the environment diagram you drew up until the error."
+      },
+      {
+       "c": "def sweet(x, y):\n    def dreams(z, f):\n        return f(z)\n    while x + y > 0:\n        y = y - dreams(x + 2, lambda x: x - y)\n    return x + y\na = 1\nb = 2\na = sweet(a, b)",
+       "lang": "py"
+      },
+      {
+       "p": "Blank Space for Diagram:"
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(a) What is the value of a in Global?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(b) What is the return value of f2?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(c) What is the return value of f3?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "1"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(d) What is the return value of f4?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "2"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(e) What is the return value of f5?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "2"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(f ) Which frame is the parent frame of the lambda function? Note: These options may not"
+      },
+      {
+       "p": "cover every frame that is opened."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Global",
+      "f1",
+      "f2",
+      "f3",
+      "None of the above."
+     ],
+     "a": 1,
+     "part": "f"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "(g) How many times is dreams called?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4 or more"
+     ],
+     "a": 2,
+     "part": "g"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "HIGHER_ORDER_FUNCTIONS",
+      "LAMBDAS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/3",
+   "n": "3",
+   "t": "3. Movie Theater Seating (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Laryn, Raymond, and Charlotte want to watch a movie in theaters together but can’t figure out how to seat themselves."
+      },
+      {
+       "p": "Implement movie_seating, a function that takes in a list of strings, people, and a list of integers, seats. movie_seating returns a list of lists of all the possible ways to arrange the people amongst the open seats. In order to be considered a valid seating arrangement, all people must have a seat. A seat with a value 0 is open. A seat with a value -1 is not open. The arrangements can be returned in any order."
+      },
+      {
+       "p": "Hint: Use remove_person, which takes in a list of strings people (representing people) and a string to_remove"
+      },
+      {
+       "c": "(representing a person to remove). This function returns a new list that includes all the people from the original",
+       "lang": "py"
+      },
+      {
+       "p": "list except the specified person to remove."
+      },
+      {
+       "c": "def remove_person(people, to_remove):\n    return [person for person in people if person != to_remove]\ndef movie_seating(people, seats):\n    \"\"\"\n    >>> movie_seating(['L', 'R'], [0, 0])\n    [['L', 'R'], ['R', 'L']]\n    >>> movie_seating(['L', 'C'], [0, -1, 0])\n    [['L', -1, 'C'], ['C', -1, 'L']]\n    >>> movie_seating(['L', 'R', 'C'], [0, -1, 0])\n    []\n    >>> movie_seating(['L', 'R', 'C'], [0, 0, 0])\n    [['L', 'R', 'C'], ['L', 'C', 'R'], ['R', 'L', 'C'],\n    ['R', 'C', 'L'], ['C', 'L', 'R'], ['C', 'R', 'L']]\n    >>> movie_seating(['R', 'C'], [0, 0, 0])\n    [['R', 'C', 0], ['R', 0, 'C'], ['C', 'R', 0], ['C', 0, 'R'],\n    [0, 'R', 'C'], [0, 'C', 'R']]\n    \"\"\"\n    if not seats and people:\n        return []\n    if not people:\n        return [seats]\n    skip_first_seat = ⟪a⟫\n    if seats[0] == -1:\n        return [⟪b⟫ for arrangement in skip_first_seat]\n    ways = []\n    for choice in people:\n        use_first_seat = ⟪c⟫\n        ways.⟪d⟫([⟪e⟫ for arrangement in use_first_seat])\n    ways.⟪f⟫([⟪g⟫ for arrangement in skip_first_seat])\n    return ways",
+       "lang": "py",
+       "f": {
+        "a": "movie_seating(people, seats[1:])",
+        "b": "[-1] + arrangement",
+        "c": "movie_seating(remove_person(people, choice), seats[1:])",
+        "d": "extend",
+        "e": "[choice] + arrangement",
+        "f": "extend",
+        "g": "[0] + arrangement"
+       }
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "movie_seating(people, seats[1:])"
+     ],
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[-1] + arrangement"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "movie_seating(remove_person(people, choice), seats[1:])"
+     ],
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "append",
+      "extend",
+      "pop",
+      "remove",
+      "insert"
+     ],
+     "a": 1,
+     "r": [
+      "B2_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[choice] + arrangement"
+     ],
+     "r": [
+      "B2_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "append",
+      "extend",
+      "pop",
+      "remove",
+      "insert"
+     ],
+     "a": 1,
+     "r": [
+      "B2_5"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "(g) Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[0] + arrangement"
+     ],
+     "r": [
+      "B2_6"
+     ],
+     "part": "g"
+    }
+   ],
+   "run": {
+    "c": [
+     "def remove_person(people, to_remove):\n    return [person for person in people if person != to_remove]\ndef movie_seating(people, seats):\n    \"\"\"\n    >>> movie_seating(['L', 'R'], [0, 0])\n    [['L', 'R'], ['R', 'L']]\n    >>> movie_seating(['L', 'C'], [0, -1, 0])\n    [['L', -1, 'C'], ['C', -1, 'L']]\n    >>> movie_seating(['L', 'R', 'C'], [0, -1, 0])\n    []\n    >>> movie_seating(['L', 'R', 'C'], [0, 0, 0])\n    [['L', 'R', 'C'], ['L', 'C', 'R'], ['R', 'L', 'C'],\n    ['R', 'C', 'L'], ['C', 'L', 'R'], ['C', 'R', 'L']]\n    >>> movie_seating(['R', 'C'], [0, 0, 0])\n    [['R', 'C', 0], ['R', 0, 'C'], ['C', 'R', 0], ['C', 0, 'R'],\n    [0, 'R', 'C'], [0, 'C', 'R']]\n    \"\"\"\n    if not seats and people:\n        return []\n    if not people:\n        return [seats]\n    skip_first_seat = ⟦B2_0⟧\n    if seats[0] == -1:\n        return [⟦B2_1⟧ for arrangement in skip_first_seat]\n    ways = []\n    for choice in people:\n        use_first_seat = ⟦B2_2⟧\n        ways.⟦B2_3⟧([⟦B2_4⟧ for arrangement in use_first_seat])\n    ways.⟦B2_5⟧([⟦B2_6⟧ for arrangement in skip_first_seat])\n    return ways"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": false,
+     "B2_3": false,
+     "B2_4": false,
+     "B2_5": false,
+     "B2_6": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 0,
+     "B2_4": 0,
+     "B2_5": 0,
+     "B2_6": 0
+    },
+    "v": {
+     "B2_0": "movie_seating(people, seats[1:])",
+     "B2_1": "[-1] + arrangement",
+     "B2_2": "movie_seating(remove_person(people, choice), seats[1:])",
+     "B2_3": "extend",
+     "B2_4": "[choice] + arrangement",
+     "B2_5": "extend",
+     "B2_6": "[0] + arrangement"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "LISTS",
+      "MUTABILITY",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/4",
+   "n": "4",
+   "t": "4. Linked Max Composite Value Path (11.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Implement link_path_tree which takes in a Tree object, t, and an integer, val. The labels of t are one- argument functions that take in an integer and return an integer. link_path_tree should mutate t such that each label of t is a Linked List containing a path from the current node to the leaf with maximal \"composite value\"."
+      },
+      {
+       "p": "For a node n, the \"composite value\" of n is the result of successively passing val through each one-argument function in the path from the root to n. For example, if the path from root to n consists of 3 functions, f –> g"
+      },
+      {
+       "p": "–> h where f is the original label of the root node and h is the original label of n, the \"composite value\" of n is h(g(f(val)))."
+      },
+      {
+       "p": "After link_path_tree finishes executing, the label of each n should be updated to be a Linked List where the first value is the \"composite value\" of n, and the rest of the Linked List is the path from n to the leaf in the subtree rooted at n with maximal \"composite value\"."
+      },
+      {
+       "p": "Hint: Use get_tail. get_tail takes in a Linked List, lnk, and returns the value in the last Link. lnk must have at least one Link."
+      },
+      {
+       "c": "def get_tail(lnk):\n    \"\"\"\n    >>> get_tail(Link(1))\n    1\n    >>> get_tail(Link(1, Link(2)))\n    2\n    \"\"\"\n    while lnk.rest is not Link.empty:\n        lnk = lnk.rest\n    return lnk.first",
+       "lang": "py"
+      },
+      {
+       "p": "Here is a visualization of one of the doctests."
+      },
+      {
+       "c": "def link_path_tree(t, val):\n    \"\"\"\n    >>> t = Tree(lambda x: x + 1, [Tree(lambda x: x + 2), Tree(lambda x: x + 3)])\n    >>> link_path_tree(t, 0)\n    >>> t # the path with maximal composite value starts from the root and ends at the second branch of the root\n    Tree(Link(1, Link(4)), [Tree(Link(3)), Tree(Link(4))])\n    >>> t.label.rest is t.branches[1].label\n    True\n    >>> t2 = Tree(lambda x: x + 1, [Tree(lambda x: -x, [Tree(lambda x: x + 5), Tree(lambda x: x + 111)]), Tree(lambda x: x ** 2)])\n    >>> link_path_tree(t2, 9)\n    >>> t2\n    Tree(Link(10, Link(-10, Link(101))), [Tree(Link(-10, Link(101)), [Tree(Link(-5)),\n    Tree(Link(101))]), Tree(Link(100))])\n    >>> t2.label.rest is t2.branches[0].label\n    True\n    >>> t2.label.rest.rest is t2.branches[0].branches[1].label\n    True\n    \"\"\"\n    applied = ⟪a⟫\n    if t.is_leaf():\n        t.label = ⟪b⟫(applied)\n    else:\n        for b in t.branches:\n            ⟪c⟫\n        t.label = ⟪d⟫(⟪e⟫, max(⟪f⟫, key=⟪g⟫))",
+       "lang": "py",
+       "f": {
+        "a": "t.label(val)",
+        "b": "Link",
+        "c": "link_path_tree(b, applied)",
+        "d": "Link",
+        "e": "applied",
+        "f": "[b.label for b in t.branches]",
+        "g": "get_tail"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "t.label(val)"
+     ],
+     "r": [
+      "B3_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "link_path_tree(b, applied)"
+     ],
+     "r": [
+      "B3_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link"
+     ],
+     "r": [
+      "B3_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "applied"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f). Hint: Use a list comprehension."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[b.label for b in t.branches]",
+      "map(lambda b: b.label, t.branches)"
+     ],
+     "r": [
+      "B3_5"
+     ],
+     "part": "f"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "(g) Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "get_tail"
+     ],
+     "r": [
+      "B3_6"
+     ],
+     "part": "g"
+    }
+   ],
+   "run": {
+    "c": [
+     "def get_tail(lnk):\n    \"\"\"\n    >>> get_tail(Link(1))\n    1\n    >>> get_tail(Link(1, Link(2)))\n    2\n    \"\"\"\n    while lnk.rest is not Link.empty:\n        lnk = lnk.rest\n    return lnk.first",
+     "def link_path_tree(t, val):\n    \"\"\"\n    >>> t = Tree(lambda x: x + 1, [Tree(lambda x: x + 2), Tree(lambda x: x + 3)])\n    >>> link_path_tree(t, 0)\n    >>> t # the path with maximal composite value starts from the root and ends at the second branch of the root\n    Tree(Link(1, Link(4)), [Tree(Link(3)), Tree(Link(4))])\n    >>> t.label.rest is t.branches[1].label\n    True\n    >>> t2 = Tree(lambda x: x + 1, [Tree(lambda x: -x, [Tree(lambda x: x + 5), Tree(lambda x: x + 111)]), Tree(lambda x: x ** 2)])\n    >>> link_path_tree(t2, 9)\n    >>> t2\n    Tree(Link(10, Link(-10, Link(101))), [Tree(Link(-10, Link(101)), [Tree(Link(-5)),\n    Tree(Link(101))]), Tree(Link(100))])\n    >>> t2.label.rest is t2.branches[0].label\n    True\n    >>> t2.label.rest.rest is t2.branches[0].branches[1].label\n    True\n    \"\"\"\n    applied = ⟦B3_0⟧\n    if t.is_leaf():\n        t.label = ⟦B3_1⟧(applied)\n    else:\n        for b in t.branches:\n            ⟦B3_2⟧\n        t.label = ⟦B3_3⟧(⟦B3_4⟧, max(⟦B3_5⟧, key=⟦B3_6⟧))"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": true,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false,
+     "B3_6": false
+    },
+    "ch": {
+     "B3_0": 1,
+     "B3_1": 1,
+     "B3_2": 1,
+     "B3_3": 1,
+     "B3_4": 1,
+     "B3_5": 1,
+     "B3_6": 1
+    },
+    "v": {
+     "B3_0": "t.label(val)",
+     "B3_1": "Link",
+     "B3_2": "link_path_tree(b, applied)",
+     "B3_3": "Link",
+     "B3_4": "applied",
+     "B3_5": "[b.label for b in t.branches]",
+     "B3_6": "get_tail"
+    }
+   },
+   "topics": [
+    {
+     "n": "4",
+     "t": [
+      "LINKED_LISTS",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/5",
+   "n": "5",
+   "t": "5. CS 61A Web Browser (21.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "You are a talented web developer for CS 61A Inc. and have been tasked with modeling a web browser with object-oriented programming in Python. Fill out the classes below to satisfy the class descriptions and doctests."
+      },
+      {
+       "h": "(a) (7.0 points)     Browser"
+      },
+      {
+       "p": "Browser’s can visit pages which are represented as strings. Browser’s store their browsing history of visited pages in a Linked List so that when str is called on a Browser instance, the entire history of visited webpages can be displayed in order of most recently visited to least recently visited. Browser’s can also go back one webpage at a time, removing the most recently visited page from the browsing history each time. The visit and back methods additionally return a zero-argument “undo” function that undoes the last action performed (either visiting or going back). “undo” functions themselves also return another “undo” function. Undoing an “undo” results in a net-zero effect (e.g., visiting a page, undoing the visit, then undoing the “undo” is the same as just visiting the page). Implement the Browser class."
+      },
+      {
+       "c": "class Browser:\n    \"\"\"\n    >>> browser = Browser()\n    >>> print(browser)\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('oh.cs61a.org')\n    >>> print(browser)\n    oh.cs61a.org<-cs61a.org\n    >>> undo = browser.back()\n    >>> print(browser)\n    cs61a.org\n    >>> undo = undo()\n    >>> print(browser)\n    oh.cs61a.org<-cs61a.org\n    >>> undo = undo()\n    >>> print(browser)\n    cs61a.org\n    >>> _ = undo()() # undo'ing an undo cancels it out and does nothing\n    >>> print(browser)\n    cs61a.org\n    \"\"\"\n    def __init__(self):\n        self.browsing_history = Link.empty\n    def visit(self, page):\n        self.browsing_history = ⟪a⟫\n        return ⟪b⟫\n    def back(self):\n        page = self.browsing_history.first\n        self.browsing_history = ⟪c⟫\n        return ⟪d⟫\n    def __str__(self):\n        display = ''\n        head = self.browsing_history\n        while head is not Link.empty:\n            if ⟪e⟫ is not Link.empty:\n                display += ⟪f⟫\n            else:\n                display += ⟪g⟫\n            head = head.rest\n        return display",
+       "lang": "py",
+       "f": {
+        "a": "Link(page, self.browsing_history)",
+        "b": "lambda: self.back()",
+        "c": "self.browsing_history.rest",
+        "d": "lambda: self.visit(page)",
+        "e": "head.rest",
+        "f": "head.first + '<-'",
+        "g": "head.first"
+       }
+      }
+     ]
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link(page, self.browsing_history)"
+     ],
+     "r": [
+      "B4_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "lambda: self.back()",
+      "self.back"
+     ],
+     "r": [
+      "B4_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.browsing_history.rest"
+     ],
+     "r": [
+      "B4_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "lambda: self.visit(page)"
+     ],
+     "r": [
+      "B4_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "v. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "head",
+      "head.rest",
+      "head.rest.rest",
+      "self.browsing_history",
+      "self.browsing_history.rest",
+      "self.browsing_history.rest.rest"
+     ],
+     "a": 1,
+     "r": [
+      "B4_4"
+     ],
+     "part": "a",
+     "sub": "v"
+    },
+    {
+     "id": 32,
+     "l": [
+      {
+       "p": "vi. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "head.first + '<-'"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "a",
+     "sub": "vi"
+    },
+    {
+     "id": 33,
+     "l": [
+      {
+       "p": "vii. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "head.first"
+     ],
+     "r": [
+      "B4_6"
+     ],
+     "part": "a",
+     "sub": "vii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (4.0 points)     Chrome"
+      },
+      {
+       "p": "Chrome‘s are Browser’s that always begin their browsing from ’google.com’. Additionally, Chrome’s can interleave their browsing history with another browser, resulting in both browsers sharing the same browsing history that alternates between the webpages in each individual browser’s original browsing history. Interleave operations cannot be undone. Implement the Chrome class."
+      },
+      {
+       "c": "class Chrome(Browser):\n    \"\"\"\n    >>> browser = Chrome()\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('tutor.cs61a.org')\n    >>> _ = browser.visit('go.cs61a.org')\n    >>> browser2 = Chrome()\n    >>> _ = browser2.visit('cs61a.org')\n    >>> _ = browser2.visit('sections.cs61a.org')\n    >>> _ = browser2.visit('code.cs61a.org')\n    >>> _ = browser2.visit('oh.cs61a.org')\n    >>> print(browser)\n    go.cs61a.org<-tutor.cs61a.org<-cs61a.org<-google.com\n    >>> print(browser2)\n    oh.cs61a.org<-code.cs61a.org<-sections.cs61a.org<-cs61a.org<-google.com\n    >>> browser.interleave_histories(browser2)\n    >>> print(browser)\n    go.cs61a.org<-oh.cs61a.org<-tutor.cs61a.org<-code.cs61a.org<-cs61a.org<-sections.cs61a.org<-google.com<-cs61a.org<-google.com\n    >>> browser.browsing_history is browser2.browsing_history\n    True\n    \"\"\"\n    def __init__(self):\n        self.browsing_history = ⟪h⟫\n    def interleave_histories(self, other):\n        head = self.browsing_history\n        other_head = other.browsing_history\n        while head is not Link.empty and other_head is not Link.empty:\n            head.rest, head, other_head = ⟪i⟫, ⟪j⟫, ⟪k⟫\n        other.browsing_history = self.browsing_history",
+       "lang": "py",
+       "f": {
+        "h": "Link('google.com')",
+        "i": "other_head",
+        "j": "other_head",
+        "k": "head.rest"
+       }
+      }
+     ]
+    },
+    {
+     "id": 34,
+     "l": [
+      {
+       "p": "i. Fill in blank (h)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link('google.com')",
+      "Link('google.com', Link.empty)"
+     ],
+     "r": [
+      "B4_7"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 35,
+     "l": [
+      {
+       "p": "ii. Fill in blank (i)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "other_head"
+     ],
+     "r": [
+      "B4_8"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 36,
+     "l": [
+      {
+       "p": "iii. Fill in blank (j)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "other_head"
+     ],
+     "r": [
+      "B4_9"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 37,
+     "l": [
+      {
+       "p": "iv. Fill in blank (k)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "head.rest"
+     ],
+     "r": [
+      "B4_10"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (10.0 points)     MemorySaver"
+      },
+      {
+       "p": "MemorySaver’s are Browser’s that have a limit to the number of webpages they can store in their browsing history. Once their browsing history exceeds this limit, they begin removing webpages from their browsing history, starting with the earliest visited pages. Assume limit is greater than 1. Implement the MemorySaver class."
+      },
+      {
+       "c": "class MemorySaver(⟪l⟫):\n    \"\"\"\n    >>> browser = MemorySaver(2)\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('cs61bl.org')\n    >>> print(browser)\n    cs61bl.org<-cs61a.org\n    >>> _ = browser.visit('cs61c.org')\n    >>> print(browser)\n    cs61c.org<-cs61bl.org\n    >>> _ = browser.back()\n    >>> print(browser)\n    cs61bl.org\n    >>> undo = browser.visit('eecs70.org')\n    >>> print(browser)\n    eecs70.org<-cs61bl.org\n    >>> _ = undo()\n    >>> print(browser)\n    cs61bl.org\n    \"\"\"\n    def __init__(self, limit):\n        ⟪m⟫\n        self.limit = limit\n        self.history_length = 0\n    def visit(self, page):\n        if self.history_length == self.limit:\n            head = self.browsing_history\n            while ⟪n⟫ is not Link.empty:\n                head = ⟪o⟫\n            ⟪p⟫\n        else:\n            self.history_length = ⟪q⟫\n        return ⟪r⟫\n    def back(self):\n        ⟪s⟫\n        return ⟪t⟫",
+       "lang": "py",
+       "f": {
+        "l": "Browser",
+        "m": "Browser.__init__(self)",
+        "n": "head.rest.rest",
+        "o": "head.rest",
+        "p": "head.rest = head.rest.rest",
+        "q": "self.history_length + 1",
+        "r": "super().visit(page)",
+        "s": "self.history_length -= 1",
+        "t": "super().back()"
+       }
+      }
+     ]
+    },
+    {
+     "id": 38,
+     "l": [
+      {
+       "p": "i. Fill in blank (l)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Browser"
+     ],
+     "r": [
+      "B4_11"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 39,
+     "l": [
+      {
+       "p": "ii. Fill in blank (m)."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "Browser.__init__()",
+      "Browser.__init__(self)",
+      "Browser.__init__(self, limit)",
+      "Chrome.__init__()",
+      "Chrome.__init__(self)",
+      "Chrome.__init__(self, limit)",
+      "super().__init__()",
+      "super().__init__(self)",
+      "super().__init__(self, limit)"
+     ],
+     "a": [
+      1,
+      6
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 40,
+     "l": [
+      {
+       "p": "iii. Fill in blank (n)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "head",
+      "head.rest",
+      "head.rest.rest",
+      "self.browsing_history",
+      "self.browsing_history.rest",
+      "self.browsing_history.rest.rest"
+     ],
+     "a": 2,
+     "r": [
+      "B4_13"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 41,
+     "l": [
+      {
+       "p": "iv. Fill in blank (o)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "head",
+      "head.rest",
+      "head.rest.rest",
+      "self.browsing_history",
+      "self.browsing_history.rest",
+      "self.browsing_history.rest.rest"
+     ],
+     "a": 1,
+     "r": [
+      "B4_14"
+     ],
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "id": 42,
+     "l": [
+      {
+       "p": "v. Fill in blank (p)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "head.rest = head.rest.rest",
+      "head.rest = Link.empty"
+     ],
+     "r": [
+      "B4_15"
+     ],
+     "part": "c",
+     "sub": "v"
+    },
+    {
+     "id": 43,
+     "l": [
+      {
+       "p": "vi. Fill in blank (q)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.history_length + 1"
+     ],
+     "r": [
+      "B4_16"
+     ],
+     "part": "c",
+     "sub": "vi"
+    },
+    {
+     "id": 44,
+     "l": [
+      {
+       "p": "vii. Fill in blank (r)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "super().visit(page)"
+     ],
+     "r": [
+      "B4_17"
+     ],
+     "part": "c",
+     "sub": "vii"
+    },
+    {
+     "id": 45,
+     "l": [
+      {
+       "p": "viii. Fill in blank (s)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.history_length -= 1"
+     ],
+     "r": [
+      "B4_18"
+     ],
+     "part": "c",
+     "sub": "viii"
+    },
+    {
+     "id": 46,
+     "l": [
+      {
+       "p": "ix. Fill in blank (t)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "super().back()"
+     ],
+     "r": [
+      "B4_19"
+     ],
+     "part": "c",
+     "sub": "ix"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Browser:\n    \"\"\"\n    >>> browser = Browser()\n    >>> print(browser)\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('oh.cs61a.org')\n    >>> print(browser)\n    oh.cs61a.org<-cs61a.org\n    >>> undo = browser.back()\n    >>> print(browser)\n    cs61a.org\n    >>> undo = undo()\n    >>> print(browser)\n    oh.cs61a.org<-cs61a.org\n    >>> undo = undo()\n    >>> print(browser)\n    cs61a.org\n    >>> _ = undo()() # undo'ing an undo cancels it out and does nothing\n    >>> print(browser)\n    cs61a.org\n    \"\"\"\n    def __init__(self):\n        self.browsing_history = Link.empty\n    def visit(self, page):\n        self.browsing_history = ⟦B4_0⟧\n        return ⟦B4_1⟧\n    def back(self):\n        page = self.browsing_history.first\n        self.browsing_history = ⟦B4_2⟧\n        return ⟦B4_3⟧\n    def __str__(self):\n        display = ''\n        head = self.browsing_history\n        while head is not Link.empty:\n            if ⟦B4_4⟧ is not Link.empty:\n                display += ⟦B4_5⟧\n            else:\n                display += ⟦B4_6⟧\n            head = head.rest\n        return display",
+     "class Chrome(Browser):\n    \"\"\"\n    >>> browser = Chrome()\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('tutor.cs61a.org')\n    >>> _ = browser.visit('go.cs61a.org')\n    >>> browser2 = Chrome()\n    >>> _ = browser2.visit('cs61a.org')\n    >>> _ = browser2.visit('sections.cs61a.org')\n    >>> _ = browser2.visit('code.cs61a.org')\n    >>> _ = browser2.visit('oh.cs61a.org')\n    >>> print(browser)\n    go.cs61a.org<-tutor.cs61a.org<-cs61a.org<-google.com\n    >>> print(browser2)\n    oh.cs61a.org<-code.cs61a.org<-sections.cs61a.org<-cs61a.org<-google.com\n    >>> browser.interleave_histories(browser2)\n    >>> print(browser)\n    go.cs61a.org<-oh.cs61a.org<-tutor.cs61a.org<-code.cs61a.org<-cs61a.org<-sections.cs61a.org<-google.com<-cs61a.org<-google.com\n    >>> browser.browsing_history is browser2.browsing_history\n    True\n    \"\"\"\n    def __init__(self):\n        self.browsing_history = ⟦B4_7⟧\n    def interleave_histories(self, other):\n        head = self.browsing_history\n        other_head = other.browsing_history\n        while head is not Link.empty and other_head is not Link.empty:\n            head.rest, head, other_head = ⟦B4_8⟧, ⟦B4_9⟧, ⟦B4_10⟧\n        other.browsing_history = self.browsing_history",
+     "class MemorySaver(⟦B4_11⟧):\n    \"\"\"\n    >>> browser = MemorySaver(2)\n    >>> _ = browser.visit('cs61a.org')\n    >>> _ = browser.visit('cs61bl.org')\n    >>> print(browser)\n    cs61bl.org<-cs61a.org\n    >>> _ = browser.visit('cs61c.org')\n    >>> print(browser)\n    cs61c.org<-cs61bl.org\n    >>> _ = browser.back()\n    >>> print(browser)\n    cs61bl.org\n    >>> undo = browser.visit('eecs70.org')\n    >>> print(browser)\n    eecs70.org<-cs61bl.org\n    >>> _ = undo()\n    >>> print(browser)\n    cs61bl.org\n    \"\"\"\n    def __init__(self, limit):\n        ⟦B4_12⟧\n        self.limit = limit\n        self.history_length = 0\n    def visit(self, page):\n        if self.history_length == self.limit:\n            head = self.browsing_history\n            while ⟦B4_13⟧ is not Link.empty:\n                head = ⟦B4_14⟧\n            ⟦B4_15⟧\n        else:\n            self.history_length = ⟦B4_16⟧\n        return ⟦B4_17⟧\n    def back(self):\n        ⟦B4_18⟧\n        return ⟦B4_19⟧"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": false,
+     "B4_4": false,
+     "B4_5": false,
+     "B4_6": false,
+     "B4_7": false,
+     "B4_8": false,
+     "B4_9": false,
+     "B4_10": false,
+     "B4_11": false,
+     "B4_12": true,
+     "B4_13": false,
+     "B4_14": false,
+     "B4_15": true,
+     "B4_16": false,
+     "B4_17": false,
+     "B4_18": true,
+     "B4_19": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0,
+     "B4_4": 0,
+     "B4_5": 0,
+     "B4_6": 0,
+     "B4_7": 1,
+     "B4_8": 1,
+     "B4_9": 1,
+     "B4_10": 1,
+     "B4_11": 2,
+     "B4_12": 2,
+     "B4_13": 2,
+     "B4_14": 2,
+     "B4_15": 2,
+     "B4_16": 2,
+     "B4_17": 2,
+     "B4_18": 2,
+     "B4_19": 2
+    },
+    "v": {
+     "B4_0": "Link(page, self.browsing_history)",
+     "B4_1": "lambda: self.back()",
+     "B4_2": "self.browsing_history.rest",
+     "B4_3": "lambda: self.visit(page)",
+     "B4_4": "head.rest",
+     "B4_5": "head.first + '<-'",
+     "B4_6": "head.first",
+     "B4_7": "Link('google.com')",
+     "B4_8": "other_head",
+     "B4_9": "other_head",
+     "B4_10": "head.rest",
+     "B4_11": "Browser",
+     "B4_13": "head.rest.rest",
+     "B4_14": "head.rest",
+     "B4_15": "head.rest = head.rest.rest",
+     "B4_16": "self.history_length + 1",
+     "B4_17": "super().visit(page)",
+     "B4_18": "self.history_length -= 1",
+     "B4_19": "super().back()",
+     "B4_12": "Browser.__init__(self)"
+    }
+   },
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "LAMBDAS",
+      "LINKED_LISTS",
+      "OBJECTS",
+      "REPRESENTATION"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "INHERITANCE",
+      "LINKED_LISTS",
+      "OBJECTS"
+     ]
+    },
+    {
+     "n": "5c",
+     "t": [
+      "INHERITANCE",
+      "LINKED_LISTS",
+      "OBJECTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/6",
+   "n": "6",
+   "t": "6. Treequality (16.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Help Scheme trees check for treequality!"
+      },
+      {
+       "h": "(a) (2.0 points)      all"
+      },
+      {
+       "p": "all takes in a list, s, and returns #t if all the elements of the list are truth-y or if s has no elements. Otherwise, it returns #f."
+      },
+      {
+       "p": "; doctests"
+      },
+      {
+       "c": "scm> (all (list 0 1 2 3 4 5))\n#t\nscm> (all (list 0 1 2 3 (< 4 2) 5))\n#f\nscm> (all '())\n#t\n(define (all s)\n    (if (null? s)\n        #t\n        (and (car s) (all (cdr s)))\n    )\n)",
+       "lang": "scm"
+      }
+     ]
+    },
+    {
+     "id": 47,
+     "l": [
+      {
+       "p": "i. Is all tail recursive?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Yes, it is tail recursive.",
+      "No, it is not tail recursive."
+     ],
+     "a": 0,
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (5.0 points)     zip"
+      },
+      {
+       "p": "Implement zip which takes in two lists, s0 and s1, and returns a list of lists where the nested list at index i contains exactly two elements: the element at index i in s0 and the element at index i in s1. If s0 and s1 have different lengths, only zip together the first k elements where k is the length of the shorter list. ; doctests"
+      },
+      {
+       "c": "scm> (zip '(1 2 3) '(-1 -2 -3))",
+       "lang": "scm"
+      },
+      {
+       "p": "((1 -1) (2 -2) (3 -3))"
+      },
+      {
+       "c": "scm> (zip '(1 2 3) '(-1 -2 -3 -4 -5))",
+       "lang": "scm"
+      },
+      {
+       "p": "((1 -1) (2 -2) (3 -3))"
+      },
+      {
+       "c": "(define (zip s0 s1)\n    (if ⟪c⟫\n        nil\n        (cons ⟪d⟫ (zip ⟪e⟫))\n    )\n)",
+       "lang": "scm",
+       "f": {
+        "c": "(or (null? s0) (null? s1))",
+        "d": "(list (car s0) (car s1))",
+        "e": "(cdr s0) (cdr s1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 48,
+     "l": [
+      {
+       "p": "i. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(or (null? s0) (null? s1))"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 49,
+     "l": [
+      {
+       "p": "ii. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(list (car s0) (car s1))"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 50,
+     "l": [
+      {
+       "p": "iii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(cdr s0) (cdr s1)"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 51,
+     "l": [
+      {
+       "p": "iv. Is zip tail recursive?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "Yes, it is tail recursive.",
+      "No, it is not tail recursive."
+     ],
+     "a": 1,
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (9.0 points)    treequals?"
+      },
+      {
+       "p": "Recall the tree Scheme data abstraction from lecture:"
+      },
+      {
+       "c": "(define (tree label branches)\n    (cons label branches)\n)\n(define (label t) (car t))\n(define (branches t) (cdr t))\n(define (is-leaf t) (null? (branches t)))",
+       "lang": "scm"
+      },
+      {
+       "p": "Implement treequals?, a Scheme procedure that takes in two tree abstractions, t0 and t1, and returns"
+      },
+      {
+       "c": "#t if they have the exact same tree structure and same label values and returns #f otherwise.",
+       "lang": "py"
+      },
+      {
+       "p": "Reminder, all returns #t when called on a list with no elements."
+      },
+      {
+       "p": "; doctests"
+      },
+      {
+       "c": "scm> (define t (tree 1 (list (tree 2 nil) (tree 3 nil))))",
+       "lang": "scm"
+      },
+      {
+       "p": "t"
+      },
+      {
+       "c": "scm> (treequals? t (tree 1 (list (tree 2 nil) (tree 3 nil))))\n#t\nscm> (treequals? t (tree 1 (list (tree 3 nil) (tree 2 nil))))\n#f\nscm> (treequals? t (tree 1 (list (tree 3 nil) (tree 3 nil))))\n#f\nscm> (treequals? t (tree 1 (list (tree 2 nil) (tree 4 nil))))\n#f\nscm> (treequals? t (tree 1 (list (tree 2 nil) (tree 3 (list (tree 4 nil))))))\n#f\nscm> (treequals? t (tree 1 (list (tree 2 nil))))\n#f\n(define (treequals? t0 t1)\n    (cond\n        ((not ⟪f⟫) #f)\n        ((not ⟪g⟫) #f)\n        (else (all (map\n            (lambda (p) ⟪h⟫)\n            ⟪i⟫)\n        ))\n    )\n)",
+       "lang": "scm",
+       "f": {
+        "f": "(= (label t0) (label t1))",
+        "g": "(= (length (branches t0)) (length (branches t1)))",
+        "h": "(treequals? (car p) (car (cdr p)))",
+        "i": "(zip (branches t0) (branches t1))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 52,
+     "l": [
+      {
+       "p": "i. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(= (label t0) (label t1))",
+      "(= (length (branches t0)) (length\n(branches t1)))"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 53,
+     "l": [
+      {
+       "p": "ii. Fill in blank (g). Hint: Use length."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(= (length (branches t0)) (length (branches t1)))",
+      "(= (label t0)\n(label t1))"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 54,
+     "l": [
+      {
+       "p": "iii. Fill in blank (h)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(treequals? (car p) (car (cdr p)))"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 55,
+     "l": [
+      {
+       "p": "iv. Fill in blank (i). Hint: Use zip."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(zip (branches t0) (branches t1))"
+     ],
+     "part": "c",
+     "sub": "iv"
+    }
+   ],
+   "topics": [
+    {
+     "n": "6a",
+     "t": [
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "6b",
+     "t": [
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TAIL_RECURSION"
+     ]
+    },
+    {
+     "n": "6c",
+     "t": [
+      "LAMBDAS",
+      "RECURSION",
+      "SCHEME",
+      "SCHEME_LISTS",
+      "TREES"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/7",
+   "n": "7",
+   "t": "7. Scheme Dictionary Abstraction (8.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Implement a dictionary abstraction in Scheme. In this data abstraction, we represent a dictionary as a list of lists where each nested list has exactly two elements: the first element is the key and the second element is the value. make-dict is a zero-argument procedure that returns an empty dictionary abstraction and is implemented for you already. There are two procedures you must implement: (1) add-item takes in a dictionary abstraction, dict, a key, key, and a value, and adds a new entry pointing from key to value at the end of the list. If key already exists as a key in dict, then the old key-value pair should be removed and the new key-value pair should be added to the end of the list. (2) get-item takes in a dictionary abstraction, dict, and a key, key, and returns the value associated with key. If key does not exist in dict, get-item should error."
+      },
+      {
+       "p": "Hint: Use cadr, which is implemented for you below."
+      },
+      {
+       "p": "; doctests"
+      },
+      {
+       "c": "scm> (define dict (make-dict))",
+       "lang": "scm"
+      },
+      {
+       "p": "dict"
+      },
+      {
+       "c": "scm> (define dict (add-item dict 'a 'b))",
+       "lang": "scm"
+      },
+      {
+       "p": "dict"
+      },
+      {
+       "c": "scm> dict",
+       "lang": "scm"
+      },
+      {
+       "p": "((a b))"
+      },
+      {
+       "c": "scm> (get-item dict 'a)",
+       "lang": "scm"
+      },
+      {
+       "p": "b"
+      },
+      {
+       "c": "scm> (define dict (add-item dict 'b 'c))",
+       "lang": "scm"
+      },
+      {
+       "p": "dict"
+      },
+      {
+       "c": "scm> dict",
+       "lang": "scm"
+      },
+      {
+       "p": "((a b) (b c))"
+      },
+      {
+       "c": "scm> (define dict (add-item dict 'a 'c))",
+       "lang": "scm"
+      },
+      {
+       "p": "dict"
+      },
+      {
+       "c": "scm> dict",
+       "lang": "scm"
+      },
+      {
+       "p": "((b c) (a c))"
+      },
+      {
+       "c": "scm> (get-item dict 'a)",
+       "lang": "scm"
+      },
+      {
+       "p": "c"
+      },
+      {
+       "c": "scm> (get-item dict 'b)",
+       "lang": "scm"
+      },
+      {
+       "p": "c"
+      },
+      {
+       "c": "scm> (get-item dict 'c)",
+       "lang": "scm"
+      },
+      {
+       "p": "Error"
+      },
+      {
+       "c": "(define (cadr s) (car (cdr s)))\n(define (make-dict) nil)\n(define (add-item dict key value)\n    (⟪a⟫ (filter (lambda (p) ⟪b⟫) dict) (list ⟪c⟫))\n)\n(define (get-item dict key)\n    (⟪d⟫ (⟪e⟫ (filter (lambda (p) ⟪f⟫) dict)))\n)",
+       "lang": "scm",
+       "f": {
+        "a": "append",
+        "b": "(not (eq? (car pair) key))",
+        "c": "(cons key (cons value nil))",
+        "d": "cadr",
+        "e": "car",
+        "f": "(eq? (car pair) key)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 56,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "car",
+      "cdr",
+      "cadr",
+      "cons",
+      "list",
+      "append",
+      "map"
+     ],
+     "a": 5,
+     "part": "a"
+    },
+    {
+     "id": 57,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(not (eq? (car pair) key))"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 58,
+     "l": [
+      {
+       "p": "(c) Select all of the expressions below that could fill in blank (c). The options that use quotes or"
+      },
+      {
+       "p": "quasiquotes are explicitly noted for clarity."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "(cons key value)",
+      "(cons key (cons value nil))",
+      "(cons (cons key (cons value nil)) nil)",
+      "(list key value)",
+      "(list key (list value))",
+      "(cons key (list value))",
+      "(list (list key value))",
+      "`(key value) which uses quasiquote",
+      "`(,key ,value) which uses quasiquote",
+      "(`(,key ,value)) which uses quasiquote",
+      "`((,key ,value)) which uses quasiquote",
+      "(list `(,key ,value)) which uses quasiquote",
+      "'(key value) which uses quote",
+      "'((key value)) which uses quote"
+     ],
+     "a": [
+      1,
+      3,
+      5,
+      8
+     ],
+     "part": "c"
+    },
+    {
+     "id": 59,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "car",
+      "cdr",
+      "cadr",
+      "cons",
+      "list",
+      "append",
+      "map"
+     ],
+     "a": 2,
+     "part": "d"
+    },
+    {
+     "id": 60,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "car",
+      "cdr",
+      "cadr",
+      "cons",
+      "list",
+      "append",
+      "map"
+     ],
+     "a": 0,
+     "part": "e"
+    },
+    {
+     "id": 61,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "(eq? (car pair) key)"
+     ],
+     "part": "f"
+    }
+   ],
+   "topics": [
+    {
+     "n": "7",
+     "t": [
+      "LAMBDAS",
+      "PROGRAMS_AS_DATA",
+      "SCHEME",
+      "SCHEME_LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-su24-final/8",
+   "n": "8",
+   "t": "8. Team USA Basketball: The Sweet Dreams Team (10.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "The USA Basketball Men’s National Team is competing in the 2024 Olympics and needs your help to analyze their players’ performances. Complete the SQL queries using the two tables below. Hint: You may use SQL keywords in the blanks."
+      },
+      {
+       "p": "The box_scores table contains data on how many minutes they spent playing in one game as well as how many points, rebounds, and assists each player got in that game. The nba_data table contains data on which National Basketball Association (NBA) team each player plays for as well as which position each player plays. box_scores:"
+      },
+      {
+       "p": "+-------------------+---------+--------+----------+---------+ | name              | minutes | points | rebounds | assists | +-------------------+---------+--------+----------+---------+ | LeBron James      |    20.4 |     14 |        4 |       4 | | Anthony Edwards   |    20.6 |     13 |        2 |       1 | | Stephen Curry     |    21.8 |     13 |        2 |       2 | | Anthony Davis     |    17.6 |     12 |       10 |       1 | | Joel Embiid       |    16.6 |     10 |        7 |       3 | | Jrue Holiday      |    17.8 |      8 |        4 |       3 | | Bam Adebayo       |    17.6 |      8 |        5 |       1 | | Devin Booker      |    20.0 |      7 |        2 |       1 | | Jayson Tatum      |    17.8 |      6 |        3 |       2 | | Micah Potter      |     2.5 |      3 |        0 |       0 | | Tyrese Haliburton |    14.8 |      2 |        2 |       3 | | Derrick White     |    11.3 |      1 |        2 |       2 | +-------------------+---------+--------+----------+---------+ nba_data:"
+      },
+      {
+       "p": "+-------------------+--------------+----------+ | name              | nba_team     | position | +-------------------+--------------+----------+ | LeBron James      | Lakers       | Forward | | Anthony Edwards   | Timberwolves | Guard    | | Stephen Curry     | Warriors     | Guard    | | Anthony Davis     | Lakers       | Center   | | Joel Embiid       | Sixers       | Center   | | Jrue Holiday      | Celtics      | Guard    | | Bam Adebayo       | Heat         | Center   | | Devin Booker      | Suns         | Guard    | | Jayson Tatum      | Celtics      | Forward | | Micah Potter      | Jazz         | Center   | | Tyrese Haliburton | Pacers       | Guard    | | Derrick White     | Celtics      | Guard    | +-------------------+--------------+----------+"
+      },
+      {
+       "h": "(a) (2.0 points)    Points-Per-Minute"
+      },
+      {
+       "p": "Write a SQL query that returns the names of the top 5 players with the most points-per-minute (PPM) who played for at least 5 minutes in order from highest PPM to lowest PPM. PPM is calculated as points divided by minutes."
+      },
+      {
+       "p": "-- EXPECTED OUTPUT:"
+      },
+      {
+       "p": "-- LeBron James -- Anthony Davis -- Anthony Edwards -- Joel Embiid -- Stephen Curry"
+      },
+      {
+       "c": "SELECT name FROM ⟪a⟫;",
+       "lang": "sql",
+       "f": {
+        "a": "box_scores WHERE minutes >= 5 ORDER BY points / minutes DESC LIMIT 5"
+       }
+      }
+     ]
+    },
+    {
+     "id": 62,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "box_scores WHERE minutes >= 5 ORDER BY points / minutes DESC LIMIT 5"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (4.0 points)     More Rebounds = More Points?"
+      },
+      {
+       "p": "Write a SQL query that returns the names of NBA teams and average number of points scored by players that play for that NBA team in order from most average rebounds to least average rebounds for the NBA teams that have a total of 5 or more rebounds across all their players. Only players who played for at least 5 minutes should be considered in these calculations."
+      },
+      {
+       "p": "-- EXPECTED OUTPUT:"
+      },
+      {
+       "p": "-- Sixers|10.0 -- Lakers|13.0 -- Heat|8.0 -- Celtics|5.0"
+      },
+      {
+       "c": "SELECT ⟪b⟫ FROM ⟪c⟫ WHERE ⟪d⟫ GROUP BY ⟪e⟫ ORDER BY ⟪f⟫;",
+       "lang": "sql",
+       "f": {
+        "b": "nba_team, AVG(points)",
+        "c": "box_scores AS b, nba_data AS n",
+        "d": "minutes >= 5 AND b.name = n.name",
+        "e": "nba_team HAVING SUM(rebounds) >= 5",
+        "f": "AVG(rebounds) DESC"
+       }
+      }
+     ]
+    },
+    {
+     "id": 63,
+     "l": [
+      {
+       "p": "i. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "nba_team, AVG(points)"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 64,
+     "l": [
+      {
+       "p": "ii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "box_scores",
+      "nba_data",
+      "box_scores AS b1, box_scores AS b2",
+      "nba_data AS n1, nba_data AS n2",
+      "box_scores AS b, nba_data AS n"
+     ],
+     "a": 4,
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 65,
+     "l": [
+      {
+       "p": "iii. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "minutes >= 5 AND b.name = n.name"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 66,
+     "l": [
+      {
+       "p": "iv. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "nba_team HAVING SUM(rebounds) >= 5"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "id": 67,
+     "l": [
+      {
+       "p": "v. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "x": "(c) (4.0 points)      Assists-Per-Minute",
+     "a": [
+      "AVG(rebounds) DESC"
+     ],
+     "part": "b",
+     "sub": "v"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (4.0 points)     Assists-Per-Minute"
+      },
+      {
+       "p": "Write a SQL query that returns each position, the name of the one player with the most assists-per-minute (APM) in that position, and that player’s APM value in order from highest APM to lowest APM. APM is calculated as assists divided by minutes. Only players who played for at least 5 minutes should be considered in these calculations."
+      },
+      {
+       "p": "-- EXPECTED OUTPUT:"
+      },
+      {
+       "p": "-- Guard|Tyrese Haliburton|0.2027027027027027 -- Forward|LeBron James|0.19607843137254904 -- Center|Joel Embiid|0.18072289156626503"
+      },
+      {
+       "c": "SELECT ⟪g⟫ FROM ⟪h⟫ WHERE ⟪i⟫ GROUP BY ⟪j⟫ ORDER BY ⟪k⟫;",
+       "lang": "sql",
+       "f": {
+        "g": "position, b.name, MAX(assists / minutes)",
+        "h": "box_scores AS b, nba_data AS n",
+        "i": "WHERE minutes >= 5 AND b.name = n.name",
+        "j": "position",
+        "k": "MAX(assists / minutes) DESC"
+       }
+      }
+     ]
+    },
+    {
+     "id": 68,
+     "l": [
+      {
+       "p": "i. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "position, b.name, MAX(assists / minutes)",
+      "position, n.name,\nMAX(assists / minutes)"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 69,
+     "l": [
+      {
+       "p": "ii. Fill in blank (h)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "box_scores",
+      "nba_data",
+      "box_scores AS b1, box_scores AS b2",
+      "nba_data AS n1, nba_data AS n2",
+      "box_scores AS b, nba_data AS n"
+     ],
+     "a": 4,
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 70,
+     "l": [
+      {
+       "p": "iii. Fill in blank (i)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "WHERE minutes >= 5 AND b.name = n.name"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "id": 71,
+     "l": [
+      {
+       "p": "iv. Fill in blank (j)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "position"
+     ],
+     "part": "c",
+     "sub": "iv"
+    },
+    {
+     "id": 72,
+     "l": [
+      {
+       "p": "v. Fill in blank (k)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "MAX(assists / minutes) DESC",
+      "assists / minutes DESC"
+     ],
+     "part": "c",
+     "sub": "v"
+    }
+   ],
+   "topics": [
+    {
+     "n": "8a",
+     "t": [
+      "SQL"
+     ]
+    },
+    {
+     "n": "8b",
+     "t": [
+      "SQL"
+     ]
+    },
+    {
+     "n": "8c",
+     "t": [
+      "SQL"
+     ]
+    }
+   ]
+  }
+ ]
+}

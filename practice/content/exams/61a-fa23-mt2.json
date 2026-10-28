@@ -1,0 +1,885 @@
+{
+ "id": "61a-fa23-mt2",
+ "t": "Fall 2023 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/fa23/mt2/61a-fa23-mt2.pdf",
+  "sol": "https://cs61a.org/resources/fa23/mt2/61a-fa23-mt2_sol.pdf",
+  "topics": "fa23-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-fa23-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (4.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed."
+      },
+      {
+       "c": "s = range(3, 7)\nt = iter(s)\nu = map(lambda x: 2 * x, t)\nv = [next(t), next(t)]      # This line does not cause an error",
+       "lang": "py"
+      },
+      {
+       "p": "Choose the output displayed by the interactive Python interpreter when each expression below is evaluated or Error if an error occurs. These expressions are evaluated in order and the value of later expressions may be affected by evaluating previous expressions."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) [-k for k in v if k in s]"
+      }
+     ],
+     "k": "mc",
+     "x": "v contains 3 and 4 (the first two elements of the range 3 through 7), and both are in the range.",
+     "o": [
+      "[]",
+      "[3, 4]",
+      "[-3, -4]",
+      "Error"
+     ],
+     "a": 2,
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) tuple(u)"
+      }
+     ],
+     "k": "mc",
+     "x": "The map object does not apply its function until tuple is called. Making v already iterated over 3 and 4.\nThus, the map will begin at 5. The iterator t stops after 6.",
+     "o": [
+      "(3, 4, 5, 6)",
+      "(3, 4, 5, 6, 7)",
+      "(6, 8, 10, 12)",
+      "(6, 8, 10, 12, 14)",
+      "(10, 12)",
+      "(10, 12, 14)",
+      "Error"
+     ],
+     "a": 4,
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) next(t)"
+      }
+     ],
+     "k": "mc",
+     "x": "The tuple call used up the values in t. StopIteration occurs.",
+     "o": [
+      "3",
+      "5",
+      "range(3, 7)",
+      "range(5, 7)",
+      "Error"
+     ],
+     "a": 4,
+     "part": "c"
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(d) next(iter(s)) + next(iter(s))"
+      }
+     ],
+     "k": "mc",
+     "x": "One makes a new iterator out of the iterable, range(3,7) in each call, and thus each call to next yields a 3.",
+     "o": [
+      "6",
+      "7",
+      "10",
+      "11",
+      "Error"
+     ],
+     "a": 0,
+     "part": "d"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "ITERATORS",
+      "LISTS",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa23-mt2/2",
+   "n": "2",
+   "t": "2. Making a List, Checking it Twice (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Complete the environment diagram below and then answer the questions that follow. There is one question for each labeled blank in the diagram. The blanks with no labels have no questions associated with them and are not scored. Some blanks may be empty or unused. If a blank contains an arrow to a function, write the function as it would appear in the diagram. Do not add frames for calls to built-in functions. Reminder: list(s) creates a new list with the same elements as s; s.pop() removes and returns the last element of s."
+      },
+      {
+       "c": "def push(t, x):\n    s = list(t)\n    s[1].append(x)\n\ndef pull():\n    s = list(t)\n    u = s.pop()\n    return u[1][0]\n\ns = [7, [8, 9]]\nt = [6, s]\n\npush(s, pull())\nprint(t)",
+       "lang": "py",
+       "ln": false
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(a) What value fills blank (a)? Select all that apply."
+      }
+     ],
+     "k": "sata",
+     "o": [
+      "None",
+      "A list",
+      "A number",
+      "The object bound to global s",
+      "The object bound to global t",
+      "The same object that s[0] would evaluate to in the global frame",
+      "The same object that s[1] would evaluate to in the global frame",
+      "The same object that t[0] would evaluate to in the global frame",
+      "The same object that t[1] would evaluate to in the global frame"
+     ],
+     "a": [
+      1,
+      3,
+      8
+     ],
+     "part": "a"
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(b) What would be printed by the expression print(t) at the end?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[6, [7, [8, 9, 8]]]"
+     ],
+     "part": "b"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa23-mt2/3",
+   "n": "3",
+   "t": "3. 24-Hour Library (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Anyone can check out a book from a library and then bring that book back. Implement the Library and Book classes. A Library takes a list of unique strings called titles and constructs a books dictionary that has strings as keys and Book objects as values. Its checkout method takes a string title and returns the corresponding Book object if that title is not checked out, or prints a message. After bring_back is invoked on that book, it can be checked out again."
+      },
+      {
+       "c": "class Library:\n    \"\"\"A library with one copy of each title that can be checked out.\n    >>> cs = Library(['Composing Programs', 'Python Docs', 'Berkeley Academic Guide'])\n    >>> bs = [cs.checkout('Composing Programs'), cs.checkout('Python Docs')]\n    >>> cs.checkout('Composing Programs')        # This time, no Book is returned\n    Composing Programs is checked out\n    >>> bs[0].bring_back()\n    >>> cs.checkout('Composing Programs').title # This time, a Book is returned\n    'Composing Programs'\n    \"\"\"\n    def __init__(self, titles):\n        self.books = {t: Book(t, ⟪a⟫) for t in titles}\n        self.out = [] # A list of Book objects\n    def checkout(self, title):\n        assert title in self.books, title + \" isn't in this library's collection\"\n        book = ⟪b⟫\n        if book not in self.out:\n            ⟪c⟫\n            return book\n        else:\n            print(book, 'is checked out')\nclass Book:\n    def __init__(self, title, library):\n        self.title = title      # a string\n        self.library = library # a Library object\n    def bring_back(self):\n        ⟪d⟫.remove(⟪e⟫)\n    def __str__(self):\n        return ⟪f⟫",
+       "lang": "py",
+       "f": {
+        "a": "self",
+        "b": "self.books[title]",
+        "c": "self.out.append(book)",
+        "d": "self.library.out",
+        "e": "self",
+        "f": "self.title"
+       }
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "x": "The book takes a library. The libary that the book is in is the ‘self“ object that is being created with this\ndictionary of books.",
+     "o": [
+      "self",
+      "self.books",
+      "Library",
+      "Library()",
+      "Library(titles)"
+     ],
+     "a": 0,
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "x": "Get the relevant book from the dictionary of books.",
+     "a": [
+      "self.books[title]"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "x": "We wish to add the book to the list of checked out books. Append adds an element to a list. (Extend\nextends a list with another list.)",
+     "o": [
+      "out.append(book)",
+      "out.extend(book)",
+      "Library.append(book)",
+      "Library.extend(book)",
+      "self.out.append(book)",
+      "self.out.extend(book)"
+     ],
+     "a": 4,
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "x": "Remove the book from the list of checked out books.",
+     "o": [
+      "self.",
+      "self.out",
+      "library",
+      "library.out",
+      "self.library.out"
+     ],
+     "a": 4,
+     "r": [
+      "B2_3"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(e) Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "x": "The name self is bound to the book we’re removing.",
+     "o": [
+      "self",
+      "title",
+      "library",
+      "self.title",
+      "self.library"
+     ],
+     "a": 0,
+     "r": [
+      "B2_4"
+     ],
+     "part": "e"
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "(f ) Fill in blank (f)."
+      }
+     ],
+     "k": "mc",
+     "x": "One needs to return a string with the title in it. The repr would return a string with quotes in it.",
+     "o": [
+      "self",
+      "title",
+      "self.title",
+      "repr(self)",
+      "repr(title)",
+      "repr(self.title)"
+     ],
+     "a": 2,
+     "r": [
+      "B2_5"
+     ],
+     "part": "f"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Library:\n    \"\"\"A library with one copy of each title that can be checked out.\n    >>> cs = Library(['Composing Programs', 'Python Docs', 'Berkeley Academic Guide'])\n    >>> bs = [cs.checkout('Composing Programs'), cs.checkout('Python Docs')]\n    >>> cs.checkout('Composing Programs')        # This time, no Book is returned\n    Composing Programs is checked out\n    >>> bs[0].bring_back()\n    >>> cs.checkout('Composing Programs').title # This time, a Book is returned\n    'Composing Programs'\n    \"\"\"\n    def __init__(self, titles):\n        self.books = {t: Book(t, ⟦B2_0⟧) for t in titles}\n        self.out = [] # A list of Book objects\n    def checkout(self, title):\n        assert title in self.books, title + \" isn't in this library's collection\"\n        book = ⟦B2_1⟧\n        if book not in self.out:\n            ⟦B2_2⟧\n            return book\n        else:\n            print(book, 'is checked out')\nclass Book:\n    def __init__(self, title, library):\n        self.title = title      # a string\n        self.library = library # a Library object\n    def bring_back(self):\n        ⟦B2_3⟧.remove(⟦B2_4⟧)\n    def __str__(self):\n        return ⟦B2_5⟧"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": true,
+     "B2_3": false,
+     "B2_4": false,
+     "B2_5": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0,
+     "B2_3": 0,
+     "B2_4": 0,
+     "B2_5": 0
+    },
+    "v": {
+     "B2_0": "self",
+     "B2_1": "self.books[title]",
+     "B2_2": "self.out.append(book)",
+     "B2_3": "self.library.out",
+     "B2_4": "self",
+     "B2_5": "self.title"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "LISTS",
+      "MUTABILITY",
+      "OBJECTS",
+      "REPRESENTATION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa23-mt2/4",
+   "n": "4",
+   "t": "4. A Perfect Question (16.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. A perfect square is k*k for some integer k."
+      },
+      {
+       "h": "(a) (7.0 points)"
+      },
+      {
+       "p": "Implement fit, which takes positive integers total and n. It returns True or False indicating whether there are n positive perfect squares that sum to total. The perfect squares need not be unique."
+      },
+      {
+       "c": "def fit(total, n):\n    \"\"\"Return whether there are n positive perfect squares that sums to total.\n    >>> [fit(4, 1), fit(4, 2), fit(4, 3), fit(4, 4)] # 1*(2*2) for n=1; 4*(1*1) for n=4\n    [True, False, False, True]\n    >>> [fit(12, n) for n in range(3, 8)] # 3*(2*2), 3*(1*1)+3*3, 4*(1*1)+2*(2*2)\n    [True, True, False, True, False]\n    >>> [fit(32, 2), fit(32, 3), fit(32, 4), fit(32, 5)] # 2*(4*4), 3*(1*1)+2*2+5*5\n    [True, False, False, True]\n    \"\"\"\n    def f(total, n, k):\n        if ⟪a⟫:\n            return True\n        elif ⟪b⟫:\n            return False\n        else:\n            return ⟪c⟫\n    return f(total, n, 1)",
+       "lang": "py",
+       "f": {
+        "a": "total == 0 and n == 0",
+        "b": "total < k * k",
+        "c": "f(total - k * k, n - 1, k) or f(total, n, k + 1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "i. Select all of the options that could fill blank (a)."
+      }
+     ],
+     "k": "sata",
+     "x": "The final condition is ideal, but the other two would still provide the correct answer after additional\nrecursive calls.",
+     "o": [
+      "total == 0",
+      "n == k",
+      "total == 0 and n == 0",
+      "total == k * k",
+      "total == k * k and n == 1",
+      "total == n * k * k"
+     ],
+     "a": [
+      2,
+      4,
+      5
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "x": "At this point, one can only use terms that are larger than k*k and thus there can’t be a solution if\ntotal is smaller than that.",
+     "a": [
+      "total < k * k"
+     ],
+     "r": [
+      "B3_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c) with an expression of the form f(___, ___, ___) ___ f(___, ___, ___)."
+      }
+     ],
+     "k": "blank",
+     "x": "You either use k*k at least once or you only use larger perfect squares.",
+     "a": [
+      "f(total - k * k, n - 1, k) or f(total, n, k + 1)"
+     ],
+     "r": [
+      "B3_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (9.0 points)"
+      },
+      {
+       "p": "Implement the generator function squares, which takes positive integers total and k. It yields all lists of perfect squares greater or equal to k*k that sum to total. Each list is in non-increasing order (large to small)."
+      },
+      {
+       "c": "def squares(total, k):\n    \"\"\"Yield the ways in which perfect squares greater or equal to k*k sum to total.\n    >>> list(squares(10, 1)) # All lists of perfect squares that sum to 10\n    [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [4, 1, 1, 1, 1, 1, 1], [4, 4, 1, 1], [9, 1]]\n    >>> list(squares(20, 2)) # Only use perfect squares greater or equal to 4 (2*2).\n    [[4, 4, 4, 4, 4], [16, 4]]\n    \"\"\"\n    assert total > 0 and k > 0\n    if total == k * k:\n        yield ⟪d⟫\n    elif total > k * k:\n        for s in ⟪e⟫:\n            yield ⟪f⟫\n        yield from squares(total, k + 1)",
+       "lang": "py",
+       "f": {
+        "d": "[k * k]",
+        "e": "squares(total - k * k, k)",
+        "f": "s + [k*k]"
+       }
+      }
+     ]
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "i. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[k * k]"
+     ],
+     "r": [
+      "B3_3"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "ii. Fill in blank (e)."
+      }
+     ],
+     "k": "blank",
+     "x": "This gives a generator that yields solutions whose total area is total - k*k. And adding one\nmore square of k*k gives a solution for total.",
+     "a": [
+      "squares(total - k * k, k)"
+     ],
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "iii. Select all of the options that could fill in blank (f)."
+      }
+     ],
+     "k": "sata",
+     "x": "Each s is a list whose elements add to total - k*k, and adding k*k gives a desired solution.",
+     "o": [
+      "s + k*k",
+      "s.append(k*k)",
+      "s + [k*k]",
+      "[s] + [k*k]"
+     ],
+     "a": [
+      2
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "iv. Write an expression containing a that evaluates to the shortest list of perfect squares that"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "min(squares(a, 1), key=len)"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "p": "sum to an integer a. For example, if a = 32, your expression should evaluate to [16, 16] (not [25, 4, 1, 1, 1]). If there are two or more such lists that are both shortest, it can evaluate to any of them. Assume squares is implemented correctly."
+      }
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def fit(total, n):\n    \"\"\"Return whether there are n positive perfect squares that sums to total.\n    >>> [fit(4, 1), fit(4, 2), fit(4, 3), fit(4, 4)] # 1*(2*2) for n=1; 4*(1*1) for n=4\n    [True, False, False, True]\n    >>> [fit(12, n) for n in range(3, 8)] # 3*(2*2), 3*(1*1)+3*3, 4*(1*1)+2*(2*2)\n    [True, True, False, True, False]\n    >>> [fit(32, 2), fit(32, 3), fit(32, 4), fit(32, 5)] # 2*(4*4), 3*(1*1)+2*2+5*5\n    [True, False, False, True]\n    \"\"\"\n    def f(total, n, k):\n        if ⟦B3_0⟧:\n            return True\n        elif ⟦B3_1⟧:\n            return False\n        else:\n            return ⟦B3_2⟧\n    return f(total, n, 1)",
+     "def squares(total, k):\n    \"\"\"Yield the ways in which perfect squares greater or equal to k*k sum to total.\n    >>> list(squares(10, 1)) # All lists of perfect squares that sum to 10\n    [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [4, 1, 1, 1, 1, 1, 1], [4, 4, 1, 1], [9, 1]]\n    >>> list(squares(20, 2)) # Only use perfect squares greater or equal to 4 (2*2).\n    [[4, 4, 4, 4, 4], [16, 4]]\n    \"\"\"\n    assert total > 0 and k > 0\n    if total == k * k:\n        yield ⟦B3_3⟧\n    elif total > k * k:\n        for s in ⟦B3_4⟧:\n            yield ⟦B3_5⟧\n        yield from squares(total, k + 1)"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 1,
+     "B3_4": 1,
+     "B3_5": 1
+    },
+    "v": {
+     "B3_0": "total == 0 and n == 0",
+     "B3_1": "total < k * k",
+     "B3_2": "f(total - k * k, n - 1, k) or f(total, n, k + 1)",
+     "B3_3": "[k * k]",
+     "B3_4": "squares(total - k * k, k)",
+     "B3_5": "s + [k*k]"
+    }
+   },
+   "topics": [
+    {
+     "n": "4a",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "4b",
+     "t": [
+      "GENERATORS",
+      "LISTS",
+      "RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa23-mt2/5",
+   "n": "5",
+   "t": "5. Only Paths (7.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Implement only_paths, which takes a Tree of numbers t and a number n. It returns a new Tree with only the nodes of t on a path from the root to a leaf with labels that sum to n, or None if no path sums to n. Do not mutate t."
+      },
+      {
+       "p": "The Tree class appears on the midterm 2 study guide. Here is an illustration of the doctest examples involving t."
+      },
+      {
+       "c": "def only_paths(t, n):\n    \"\"\"Return a Tree with only the nodes of t along paths from the root to a leaf of t\n    for which the node labels of the path sum to n. If no paths sum to n, return None.\n    >>> print(only_paths(Tree(5, [Tree(2), Tree(1, [Tree(2)]), Tree(1, [Tree(1)])]), 7))\n    5\n    2\n    1\n    1\n    >>> t = Tree(3, [Tree(4), Tree(1, [Tree(3, [Tree(2)]), Tree(2, [Tree(1)]), Tree(5), Tree(3)])])\n    >>> print(only_paths(t, 7))\n    3\n    4\n    1\n    2\n    1\n    3\n    >>> print(only_paths(t, 9))\n    3\n    1\n    3\n    2\n    5\n    >>> print(only_paths(t, 3))\n    None\n    \"\"\"\n    if ⟪a⟫:\n        return t\n    new_branches = [⟪b⟫ for b in t.branches]\n    if ⟪c⟫(new_branches):\n        return Tree(t.label, [b for b in new_branches if ⟪d⟫])",
+       "lang": "py",
+       "f": {
+        "a": "t.is_leaf() and n == t.label",
+        "b": "only_paths(b, n - t.label)",
+        "c": "any",
+        "d": "b is not None"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "x": "This is a tree with a path to a leaf with sum of labels being n as specified. And no recursive call\nis needed.",
+     "a": [
+      "t.is_leaf() and n == t.label"
+     ],
+     "r": [
+      "B4_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "x": "The sum of labels along a path to any leaf is the sum in a branch plus the label. Thus, we wish to\nfind a solution for each branch with sum n-t.label.",
+     "a": [
+      "only_paths(b, n - t.label)"
+     ],
+     "r": [
+      "B4_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "x": "The function returns None if a branch has no valid path. Thus, if all the entries of the list of solutions for\nbranches are None, the procedure is done. Otherwise it should return a tree.",
+     "o": [
+      "all",
+      "any",
+      "has",
+      "only_paths"
+     ],
+     "a": 1,
+     "r": [
+      "B4_2"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "(d) Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "x": "Only keep the results that are trees, not None.\n(lambda f: lambda t, n: f(t, n-1))(only_paths)\nLike memo from lecture, this lambda function takes a function and returns a similar function. This\nsimilar function calls the original only_paths on n-1 rather than n to account for the length of the path.\n6. (6.0 points)      After Party",
+     "o": [
+      "only_paths(b, n)",
+      "b.label == n",
+      "b.label != n",
+      "b is None",
+      "b is not None"
+     ],
+     "a": 4,
+     "r": [
+      "B4_3"
+     ],
+     "part": "d"
+    },
+    {
+     "s": [
+      {
+       "p": "(e) This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first! Fill in the blank to implement only_long_paths, which takes a Tree of numbers t and a number n. It returns a new Tree containing only the nodes of t that lie on a path from the root to a leaf for which the sum of the labels plus the length of the path is n. Do not mutate t. You may not write and, or, if, [ or ]. Assume only_paths is implemented correctly."
+      },
+      {
+       "c": "only_paths = ⟪⟫\ndef only_long_paths(t, n):\n    \"\"\"Return a Tree with only the nodes of t along paths from the root to a leaf of t\n    for which the sum of node labels plus the length of the path is n.\n    >>> example = Tree(5, [Tree(3), Tree(1, [Tree(2)]), Tree(1, [Tree(1)])])\n    >>> only_long_paths(example, 10) # Result has paths 5-3 (length 2) and 5-1-1 (length 3)\n    Tree(5, [Tree(3), Tree(1, [Tree(1)])])\n    \"\"\"\n    return only_paths(t, n)",
+       "lang": "py"
+      }
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def only_paths(t, n):\n    \"\"\"Return a Tree with only the nodes of t along paths from the root to a leaf of t\n    for which the node labels of the path sum to n. If no paths sum to n, return None.\n    >>> print(only_paths(Tree(5, [Tree(2), Tree(1, [Tree(2)]), Tree(1, [Tree(1)])]), 7))\n    5\n    2\n    1\n    1\n    >>> t = Tree(3, [Tree(4), Tree(1, [Tree(3, [Tree(2)]), Tree(2, [Tree(1)]), Tree(5), Tree(3)])])\n    >>> print(only_paths(t, 7))\n    3\n    4\n    1\n    2\n    1\n    3\n    >>> print(only_paths(t, 9))\n    3\n    1\n    3\n    2\n    5\n    >>> print(only_paths(t, 3))\n    None\n    \"\"\"\n    if ⟦B4_0⟧:\n        return t\n    new_branches = [⟦B4_1⟧ for b in t.branches]\n    if ⟦B4_2⟧(new_branches):\n        return Tree(t.label, [b for b in new_branches if ⟦B4_3⟧])",
+     "def only_long_paths(t, n):\n    \"\"\"Return a Tree with only the nodes of t along paths from the root to a leaf of t\n    for which the sum of node labels plus the length of the path is n.\n    >>> example = Tree(5, [Tree(3), Tree(1, [Tree(2)]), Tree(1, [Tree(1)])])\n    >>> only_long_paths(example, 10) # Result has paths 5-3 (length 2) and 5-1-1 (length 3)\n    Tree(5, [Tree(3), Tree(1, [Tree(1)])])\n    \"\"\"\n    return only_paths(t, n)"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": false,
+     "B4_3": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0
+    },
+    "v": {
+     "B4_0": "t.is_leaf() and n == t.label",
+     "B4_1": "only_paths(b, n - t.label)",
+     "B4_2": "any",
+     "B4_3": "b is not None"
+    }
+   },
+   "topics": [
+    {
+     "n": "5",
+     "t": [
+      "LAMBDAS",
+      "TREES",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa23-mt2/6",
+   "n": "6",
+   "t": "6. After Party (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Implement after, which takes a linked list s and values a and b. It returns whether an element of s equal to b appears after an element of s equal to a. The Link class appears on the Midterm 2 study guide."
+      },
+      {
+       "c": "def after(s, a, b):\n    \"\"\"Return whether b comes after a in linked list s.\n    >>> t = Link(3, Link(6, Link(5, Link(4))))\n    >>> after(t, 6, 4)\n    True\n    >>> after(t, 4, 6)\n    False\n    >>> after(t, 6, 6)\n    False\n    \"\"\"\n    def find(s, n, f):\n        if s == Link.empty:\n            return ⟪a⟫\n        elif s.first == n:\n            return f(s.rest)\n        else:\n            return find(s.rest, n, f)\n    return find(s, a, lambda rest: ⟪b⟫)",
+       "lang": "py",
+       "f": {
+        "a": "False",
+        "b": "find(rest, b, lambda rest: True)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "x": "You have not found n, which is a, yet, and the list is done.",
+     "o": [
+      "n",
+      "True",
+      "False",
+      "a<b",
+      "f(Link.empty)"
+     ],
+     "a": 2,
+     "r": [
+      "B5_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b). You may not use or, and, if, [, or ]."
+      }
+     ],
+     "k": "blank",
+     "x": "At this point, you have found a in the list, so you should see if b is in the rest of the list.",
+     "a": [
+      "find(rest, b, lambda rest: True)"
+     ],
+     "r": [
+      "B5_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "(c) What is the order of growth of the run time of an efficient implementation of after in terms of"
+      },
+      {
+       "p": "the length of s? Here, efficient means that you have filled in the blanks to give the function the fastest order of growth."
+      }
+     ],
+     "k": "mc",
+     "x": "Each element is considered once since each recursive function call is called on the rest of the current list,\ngiving linear time. In the best case, a and b could appear at the beginning of the list, which would be\nfound in constant time, so that answer was accepted as well.",
+     "o": [
+      "Constant",
+      "Logarithmic",
+      "Linear",
+      "Quadratic",
+      "Exponential"
+     ],
+     "a": 2,
+     "part": "c"
+    }
+   ],
+   "run": {
+    "c": [
+     "def after(s, a, b):\n    \"\"\"Return whether b comes after a in linked list s.\n    >>> t = Link(3, Link(6, Link(5, Link(4))))\n    >>> after(t, 6, 4)\n    True\n    >>> after(t, 4, 6)\n    False\n    >>> after(t, 6, 6)\n    False\n    \"\"\"\n    def find(s, n, f):\n        if s == Link.empty:\n            return ⟦B5_0⟧\n        elif s.first == n:\n            return f(s.rest)\n        else:\n            return find(s.rest, n, f)\n    return find(s, a, lambda rest: ⟦B5_1⟧)"
+    ],
+    "b": {
+     "B5_0": false,
+     "B5_1": false
+    },
+    "ch": {
+     "B5_0": 0,
+     "B5_1": 0
+    },
+    "v": {
+     "B5_0": "False",
+     "B5_1": "find(rest, b, lambda rest: True)"
+    }
+   },
+   "topics": [
+    {
+     "n": "6a",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    },
+    {
+     "n": "6b",
+     "t": [
+      "LAMBDAS",
+      "LINKED_LISTS",
+      "RECURSION"
+     ]
+    },
+    {
+     "n": "6c",
+     "t": [
+      "EFFICIENCY"
+     ]
+    }
+   ]
+  }
+ ]
+}

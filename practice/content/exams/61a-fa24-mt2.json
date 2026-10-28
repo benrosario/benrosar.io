@@ -1,0 +1,1017 @@
+{
+ "id": "61a-fa24-mt2",
+ "t": "Fall 2024 Midterm 2",
+ "src": {
+  "exam": "https://cs61a.org/resources/fa24/mt2/61a-fa24-mt2.pdf",
+  "sol": "https://cs61a.org/resources/fa24/mt2/61a-fa24-mt2_sol.pdf",
+  "topics": "fa24-mt2"
+ },
+ "p": [
+  {
+   "id": "61a-fa24-mt2/1",
+   "n": "1",
+   "t": "1. What Would Python Display? (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Assume the following code has been executed. The Tree class appears on the midterm 2 study guide (page 2, left side)."
+      },
+      {
+       "c": "scare = Tree(0, [Tree(4), Tree(5, [Tree(10)]), Tree(2)])\ncrow = Tree(9, [scare, Tree(7, [Tree(6)])])\ndef climb(t, f):\n    if t.is_leaf():\n        return [t.label]\n    return [t.label] + climb(max(t.branches, key=f), f)\ndef run(t):\n    if t.is_leaf():\n        return t.label\n    else:\n        return max(map(run, t.branches))\ndef hide(t):\n    return t.label\njump = {(2 * x - 1): x for x in range(50)}",
+       "lang": "py"
+      },
+      {
+       "p": "Write the value of each expression below or Error if an error occurs."
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "l": [
+      {
+       "p": "(a) crow.branches[0].label"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 2,
+     "l": [
+      {
+       "p": "(b) [hide(b) for b in scare.branches]"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[4, 5, 2]"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 3,
+     "l": [
+      {
+       "p": "(c) climb(crow, hide)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[9, 7, 6]"
+     ],
+     "part": "c"
+    },
+    {
+     "id": 4,
+     "l": [
+      {
+       "p": "(d) climb(crow, run)"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[9, 0, 5, 10]"
+     ],
+     "part": "d"
+    },
+    {
+     "id": 5,
+     "l": [
+      {
+       "p": "(e) jump[jump[13]]"
+      }
+     ],
+     "k": "blank",
+     "x": "2. (5.0 points)     Pizza by the Slice",
+     "a": [
+      "4"
+     ],
+     "part": "e"
+    }
+   ],
+   "topics": [
+    {
+     "n": "1",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "RECURSION",
+      "SEQUENCES",
+      "TREES",
+      "WWPD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa24-mt2/2",
+   "n": "2",
+   "t": "2. Pizza by the Slice (5.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Answer the questions about the code below. You are encouraged to draw an environment diagram, but the diagram itself will not be scored."
+      },
+      {
+       "c": "def slice_up(s):\n    copy = s\n    t = [copy]\n    while len(s) > 1:\n        t.append(s[:len(s)-1])\n        s.pop()\n        s[0] = len(s)\n    return t\n\nt = [3, 4, 5]\nprint(slice_up(t))\nprint(t)",
+       "lang": "py",
+       "ln": true
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "l": [
+      {
+       "p": "(a) What would be printed by the expression print(slice_up(t)) on line 11?"
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "[[1], [3, 4], [2]]"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 7,
+     "l": [
+      {
+       "p": "(b) What would be printed by the expression print(t) on line 12?"
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "[1]",
+      "[2]",
+      "[3]",
+      "[1, 4]",
+      "[2, 4]",
+      "[3, 4]",
+      "[1, 4, 5]",
+      "[2, 4, 5]",
+      "[3, 4, 5]"
+     ],
+     "a": 0,
+     "part": "b"
+    },
+    {
+     "id": 8,
+     "l": [
+      {
+       "p": "(c) What is the order of growth of the time it takes to evaluate list(list(q)) for a list of numbers"
+      },
+      {
+       "p": "q in terms of the length of q. Assume that creating a list with one element takes constant time, and making a copy of a list takes linear time in the length of the list."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "exponential",
+      "quadratic",
+      "linear",
+      "logarithmic",
+      "constant"
+     ],
+     "a": 2,
+     "part": "c"
+    }
+   ],
+   "topics": [
+    {
+     "n": "2a",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    },
+    {
+     "n": "2b",
+     "t": [
+      "ENVIRONMENT_DIAGRAMS",
+      "LISTS",
+      "MUTABILITY"
+     ]
+    },
+    {
+     "n": "2c",
+     "t": [
+      "EFFICIENCY",
+      "ENVIRONMENT_DIAGRAMS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa24-mt2/3",
+   "n": "3",
+   "t": "3. CS 61A Software Store (6.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "A Store instance has a list of branches, and each branch is also a Store instance, forming a tree of stores. Each Store instance also has a list of programs (strings) called its inventory. For a Store:"
+      },
+      {
+       "p": "• The copies(s) method returns the number of times s appears in the inventories of all nodes in its tree of stores."
+      },
+      {
+       "p": "• The add_to(k) method returns a function that takes a string and appends it to the inventory of its kth branch. Assume that k is non-negative and less than the number of branches."
+      },
+      {
+       "c": "class Store:\n    \"\"\"A Store selling programs has branches forming a tree of Stores.\n    >>> north, south = Store(['Cats', 'Ants']), Store(['Cats', 'Cats', 'Hog'])\n    >>> east, west = Store(['Cats', 'Hog', 'Hog'], [north, south]), Store(['Cats', 'Cats', 'Ants'])\n    >>> main = Store(['Ants', 'Ants', 'Hog'], [east, west])\n    >>> east.copies('Cats') # 1 in north, 2 in south, 1 in east\n    4\n    >>> main.copies('Ants') # 2 in main, 1 in north, 1 in west\n    4\n    >>> main.add_to(1)('Ants') # Add 'Ants' to the inventory of west, the branch of main at index 1\n    >>> [main.copies('Ants'), west.copies('Ants')] # increased copies in both main and west\n    [5, 2]\n    \"\"\"\n    def __init__(self, programs, branches=[]):\n        assert all([isinstance(b, Store) for b in branches])\n        self.branches = branches\n        self.inventory = programs\n    def copies(self, s):\n        \"\"\"Return the number of times s (string) appears in all inventories of this tree.\"\"\"\n        return sum([⟪a⟫ for p in self.inventory if p == s] + [⟪b⟫ for b in self.branches])\n    def add_to(self, k):\n        \"\"\"Return a function that appends a string to the inventory of the branch at index k.\"\"\"\n        return ⟪c⟫",
+       "lang": "py",
+       "f": {
+        "a": "1",
+        "b": "b.copies(s)",
+        "c": "self.branches[k].inventory.append"
+       }
+      }
+     ]
+    },
+    {
+     "id": 9,
+     "l": [
+      {
+       "p": "(a) Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "1",
+      "p",
+      "len(p)",
+      "len(self.inventory)"
+     ],
+     "a": 0,
+     "r": [
+      "B2_0"
+     ],
+     "part": "a"
+    },
+    {
+     "id": 10,
+     "l": [
+      {
+       "p": "(b) Fill in blank (b)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "b.copies(s)"
+     ],
+     "r": [
+      "B2_1"
+     ],
+     "part": "b"
+    },
+    {
+     "id": 11,
+     "l": [
+      {
+       "p": "(c) Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "self.branches[k].inventory.append"
+     ],
+     "r": [
+      "B2_2"
+     ],
+     "part": "c"
+    }
+   ],
+   "run": {
+    "c": [
+     "class Store:\n    \"\"\"A Store selling programs has branches forming a tree of Stores.\n    >>> north, south = Store(['Cats', 'Ants']), Store(['Cats', 'Cats', 'Hog'])\n    >>> east, west = Store(['Cats', 'Hog', 'Hog'], [north, south]), Store(['Cats', 'Cats', 'Ants'])\n    >>> main = Store(['Ants', 'Ants', 'Hog'], [east, west])\n    >>> east.copies('Cats') # 1 in north, 2 in south, 1 in east\n    4\n    >>> main.copies('Ants') # 2 in main, 1 in north, 1 in west\n    4\n    >>> main.add_to(1)('Ants') # Add 'Ants' to the inventory of west, the branch of main at index 1\n    >>> [main.copies('Ants'), west.copies('Ants')] # increased copies in both main and west\n    [5, 2]\n    \"\"\"\n    def __init__(self, programs, branches=[]):\n        assert all([isinstance(b, Store) for b in branches])\n        self.branches = branches\n        self.inventory = programs\n    def copies(self, s):\n        \"\"\"Return the number of times s (string) appears in all inventories of this tree.\"\"\"\n        return sum([⟦B2_0⟧ for p in self.inventory if p == s] + [⟦B2_1⟧ for b in self.branches])\n    def add_to(self, k):\n        \"\"\"Return a function that appends a string to the inventory of the branch at index k.\"\"\"\n        return ⟦B2_2⟧"
+    ],
+    "b": {
+     "B2_0": false,
+     "B2_1": false,
+     "B2_2": false
+    },
+    "ch": {
+     "B2_0": 0,
+     "B2_1": 0,
+     "B2_2": 0
+    },
+    "v": {
+     "B2_0": "1",
+     "B2_1": "b.copies(s)",
+     "B2_2": "self.branches[k].inventory.append"
+    }
+   },
+   "topics": [
+    {
+     "n": "3",
+     "t": [
+      "LISTS",
+      "OBJECTS",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa24-mt2/4",
+   "n": "4",
+   "t": "4. Almost a Perfect Question (18.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "Definition. A proper divisor of an integer n is an integer d less than n that evenly divides n, and so n divided by d has no remainder. A semiperfect number is a positive integer that is the sum of some (or all) of its proper divisors. For example, 24 = 2 + 4 + 6 + 12 and so it is semiperfect. The sum of divisors cannot contain repeated numbers."
+      },
+      {
+       "h": "(a) (6.0 points)"
+      },
+      {
+       "p": "Implement semiperfect, which takes a positive integer n. It returns True if n is semiperfect and False otherwise."
+      },
+      {
+       "c": "def semiperfect(n):\n    \"\"\"Return whether positive integer n is a sum of some (or all) of its proper divisors.\n    >>> [k for k in range(1, 40) if semiperfect(k)]\n    [6, 12, 18, 20, 24, 28, 30, 36]\n    \"\"\"\n    def f(s, d):\n        if ⟪a⟫:\n            return True\n        if d >= n:\n            return False\n        if ⟪b⟫ and f(⟪c⟫, d + 1):\n            return True\n        return ⟪d⟫\n    return f(n, 1)",
+       "lang": "py",
+       "f": {
+        "a": "s == 0",
+        "b": "n % d == 0",
+        "c": "s - d",
+        "d": "f(s, d + 1)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 12,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "n == 0",
+      "s == 0",
+      "s == d",
+      "n == d"
+     ],
+     "a": 1,
+     "r": [
+      "B3_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 13,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "n % d == 0",
+      "s % d == 0",
+      "n%d>0",
+      "s%d>0"
+     ],
+     "a": 0,
+     "r": [
+      "B3_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 14,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s - d"
+     ],
+     "r": [
+      "B3_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 15,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "f(s, d + 1)"
+     ],
+     "r": [
+      "B3_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)"
+      },
+      {
+       "p": "Implement subsums, a generator function that takes a list of unique (no repeats) positive integers s and a positive integer n. It yields all sublists of s that sum to n. A sublist of s is a list containing some of the elements of s in order. The subsums function should not yield the same list twice. The lists may appear in any order."
+      },
+      {
+       "c": "def subsums(s, n):\n    \"\"\"Yield all sublists of s that sum to n.\n    >>> list(subsums([1, 2, 3, 6, 9], 18))\n    [[1, 2, 6, 9], [3, 6, 9]]\n    >>> list(subsums([1, 2, 3, 4, 6], 16))\n    [[1, 2, 3, 4, 6]]\n    >>> list(subsums([1, 2, 3, 4, 6, 8, 12], 12))\n    [[1, 2, 3, 6], [1, 3, 8], [2, 4, 6], [4, 8], [12]]\n    \"\"\"\n    if s:\n        if ⟪e⟫:\n            yield [n]\n        for t in ⟪f⟫:\n            yield ⟪g⟫\n        yield from ⟪h⟫",
+       "lang": "py",
+       "f": {
+        "e": "n == s[0]",
+        "f": "subsums(s[1:], n-s[0])",
+        "g": "s[:1] + t",
+        "h": "subsums(s[1:], n)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 16,
+     "l": [
+      {
+       "p": "i. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "n == s",
+      "n == s[0]",
+      "n in s",
+      "[n] == s"
+     ],
+     "a": 1,
+     "r": [
+      "B3_4"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 17,
+     "l": [
+      {
+       "p": "ii. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "subsums(s[1:], n-s[0])"
+     ],
+     "r": [
+      "B3_5"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 18,
+     "l": [
+      {
+       "p": "iii. Fill in blank (g)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "s+t",
+      "[s] + t",
+      "s[1:] + t",
+      "s[:1] + t"
+     ],
+     "a": 3,
+     "r": [
+      "B3_6"
+     ],
+     "part": "b",
+     "sub": "iii"
+    },
+    {
+     "id": 19,
+     "l": [
+      {
+       "p": "iv. Fill in blank (h)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "subsums(s, n)",
+      "subsums(s[1:], n)",
+      "subsums(s, n - 1)",
+      "subsums(s[1:], n - 1)"
+     ],
+     "a": 1,
+     "r": [
+      "B3_7"
+     ],
+     "part": "b",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(c) (6.0 points)"
+      },
+      {
+       "p": "Implement semisums, which takes a positive integer n. It returns a list of all lists of unique (no repeats) proper divisors of n that sum to n. You may call semiperfect and subsums."
+      },
+      {
+       "c": "def semisums(n):\n    \"\"\"Return a list of all lists (with no repeats) of\n    proper divisors of n that sum to n.\n    >>> semisums(22) # 22 is not semiperfect, so there are no sums.\n    []\n    >>> semisums(30) # 30 is semiperfect. It has three different sums.\n    [[1, 3, 5, 6, 15], [2, 3, 10, 15], [5, 10, 15]]\n    \"\"\"\n    return list( ⟪i⟫ ([k for k in range(1, n) if ⟪j⟫ ], ⟪k⟫ ))",
+       "lang": "py",
+       "f": {
+        "i": "subsums",
+        "j": "n % k == 0",
+        "k": "n"
+       }
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "l": [
+      {
+       "p": "i. Fill in blank (i)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "map",
+      "filter",
+      "sorted",
+      "subsums",
+      "semiperfect"
+     ],
+     "a": 3,
+     "r": [
+      "B3_8"
+     ],
+     "part": "c",
+     "sub": "i"
+    },
+    {
+     "id": 21,
+     "l": [
+      {
+       "p": "ii. Fill in blank (j)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "semiperfect(n)",
+      "semiperfect(k)",
+      "semiperfect(n) or semiperfect(k)",
+      "n % k == 0"
+     ],
+     "a": 3,
+     "r": [
+      "B3_9"
+     ],
+     "part": "c",
+     "sub": "ii"
+    },
+    {
+     "id": 22,
+     "l": [
+      {
+       "p": "iii. Fill in blank (k)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "n"
+     ],
+     "r": [
+      "B3_10"
+     ],
+     "part": "c",
+     "sub": "iii"
+    },
+    {
+     "s": [
+      {
+       "p": "iv. Fill in blank (l) of primitive_semiperfect, a function that takes a positive integer n. It returns True if n is semiperfect and no smaller semiperfect number is a divisor of n."
+      },
+      {
+       "c": "def primitive_semiperfect(n):\n    \"\"\"Return whether n is semiperfect and has no semiperfect proper divisors.\n    >>> [k for k in range(1, 300) if primitive_semiperfect(k)]\n    [6, 20, 28, 88, 104, 272]\n    \"\"\"\n    return semiperfect(n) and not any(map(semiperfect, filter(⟪l⟫)))",
+       "lang": "py",
+       "f": {
+        "l": "lambda k: n % k == 0, range(1, n)"
+       }
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "l": [
+      {
+       "p": "Fill in blank (l). Your answer should have two expressions separated by a comma."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "lambda k: n % k == 0, range(1, n)"
+     ],
+     "r": [
+      "B3_11"
+     ],
+     "part": "c"
+    }
+   ],
+   "run": {
+    "c": [
+     "def semiperfect(n):\n    \"\"\"Return whether positive integer n is a sum of some (or all) of its proper divisors.\n    >>> [k for k in range(1, 40) if semiperfect(k)]\n    [6, 12, 18, 20, 24, 28, 30, 36]\n    \"\"\"\n    def f(s, d):\n        if ⟦B3_0⟧:\n            return True\n        if d >= n:\n            return False\n        if ⟦B3_1⟧ and f(⟦B3_2⟧, d + 1):\n            return True\n        return ⟦B3_3⟧\n    return f(n, 1)",
+     "def subsums(s, n):\n    \"\"\"Yield all sublists of s that sum to n.\n    >>> list(subsums([1, 2, 3, 6, 9], 18))\n    [[1, 2, 6, 9], [3, 6, 9]]\n    >>> list(subsums([1, 2, 3, 4, 6], 16))\n    [[1, 2, 3, 4, 6]]\n    >>> list(subsums([1, 2, 3, 4, 6, 8, 12], 12))\n    [[1, 2, 3, 6], [1, 3, 8], [2, 4, 6], [4, 8], [12]]\n    \"\"\"\n    if s:\n        if ⟦B3_4⟧:\n            yield [n]\n        for t in ⟦B3_5⟧:\n            yield ⟦B3_6⟧\n        yield from ⟦B3_7⟧",
+     "def semisums(n):\n    \"\"\"Return a list of all lists (with no repeats) of\n    proper divisors of n that sum to n.\n    >>> semisums(22) # 22 is not semiperfect, so there are no sums.\n    []\n    >>> semisums(30) # 30 is semiperfect. It has three different sums.\n    [[1, 3, 5, 6, 15], [2, 3, 10, 15], [5, 10, 15]]\n    \"\"\"\n    return list( ⟦B3_8⟧ ([k for k in range(1, n) if ⟦B3_9⟧ ], ⟦B3_10⟧ ))",
+     "def primitive_semiperfect(n):\n    \"\"\"Return whether n is semiperfect and has no semiperfect proper divisors.\n    >>> [k for k in range(1, 300) if primitive_semiperfect(k)]\n    [6, 20, 28, 88, 104, 272]\n    \"\"\"\n    return semiperfect(n) and not any(map(semiperfect, filter(⟦B3_11⟧)))"
+    ],
+    "b": {
+     "B3_0": false,
+     "B3_1": false,
+     "B3_2": false,
+     "B3_3": false,
+     "B3_4": false,
+     "B3_5": false,
+     "B3_6": false,
+     "B3_7": false,
+     "B3_8": false,
+     "B3_9": false,
+     "B3_10": false,
+     "B3_11": false
+    },
+    "ch": {
+     "B3_0": 0,
+     "B3_1": 0,
+     "B3_2": 0,
+     "B3_3": 0,
+     "B3_4": 1,
+     "B3_5": 1,
+     "B3_6": 1,
+     "B3_7": 1,
+     "B3_8": 2,
+     "B3_9": 2,
+     "B3_10": 2,
+     "B3_11": 3
+    },
+    "v": {
+     "B3_0": "s == 0",
+     "B3_1": "n % d == 0",
+     "B3_2": "s - d",
+     "B3_3": "f(s, d + 1)",
+     "B3_4": "n == s[0]",
+     "B3_5": "subsums(s[1:], n-s[0])",
+     "B3_6": "s[:1] + t",
+     "B3_7": "subsums(s[1:], n)",
+     "B3_8": "subsums",
+     "B3_9": "n % k == 0",
+     "B3_10": "n",
+     "B3_11": "lambda k: n % k == 0, range(1, n)"
+    }
+   },
+   "topics": [
+    {
+     "n": "4a",
+     "t": [
+      "CONTROL",
+      "HIGHER_ORDER_FUNCTIONS"
+     ]
+    },
+    {
+     "n": "4b",
+     "t": [
+      "GENERATORS",
+      "LISTS",
+      "TREE_RECURSION"
+     ]
+    },
+    {
+     "n": "4c",
+     "t": [
+      "GENERATORS",
+      "LAMBDAS",
+      "LISTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa24-mt2/5",
+   "n": "5",
+   "t": "5. How Long is this Exam? (11.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "h": "(a) (5.0 points)"
+      },
+      {
+       "p": "Implement longer, which takes two linked lists of numbers s and t. It returns the longer of the two. If they have the same length, it returns s."
+      },
+      {
+       "p": "A linked list is either a Link instance or Link.empty. The Link class is on page 2 of the midterm 2 study guide."
+      },
+      {
+       "c": "def longer(s, t):\n    \"\"\"Return the longer linked list, s or t. (Same length? return s.)\n    >>> longer(Link(2, Link(3)), Link.empty)\n    Link(2, Link(3))\n    >>> longer(Link(2, Link(3)), Link(4, Link(5)))\n    Link(2, Link(3))\n    >>> longer(Link(2, Link(3)), Link(4, Link(5, Link(6, Link(7)))))\n    Link(4, Link(5, Link(6, Link(7))))\n    >>> longer(Link.empty, Link.empty) is Link.empty\n    True\n    \"\"\"\n    a, b = s, t\n    while b is not Link.empty:\n        if ⟪a⟫:\n            return ⟪b⟫\n        ⟪c⟫\n    return ⟪d⟫",
+       "lang": "py",
+       "f": {
+        "a": "a is Link.empty",
+        "b": "t",
+        "c": "a, b = a.rest, b.rest",
+        "d": "s"
+       }
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "l": [
+      {
+       "p": "i. Fill in blank (a)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "a is Link.empty"
+     ],
+     "r": [
+      "B4_0"
+     ],
+     "part": "a",
+     "sub": "i"
+    },
+    {
+     "id": 25,
+     "l": [
+      {
+       "p": "ii. Fill in blank (b)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "a",
+      "b",
+      "s",
+      "t",
+      "longer(a, b)",
+      "longer(s, t)"
+     ],
+     "a": 3,
+     "r": [
+      "B4_1"
+     ],
+     "part": "a",
+     "sub": "ii"
+    },
+    {
+     "id": 26,
+     "l": [
+      {
+       "p": "iii. Fill in blank (c)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "a = a.rest",
+      "a = s.rest",
+      "b = b.rest",
+      "b = t.rest",
+      "a, b = a.rest, b.rest",
+      "a, b = s.rest, t.rest"
+     ],
+     "a": 4,
+     "r": [
+      "B4_2"
+     ],
+     "part": "a",
+     "sub": "iii"
+    },
+    {
+     "id": 27,
+     "l": [
+      {
+       "p": "iv. Fill in blank (d)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "a",
+      "b",
+      "s",
+      "t",
+      "longer(a, b)",
+      "longer(s, t)"
+     ],
+     "a": 2,
+     "r": [
+      "B4_3"
+     ],
+     "part": "a",
+     "sub": "iv"
+    },
+    {
+     "s": [
+      {
+       "h": "(b) (6.0 points)"
+      },
+      {
+       "p": "Implement longest, which takes a linked list of postive integers s and a positive integer n. It returns the longest sublist of s with elements that sum to a number less than or equal to n. Do not mutate s. In case of a tie, return any of the longest sublists whose sum is n or less. Assume longer is implemented correctly."
+      },
+      {
+       "p": "A sublist of a linked list s is a linked list with some (or none or all) of the elements of s in order. Assume the sum of the elements of Link.empty is 0. Link.empty is a sublist of any linked list."
+      },
+      {
+       "c": "def longest(s, n):\n    \"\"\"Return the longest sublist of s that sums to n or less.\n    >>> longest(Link(5, Link(1, Link(3, Link(4, Link(2, Link(7)))))), 7)\n    Link(1, Link(3, Link(2)))\n    >>> longest(Link(5, Link(1, Link(3, Link(4, Link(2, Link(7)))))), 70)\n    Link(5, Link(1, Link(3, Link(4, Link(2, Link(7))))))\n    >>> longest(Link(3, Link(4, Link(5))), 2) is Link.empty\n    True\n    \"\"\"\n    if s is Link.empty:\n        return s\n    t = ⟪e⟫\n    if ⟪f⟫:\n        return longer( ⟪g⟫ , t)\n    else:\n        return t",
+       "lang": "py",
+       "f": {
+        "e": "longest(s.rest, n)",
+        "f": "s.first <= n",
+        "g": "Link(s.first, longest(s.rest, n - s.first))"
+       }
+      }
+     ]
+    },
+    {
+     "id": 28,
+     "l": [
+      {
+       "p": "i. Fill in blank (e)."
+      }
+     ],
+     "k": "mc",
+     "o": [
+      "longest(s, n)",
+      "longest(s, n - s.first)",
+      "longest(s.rest, n)",
+      "longest(s.rest, n - s.first)"
+     ],
+     "a": 2,
+     "r": [
+      "B4_4"
+     ],
+     "part": "b",
+     "sub": "i"
+    },
+    {
+     "id": 29,
+     "l": [
+      {
+       "p": "ii. Fill in blank (f)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "s.first <= n"
+     ],
+     "r": [
+      "B4_5"
+     ],
+     "part": "b",
+     "sub": "ii"
+    },
+    {
+     "id": 30,
+     "l": [
+      {
+       "p": "iii. Fill in blank (g)."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "Link(s.first, longest(s.rest, n - s.first))"
+     ],
+     "r": [
+      "B4_6"
+     ],
+     "part": "b",
+     "sub": "iii"
+    }
+   ],
+   "run": {
+    "c": [
+     "def longer(s, t):\n    \"\"\"Return the longer linked list, s or t. (Same length? return s.)\n    >>> longer(Link(2, Link(3)), Link.empty)\n    Link(2, Link(3))\n    >>> longer(Link(2, Link(3)), Link(4, Link(5)))\n    Link(2, Link(3))\n    >>> longer(Link(2, Link(3)), Link(4, Link(5, Link(6, Link(7)))))\n    Link(4, Link(5, Link(6, Link(7))))\n    >>> longer(Link.empty, Link.empty) is Link.empty\n    True\n    \"\"\"\n    a, b = s, t\n    while b is not Link.empty:\n        if ⟦B4_0⟧:\n            return ⟦B4_1⟧\n        ⟦B4_2⟧\n    return ⟦B4_3⟧",
+     "def longest(s, n):\n    \"\"\"Return the longest sublist of s that sums to n or less.\n    >>> longest(Link(5, Link(1, Link(3, Link(4, Link(2, Link(7)))))), 7)\n    Link(1, Link(3, Link(2)))\n    >>> longest(Link(5, Link(1, Link(3, Link(4, Link(2, Link(7)))))), 70)\n    Link(5, Link(1, Link(3, Link(4, Link(2, Link(7))))))\n    >>> longest(Link(3, Link(4, Link(5))), 2) is Link.empty\n    True\n    \"\"\"\n    if s is Link.empty:\n        return s\n    t = ⟦B4_4⟧\n    if ⟦B4_5⟧:\n        return longer( ⟦B4_6⟧ , t)\n    else:\n        return t"
+    ],
+    "b": {
+     "B4_0": false,
+     "B4_1": false,
+     "B4_2": true,
+     "B4_3": false,
+     "B4_4": false,
+     "B4_5": false,
+     "B4_6": false
+    },
+    "ch": {
+     "B4_0": 0,
+     "B4_1": 0,
+     "B4_2": 0,
+     "B4_3": 0,
+     "B4_4": 1,
+     "B4_5": 1,
+     "B4_6": 1
+    },
+    "v": {
+     "B4_0": "a is Link.empty",
+     "B4_1": "t",
+     "B4_2": "a, b = a.rest, b.rest",
+     "B4_3": "s",
+     "B4_4": "longest(s.rest, n)",
+     "B4_5": "s.first <= n",
+     "B4_6": "Link(s.first, longest(s.rest, n - s.first))"
+    }
+   },
+   "topics": [
+    {
+     "n": "5a",
+     "t": [
+      "LINKED_LISTS"
+     ]
+    },
+    {
+     "n": "5b",
+     "t": [
+      "LINKED_LISTS",
+      "TREE_RECURSION"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "61a-fa24-mt2/6",
+   "n": "6",
+   "t": "6. Nice Path! (0.0 pts)",
+   "b": [
+    {
+     "s": [
+      {
+       "p": "This A+ question is not worth any points. It can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!"
+      }
+     ]
+    },
+    {
+     "s": [
+      {
+       "p": "(a) Fill in the blank of max_path, which takes a Tree of integers t and a function g. It returns a list s containing the labels along the path from the root of t to a leaf for which g(s) is as large or larger than for any other path. In case of a tie, return any path with a maximum g(s) value."
+      },
+      {
+       "c": "def climb(t, f):\n    if t.is_leaf():\n        return [t.label]\n    return [t.label] + climb(max(t.branches, key=f), f)\ndef max_path(t, g):\n    \"\"\"Return the path s from the root of t to a leaf for which g(s) is largest.\n    >>> scare = Tree(0, [Tree(4), Tree(5, [Tree(10)]), Tree(2)])\n    >>> crow = Tree(4, [Tree(5), Tree(9, [scare, Tree(7, [Tree(6)])]), Tree(8)])\n    >>> max_path(crow, lambda p: -p[-1])            # The path to the smallest leaf\n    [4, 9, 0, 2]\n    >>> max_path(crow, len)                         # The longest path\n    [4, 9, 0, 5, 10]\n    >>> max_path(crow, lambda p: -abs(p[0]-p[-1])) # To the leaf closest in value to the root\n    [4, 9, 0, 4]\n    \"\"\"\n    x = [t.label]      # You can use x instead of [t.label] to shorten your answer!\n    return climb(t, lambda b: ⟪⟫ )",
+       "lang": "py"
+      }
+     ]
+    },
+    {
+     "id": 31,
+     "l": [
+      {
+       "p": "Fill in the blank."
+      }
+     ],
+     "k": "blank",
+     "a": [
+      "g(x + max_path(b, lambda p: g(x + p)))"
+     ],
+     "r": [
+      "B5_0"
+     ]
+    }
+   ],
+   "run": {
+    "c": [
+     "def climb(t, f):\n    if t.is_leaf():\n        return [t.label]\n    return [t.label] + climb(max(t.branches, key=f), f)\ndef max_path(t, g):\n    \"\"\"Return the path s from the root of t to a leaf for which g(s) is largest.\n    >>> scare = Tree(0, [Tree(4), Tree(5, [Tree(10)]), Tree(2)])\n    >>> crow = Tree(4, [Tree(5), Tree(9, [scare, Tree(7, [Tree(6)])]), Tree(8)])\n    >>> max_path(crow, lambda p: -p[-1])            # The path to the smallest leaf\n    [4, 9, 0, 2]\n    >>> max_path(crow, len)                         # The longest path\n    [4, 9, 0, 5, 10]\n    >>> max_path(crow, lambda p: -abs(p[0]-p[-1])) # To the leaf closest in value to the root\n    [4, 9, 0, 4]\n    \"\"\"\n    x = [t.label]      # You can use x instead of [t.label] to shorten your answer!\n    return climb(t, lambda b: ⟦B5_0⟧ )"
+    ],
+    "b": {
+     "B5_0": false
+    },
+    "ch": {
+     "B5_0": 0
+    },
+    "v": {
+     "B5_0": "g(x + max_path(b, lambda p: g(x + p)))"
+    }
+   },
+   "topics": [
+    {
+     "n": "6",
+     "t": [
+      "HIGHER_ORDER_FUNCTIONS",
+      "LAMBDAS",
+      "RECURSION",
+      "TREES"
+     ]
+    }
+   ]
+  }
+ ]
+}
