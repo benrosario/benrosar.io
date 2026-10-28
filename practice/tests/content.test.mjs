@@ -113,7 +113,10 @@ test('sidebar sorting: date, answered, direction and ties', () => {
   assert.deepEqual(ids('suggested', true), v.exams.map(e => e.id).reverse());
   // Newest first; within a term the order the exams were given (final after the midterms).
   assert.deepEqual(ids('date', true).slice(0, 5), ['61a-fa26-mt1', '61a-sp26-mt2', '61a-fa25-final', '61a-fa25-mt2', '61a-fa25-mt1']);
-  assert.deepEqual(ids('date', false), ids('date', true).reverse());
+  // Oldest first is the reverse, except that the undated adapted set stays last.
+  assert.deepEqual(ids('date', false).slice(0, -1), ids('date', true).slice(0, -1).reverse());
+  assert.equal(ids('date', false).at(-1), '61a-fa26-gleam-adapted');
+  assert.equal(ids('date', true).at(-1), '61a-fa26-gleam-adapted');
   // There's no exam-type sort; a saved one falls back to the suggested order.
   assert.ok(!sortOptions(v).includes('kind'));
   assert.deepEqual(ids('kind', false), ids('suggested', false));
@@ -128,4 +131,23 @@ test('sidebar sorting: date, answered, direction and ties', () => {
   assert.equal(ids('nonsense', false).join(), ids('suggested', false).join());
   // Ties (equal answered counts) go to the newest exam.
   assert.equal(ids('answered', false)[0], '61a-fa26-mt1');
+});
+
+test('Gleam replaces Scheme on the final: adapted problems count, Scheme stays out with the reason', async () => {
+  const { grade, isGleam, howChecked } = await import('../src/js/grading.js');
+  const ex = views.final.exams.find(e => e.id === '61a-fa26-gleam-adapted');
+  assert.ok(ex && counts({}, ex).n >= 30, 'adapted Gleam problems are in the final');
+  assert.ok(ex.problems.every(P => P.p.adapted?.from && P.p.adapted.problem), 'every adapted problem names its original');
+  assert.match(find('final', '61a-su23-final|7').why, /Gleam replaced it/);
+  // Gleam is only on the final (it's taught after Midterm 3).
+  for (const cid of ['midterm1', 'midterm2', 'midterm3']) assert.ok(!views[cid].exams.some(e => e.id === '61a-fa26-gleam-adapted'));
+  // The final's timed pool has a Gleam group.
+  assert.ok(timedPool(bank, views.final).filter(x => x.bucket === 'gleam').length >= 3);
+  // Gleam text answers are case-sensitive (Ok is not ok); other languages aren't.
+  const P = ex.problems.find(P => P.p.id.endsWith('/3')).p, q = P.b.find(b => b.id === 25);
+  assert.ok(isGleam(P));
+  assert.equal((await grade({ ...q, ev: undefined }, 'Error(Nil)', P)).ok, true);
+  assert.equal((await grade({ ...q, ev: undefined }, 'error(nil)', P)).ok, false);
+  assert.match(howChecked(q, P), /compiling your answer in Gleam/);
+  assert.match(howChecked(P.b.find(b => b.id === 19), P), /compiling your code and running the problem’s tests in Gleam/);
 });

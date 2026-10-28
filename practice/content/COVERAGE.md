@@ -60,7 +60,7 @@ Exam facts, from <https://cs61a.org/fa26/> and <https://cs61a.org/fa26/syllabus/
 | Midterm 1 | **New:** Fall 2026 MT1 (this semester's), Fall 2025 MT1, Spring 2025 MT1, Fall 2024 MT1. **Reused by topic:** Summer 2025 Midterm Q2, Summer 2023 Midterm Q3(b–c), Summer 2024 Final Q2, Fall 2024 MT2 Q4(a), Spring 2026 MT2 Q2(b–c) | 100 | 50 min, 4 original problems, one from each of: environment diagrams, WWPD, control, higher-order functions (23 in the pool) |
 | Midterm 2 | **New:** Summer 2025 Midterm Q2–4, Summer 2023 Midterm Q3–5. **Reused by topic:** recursion, tree recursion, list and linked-list problems from the ten existing exams | 140 | 50 min, 3 original problems, balanced across linked lists, tree recursion, lists, recursion and basics (23 in the pool). Labeled with the one-hour CBTF slot. |
 | Midterm 3 | Unchanged: the ten curated exams | 418 | Unchanged: 50 min / 4 or 1 h 50 min / 8 problems from the 13 modified problems |
-| Final | All 18 exams. **New finals:** Fall 2025 Final (all but its Scheme Q6), Spring 2025 Final Q3 and Q8 (SQL) | 552 | 50 min / 3, 1 h 50 min / 6 or 3 h / 9 original problems, round-robin across early material, recursion and lists, MT3 topics and SQL. The 50-minute exam takes one problem from each of 3 different topic groups. At most one problem per source exam when possible. A+ problems are never drawn. |
+| Final | All 18 exams, plus the 4 Scheme problems this site adapted to Gleam (labeled). **New finals:** Fall 2025 Final (all but its Scheme Q6), Spring 2025 Final Q3 and Q8 (SQL) | 584 | 50 min / 3, 1 h 50 min / 6 or 3 h / 9 problems, round-robin across early material, recursion and lists, MT3 topics, SQL and Gleam. The Gleam problems are the labeled adaptations. The 50-minute exam takes one problem from each of 3 different topic groups. At most one problem per source exam when possible. A+ problems are never drawn. |
 
 Every imported answer was checked against the solution PDFs:
 
@@ -68,6 +68,37 @@ Every imported answer was checked against the solution PDFs:
 - **Python fill-in blanks** run with each problem's doctests (`npm run practice:test`, 425 runs).
 - **What-would-Python-display and environment-diagram answers** were confirmed by executing the code.
 - **SQL answers** were executed in SQLite against each problem's example rows. Spring 2025 Q8(b)'s select-all key is exactly the set of options that reproduce the published result.
+
+## Gleam (replaced Scheme in Fall 2026)
+
+Gleam starts in Week 10, after Midterm 3, so it's on the final only. The course calendar lists:
+
+- Lecture 27 (Functional Programming)
+- Discussions 8 and 9
+- Lab 8 (Gleam Types)
+- Homeworks 7 and 8
+- Quizzes 6 and 7
+
+Homework 7 pins Gleam v1.18.1 compiled to JavaScript and tests answers with plain Gleam `assert` functions. Scheme isn't mentioned anywhere on the Fall 2026 site.
+
+**No past Gleam exam questions exist yet.** The Final has:
+
+- **Scheme problems adapted to Gleam:** written by this site, not course staff, and labeled as such everywhere they appear. Each keeps its original's structure, blanks and examples where Gleam allows. Answers follow the official Scheme solutions, and code answers are checked by compiling and running them.
+  - Summer 2024 Final Q6 (Treequality): tree custom type, zip, treequals
+  - Summer 2023 Final Q8 (List Methods): pad, shorten
+  - Summer 2024 Final Q7 (dictionary abstraction): as an immutable list of pairs, with `get_item` returning a `Result`
+  - Summer 2025 Final Q7 (rotate)
+  - **Left out:** questions that depend on Scheme specifics (macros, `scheme_eval`), and the tail-recursion question for `all`, where Gleam's answer is unclear.
+- **Scheme questions stay out of scope** for the Final, with the reason "Scheme isn’t taught this semester (Gleam replaced it)". They remain in the shared bank, so Midterm 3's existing curation is unchanged.
+- **Topic tags:** Gleam, functional programming, algebraic data types, immutable data and pattern matching. These are this site's own tags, because the staff topic list has none yet. Replace them if staff publish theirs.
+- **Interpreters:** unknown whether Lecture 30 uses Gleam or Python. The interpreters classification is unchanged until its materials are posted.
+
+**Waiting on course staff:**
+
+- Discussion 8 and 9 solutions, which aren't posted yet.
+- Lab 8 and Homeworks 7–8. These are imported only after they're due and official solutions are released, because Homework 7 requires checkoff interviews.
+- Quizzes 6 and 7, which are on PrairieLearn behind a login.
+- The final study guide and any final recommendations.
 
 ## Errata and corrections
 
@@ -79,7 +110,7 @@ Every imported answer was checked against the solution PDFs:
 
 ## Gaps (not covered yet)
 
-- **Material taught after Midterm 3 has almost no past-exam questions.**
+- **Material taught after Midterm 3 has almost no past-exam questions.** Gleam has only this site's adaptations so far; see the Gleam section.
   - No past exam material exists for: functional programming, algebraic data types, immutable data, coding agents, browsers, applications, software testing, software tracing, ethics.
   - **Interpreters:** every past interpreter question uses Scheme, so the Final has no interpreter questions.
   - **SQL:** five past SQL problems are in the Final. A sixth problem in the timed pool is the Summer 2023 Final WWPD, which has an SQL part.

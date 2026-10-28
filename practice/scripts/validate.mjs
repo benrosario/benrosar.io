@@ -2,11 +2,13 @@
 // Returns a list of error strings; an empty list means the bundle is valid.
 import { resolveCollection, timedPool, timedLengths, questionTopics, FORMAT_TAGS, QID } from '../src/js/model.js';
 
-const LANGS = new Set(['py', 'scm', 'sql']), KINDS = new Set(['mc', 'sata', 'blank']);
+const LANGS = new Set(['py', 'scm', 'sql', 'gleam']), KINDS = new Set(['mc', 'sata', 'blank']);
 export const KNOWN_TOPICS = new Set(['VARS_AND_FUNCTIONS', 'CONTROL', 'HIGHER_ORDER_FUNCTIONS', 'ENVIRONMENT_DIAGRAMS', 'LAMBDAS', 'RECURSION', 'TREE_RECURSION',
   'SEQUENCES', 'LISTS', 'DATA_ABSTRACTION', 'TREES', 'MUTABILITY', 'ITERATORS', 'GENERATORS', 'OBJECTS', 'INHERITANCE', 'REPRESENTATION', 'MUTABLE_TREES',
   'LINKED_LISTS', 'GROWTH', 'EFFICIENCY', 'INTERPRETERS', 'SQL', 'SCHEME', 'SCHEME_LISTS', 'MACROS', 'TAIL_RECURSION', 'PROGRAMS_AS_DATA', 'NONLOCAL',
-  'SELF_REFERENCE', 'BNF', 'REGEX', 'UNTAGGED', 'WWPD', 'SCHEME_DATA_ABSTRACTION']);
+  'SELF_REFERENCE', 'BNF', 'REGEX', 'UNTAGGED', 'WWPD', 'SCHEME_DATA_ABSTRACTION',
+  // Gleam replaced Scheme in Fall 2026; these are this site's tags until the course staff publish their own.
+  'GLEAM', 'FUNCTIONAL_PROGRAMMING', 'ALGEBRAIC_DATA_TYPES', 'IMMUTABLE_DATA', 'PATTERN_MATCHING']);
 
 function checkSegs(segs, where, E) {
   if (!Array.isArray(segs) || !segs.length) return E.push(`${where}: empty text`);
@@ -43,6 +45,10 @@ export function checkProblem(p, where, E) {
     }
   }
   if (p.run) for (const id in p.run.v || {}) if (!(id in p.run.b)) E.push(`${where}: run value for unknown blank ${id}`);
+  if (p.run?.lang == 'gleam' && p.b.some(b => b.r) && !/pub fn \w+_test\(/.test(p.run.t || '')) E.push(`${where}: Gleam code blanks need tests (pub fn ..._test)`);
+  if (p.run && p.run.lang && p.run.lang != 'gleam') E.push(`${where}: unknown run language ${p.run.lang}`);
+  for (const b of p.b) if (b.ev && !(b.k == 'blank' && p.run?.lang == 'gleam')) E.push(`${where} q${b.id}: "evaluates to" questions need a Gleam problem`);
+  if (p.adapted && !(p.adapted.from && p.adapted.problem)) E.push(`${where}: adapted problems need from and problem`);
 }
 
 export function validate(bank) {
@@ -50,7 +56,8 @@ export function validate(bank) {
   for (const e of bank.exams) {
     if (examIds.has(e.id)) E.push(`duplicate exam id ${e.id}`); examIds.add(e.id);
     if (!e.t) E.push(`${e.id}: missing title`);
-    if (!e.src?.exam || !e.src?.sol) E.push(`${e.id}: missing source links`);
+    if (e.src?.adapted) { if (!e.p.every(p => p.adapted)) E.push(`${e.id}: every problem in an adapted set must say what it was adapted from`); }
+    else if (!e.src?.exam || !e.src?.sol) E.push(`${e.id}: missing source links`);
     const qids = new Set();
     for (const p of e.p) {
       if (p.id !== `${e.id}/${p.n}`) E.push(`${e.id}: problem id ${p.id} should be ${e.id}/${p.n}`);
@@ -64,7 +71,8 @@ export function validate(bank) {
     const ids = new Set();
     for (const p of bank.timed[k]) { if (ids.has(p.id)) E.push(`timed ${k}: duplicate id ${p.id}`); ids.add(p.id); if (!p.src) E.push(`timed ${k}/${p.id}: missing source`); checkProblem(p, `timed ${k}/${p.id}`, E); }
   }
-  const EX = Object.fromEntries(bank.exams.map(e => [e.id, e]));
+  const EX = Object.fromEntries(bank.exams.map(e => [e.id, e])), PR = new Set(bank.exams.flatMap(e => e.p.map(p => p.id)));
+  for (const e of bank.exams) for (const p of e.p) if (p.adapted && !PR.has(p.adapted.problem)) E.push(`${p.id}: adapted from unknown problem ${p.adapted.problem}`);
   for (const C of bank.collections) {
     const w = `collection ${C.id}`;
     if (!C.label || !C.sub || !C.coverage?.text || !C.timed?.intro) E.push(`${w}: missing label, subtitle, coverage or timed intro`);

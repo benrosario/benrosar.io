@@ -14,7 +14,7 @@
 //   blob8   study collection selected when the event happened: midterm1 | midterm2 | midterm3 | final.
 //           Empty for events sent before study collections existed; those were all Midterm 3 practice.
 //   double1 check result: 1 correct, 0 wrong, -1 not a check
-//   double2 1 if the check ran code (doctests), else 0
+//   double2 1 if the check ran code (Python doctests or Gleam tests), else 0
 //   double3 pt_submit: questions correct    double4 pt_submit: question count    double5 pt_submit: seconds used
 const NAMES = new Set(['exam_open', 'problem_open', 'check', 'reveal', 'exam_complete', 'theme', 'pt_start', 'pt_submit', 'study_select']);
 const num = v => (Number.isFinite(v) ? v : 0);

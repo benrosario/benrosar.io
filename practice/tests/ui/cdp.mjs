@@ -16,7 +16,7 @@ const CANDIDATES = [
 ].filter(Boolean);
 export const chromePath = () => CANDIDATES.find(p => existsSync(p));
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json',
   '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 // Serve a directory on 127.0.0.1 (random port). POST /e is accepted and ignored, like the analytics Worker.

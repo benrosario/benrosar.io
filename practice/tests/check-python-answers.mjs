@@ -16,7 +16,7 @@ const TEXT_ONLY = {
 export async function pythonJobs(filter = '') {
   const bank = await loadBank(), jobs = [];
   const add = (where, p) => {
-    const R = p.run; if (!R) return;
+    const R = p.run; if (!R || R.lang == 'gleam') return; // Gleam is checked by check-gleam-answers.mjs
     // 1. Every chunk that has blanks, all official answers.
     R.c.forEach((c, i) => { if (/⟦B/.test(c)) jobs.push({ where: `${where} chunk ${i}`, full: R.c.map(x => fill(x, R.b, R.v)).join('\n\n'), test: fill(c, R.b, R.v) }); });
     // 2. Each accepted answer of each code-checked blank question, others official (as the site grades it).

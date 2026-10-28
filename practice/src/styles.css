@@ -129,3 +129,6 @@ label.o.right>span{color:var(--ok);font-weight:600}label.o.wrong>span{color:var(
 @media (prefers-reduced-motion:reduce){.srtp{transition:none}}
 body.ptm .sortbar{display:none}
 @media (max-width:760px){.chip,.srto button{min-height:36px}}
+.tip.adapted{color:#7a3fb8;background:#f3ebfc;border-color:#d9c2f2}
+:root[data-theme=dark] .tip.adapted{color:#cfa8ff;background:#2a1d3a;border-color:#4a3466}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tip.adapted{color:#cfa8ff;background:#2a1d3a;border-color:#4a3466}}

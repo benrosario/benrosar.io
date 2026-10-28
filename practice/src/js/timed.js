@@ -7,7 +7,7 @@
 import { st, cs } from './state.js';
 import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, AI_ICON, wireAI } from './util.js';
 import { segHTML, segText, wireFills, FILLS } from './highlight.js';
-import { grade, keyText, pyLoaded, howChecked } from './grading.js';
+import { grade, keyText, howChecked, loadingText, runs } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { timedPool, timedLengths, pickTimed } from './model.js';
 import { ev } from './events.js';
@@ -20,7 +20,9 @@ const lookup = () => { if (!PROB) { PROB = {}; for (const e of st.bank.exams) fo
 const label = c => st.views[c]?.label || c;
 // The problem an attempt's id refers to, from the current bank (null if it no longer exists).
 function prob(X, id) { lookup(); return X.pool == 'source' ? PROB[id]?.p || null : MOD[X.set || 'midterm3']?.[id] || null; }
-const srcOf = (X, id) => { lookup(); return X.pool == 'source' ? (PROB[id] ? `${PROB[id].e.t}, Q${PROB[id].p.n}` : X.snap?.src?.[id] || '') : (prob(X, id)?.src || X.snap?.src?.[id] || ''); };
+const srcOf = (X, id) => { lookup(); const P = PROB[id]?.p;
+  if (X.pool != 'source') return prob(X, id)?.src || X.snap?.src?.[id] || '';
+  return P ? (P.adapted ? `Adapted to Gleam by this site from ${P.adapted.from}` : `${PROB[id].e.t}, Q${P.n}`) : X.snap?.src?.[id] || ''; };
 const blankAns = v => v == null || (typeof v == 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
 export const ptX = () => st.ptHist != null ? (st.S._pth || []).find(h => h.d === st.ptHist && h.ids) : st.S._pt;
 
@@ -74,7 +76,9 @@ export function renderPT() {
   X.ids.forEach((id, pi) => {
     const p = prob(X, id) || { t: X.snap?.t?.[id] || id, b: [] }, d = document.createElement('section'); d.className = 'prob'; d.id = 'pt-' + pi; d.style.scrollMarginTop = '64px';
     const src = srcOf(X, id);
-    d.innerHTML = `<h2>${pi + 1}. ${esc(p.t)}</h2>` + (rev && src ? `<div class="tips"><span class="tip oos">${X.pool == 'source' ? 'From' : 'Based on'} ${esc(src)}</span></div>` : '');
+    // Adapted problems say so during the exam too; other sources are only shown afterwards.
+    const tip = p.adapted ? `<span class="tip adapted">⇄ ${esc(rev ? src : 'Adapted to Gleam by this site from a Scheme exam problem')}</span>` : rev && src ? `<span class="tip oos">${X.pool == 'source' ? 'From' : 'Based on'} ${esc(src)}</span>` : '';
+    d.innerHTML = `<h2>${pi + 1}. ${esc(p.t)}</h2>` + (tip ? `<div class="tips">${tip}</div>` : '');
     const mine = all.filter(x => x.pi == pi), keys = new Set(mine.map(x => x.key));
     p.b.forEach(b => {
       if (b.s) { const t = document.createElement('div'); t.className = 'txt';
@@ -117,10 +121,10 @@ function ptCard(x, p, rev, X) {
     const fb = c.querySelector('.fb'); fb.className = 'fb ' + (X.lost ? '' : r.ok ? 'ok' : 'no');
     fb.innerHTML = r.ok ? '✓ ' + esc(r.m || 'Correct') : X.lost ? 'Your answer wasn’t saved' : r.none ? '✗ Not answered' : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
     const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { r.ok = true; r.m = 'Marked correct by you'; const hs = (st.S._pth || []).find(h => h.d == X.sub); if (hs) { hs.ok++; if (hs !== X && hs.res && hs.res[key]) Object.assign(hs.res[key], { ok: true, m: r.m }); } st.save(); const y = scrollY; renderPT(); scrollTo(0, y); };
-    const out = c.querySelector('.out'); if (out) { const o = r.o || (q.k == 'blank' && !q.r ? 'Compared with the official answer text; this answer wasn’t run.' : ''); out.hidden = !o; out.textContent = o; }
+    const out = c.querySelector('.out'); if (out) { const o = r.o || (q.k == 'blank' && !runs(q) ? 'Compared with the official answer text; this answer wasn’t run.' : ''); out.hidden = !o; out.textContent = o; }
     const ai = c.querySelector('.ai'); if (ai) wireAI(ai, () => aiPrompt('Timed practice exam', p, q, v, r.o, label(X.c)));
     const an = document.createElement('div'); an.className = 'ans'; an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + (q.x ? `<div class="x">${esc(q.x)}</div>` : ''); w.append(an);
-  } else if (!rev) c.querySelector('.qh .tag').dataset.tip = howChecked(q) + ' when you submit.';
+  } else if (!rev) c.querySelector('.qh .tag').dataset.tip = howChecked(q, p) + ' when you submit.';
   return w;
 }
 
@@ -197,7 +201,7 @@ async function ptSubmit() {
   const all = ptQs(X), res = {}; let i = 0;
   for (const { p, q, key, gone } of all) {
     const v = X.ans[key], c = $('#ptclock'); i++;
-    if (c) { c.classList.add('busy'); c.textContent = q.r && !pyLoaded() && !blankAns(v) ? 'Loading Python…' : `Grading ${i}/${all.length}`; }
+    if (c) { c.classList.add('busy'); c.textContent = !blankAns(v) && /^Loading/.test(loadingText(q, p)) ? loadingText(q, p).replace(/ \(.*/, '') : `Grading ${i}/${all.length}`; }
     if (blankAns(v)) { res[key] = { ok: false, none: 1 }; continue; }
     if (gone) { res[key] = { ok: false, o: 'This question changed before the exam was graded.' }; continue; }
     try { const g = await grade(q, v, p); res[key] = { ok: g.ok, m: g.how, o: g.out }; } catch (e) { res[key] = { ok: false, o: String(e) }; }

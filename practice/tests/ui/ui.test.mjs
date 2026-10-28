@@ -293,6 +293,38 @@ test('sort chips order the sidebar, reverse it, and are remembered per study opt
   assert.equal(await q('getComputedStyle(document.querySelector("#sortbar")).display'), 'none');
 });
 
+test('Gleam questions compile and run in the browser, and adapted problems are labeled', { timeout: 120000 }, async () => {
+  await open(null, '?exam=final');
+  const i = await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent).indexOf("Scheme problems adapted to Gleam")');
+  assert.ok(i >= 0); await clickExam(i);
+  assert.match(await q('document.querySelector("#m .note").textContent'), /Written by this site, not the course staff/);
+  assert.match(await q(`document.querySelector('#p-${i}-3 .tip.adapted').textContent`), /Adapted to Gleam by this site from Summer 2025 Final Q7.*not written by course staff/);
+  assert.equal(await q(`document.querySelectorAll('#m .prob .tip.adapted').length`), 4);
+  assert.ok(await q(`[...document.querySelectorAll('#p-${i}-3 pre .hk')].some(e => e.textContent == 'fn')`), 'Gleam is highlighted');
+  const check = async (qid, answer) => {
+    await q(`(()=>{const c=document.querySelector('#q-${i}-${qid}');c.querySelector('.q').classList.remove('ok','no');c.querySelector('textarea').value=${JSON.stringify(answer)};c.querySelector('.ck').click()})()`);
+    await page.waitFor(`(()=>{const c=document.querySelector('#q-${i}-${qid} .q');return c.classList.contains('ok')||c.classList.contains('no')})()`, 60000);
+    return q(`(()=>{const c=document.querySelector('#q-${i}-${qid}');return {ok:c.querySelector('.q').classList.contains('ok'),fb:c.querySelector('.fb').textContent,out:c.querySelector('.out').hidden?'':c.querySelector('.out').textContent}})()`);
+  };
+  assert.match(await q(`document.querySelector('#q-${i}-30 .ck').dataset.tip`), /compiling your code and running the problem’s tests in Gleam/);
+  // A working answer that isn't the official text runs (the first check loads the compiler).
+  let r = await check(30, '-1 + k');
+  assert.ok(r.ok, JSON.stringify(r)); assert.match(r.fb, /Compiled and ran your Gleam code: the test passed/);
+  // A type error shows the compiler's message; a wrong answer shows the failed assert.
+  r = await check(29, 'first');
+  assert.equal(r.ok, false); assert.match(r.out, /Your Gleam code didn’t compile:[\s\S]*Type mismatch/);
+  r = await check(28, 's');
+  assert.equal(r.ok, false); assert.match(r.out, /tests failed:[\s\S]*rotate: Assertion failed\.[\s\S]*left:/);
+  // An infinite loop is stopped.
+  r = await check(30, 'k + 1');
+  assert.equal(r.ok, false); assert.match(r.out, /Timed out after 8 seconds/);
+  // "Evaluates to": text match, then compiled comparison (value and type), case-sensitive.
+  assert.ok((await check(32, '[ "b","c","a" ]')).ok);
+  r = await check(32, '["c", "a", "b"]'); assert.equal(r.ok, false); assert.match(r.out, /doesn’t equal the value/);
+  r = await check(32, '3'); assert.equal(r.ok, false); assert.match(r.out, /didn’t compile as a Gleam value of the right type/);
+  r = await check(32, '["B", "C", "A"]'); assert.equal(r.ok, false);
+});
+
 test('keyboard: the study menu works like the filter menu', async () => {
   await open(null, '?exam=midterm2');
   const b = '#sdd .ddb';

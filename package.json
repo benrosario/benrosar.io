@@ -16,7 +16,7 @@
     "deploy:response-store": "wrangler deploy --config wrangler.response-store.jsonc",
     "practice:build": "node practice/scripts/build.mjs",
     "practice:serve": "python3 -m http.server 8614 --directory practice/public",
-    "practice:test": "node --test practice/tests/*.test.mjs && node practice/tests/check-python-answers.mjs",
+    "practice:test": "node --test practice/tests/*.test.mjs && node practice/tests/check-python-answers.mjs && node practice/tests/check-gleam-answers.mjs",
     "practice:test:ui": "node --test --test-timeout=180000 practice/tests/ui/*.test.mjs",
     "practice:sync": "node practice/scripts/sync-preview.mjs",
     "practice:check-preview": "node practice/scripts/sync-preview.mjs --check",

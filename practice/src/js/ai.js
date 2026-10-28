@@ -7,10 +7,11 @@ export function aiPrompt(title, p, q, v, out, studying) {
   const ask = segText(q.l), kind = { mc: 'multiple choice (one answer)', sata: 'select all that apply', blank: 'fill in the blank' }[q.k];
   const opts = q.o ? '\n\nOptions:\n' + q.o.map(o => '- ' + o).join('\n') : '';
   const block = (t, lang) => '```' + (lang || '') + '\n' + t + '\n```';
-  const lang = q.k == 'blank' && /[()=\[\].]/.test(q.a[0]) ? 'python' : '';
-  return `I'm studying for a CS 61A (UC Berkeley, Python/Scheme/SQL) exam${studying ? ` (${studying})` : ''} and got a past exam question wrong. Please help me understand my mistake.
+  const gleam = p.run?.lang == 'gleam' || p.b.some(b => b.s?.some(g => g.lang == 'gleam'));
+  const lang = q.k == 'blank' && /[()=\[\].]/.test(q.a[0]) ? (gleam ? 'gleam' : 'python') : '';
+  return `I'm studying for a CS 61A (UC Berkeley, Fall 2026: Python, Gleam and SQL) exam${studying ? ` (${studying})` : ''} and got a past exam question wrong. Please help me understand my mistake.
 
-## Problem: ${title}, ${p.t}
+## Problem: ${title}, ${p.t}${p.adapted ? `\n(Not official course material: a practice site adapted this to Gleam from ${p.adapted.from}, a Scheme exam problem.)` : ''}
 ${p.b.filter(b => b.s).map(b => segText(b.s)).join('\n\n')}
 
 ## The question I answered (${kind})

@@ -9,6 +9,7 @@ export const st = {
   cur: 0,             // index of the selected source exam in st.view.exams
   ptView: false,      // showing timed practice instead of the practice questions
   ptHist: null,       // submit time of a past attempt being reviewed, or null
+  gleam: null,        // {worker, base}: URLs of the Gleam checking worker and compiler assets
 };
 // Per-collection navigation state: selected exam, filter, open sidebar groups, scroll position, timed length.
 export const cs = () => st.S._cs[st.cid] || (st.S._cs[st.cid] = {});

@@ -4,7 +4,7 @@
  "ref": "the final",
  "sub": "Comprehensive",
  "coverage": {
-  "text": "Fall 2026 Final (Fri 12/18, 11:30am–2:30pm, 75 points, paper). The course pages don’t state its scope; this option assumes the whole course, using the course’s in-scope topic list.",
+  "text": "Fall 2026 Final (Fri 12/18, 11:30am–2:30pm, 75 points, paper). The course pages don’t state its scope; this option assumes the whole course, including Gleam (which replaced Scheme this semester).",
   "url": "https://cs61a.org/fa26/"
  },
  "scope": {
@@ -32,9 +32,22 @@
    "GROWTH",
    "EFFICIENCY",
    "INTERPRETERS",
-   "SQL"
+   "SQL",
+   "GLEAM",
+   "FUNCTIONAL_PROGRAMMING",
+   "ALGEBRAIC_DATA_TYPES",
+   "IMMUTABLE_DATA",
+   "PATTERN_MATCHING"
   ],
-  "note": "Problems are included when every topic the course staff tagged them with is on the course’s current in-scope topic list (no Scheme, macros or tail recursion). That classification is this site’s, not a staff recommendation."
+  "note": "Problems are included when every topic tagged on them is on the course’s in-scope topic list, plus Gleam, which replaced Scheme this semester and is on the final. Scheme questions stay out of scope. That classification is this site’s, not a staff recommendation; the Gleam topic tags are this site’s too until the course staff publish theirs.",
+  "why": {
+   "SCHEME": "Scheme isn’t taught this semester (Gleam replaced it)",
+   "SCHEME_LISTS": "Scheme isn’t taught this semester (Gleam replaced it)",
+   "SCHEME_DATA_ABSTRACTION": "Scheme isn’t taught this semester (Gleam replaced it)",
+   "MACROS": "Scheme isn’t taught this semester (Gleam replaced it)",
+   "TAIL_RECURSION": "Scheme isn’t taught this semester (Gleam replaced it)",
+   "PROGRAMS_AS_DATA": "Scheme isn’t taught this semester (Gleam replaced it)"
+  }
  },
  "noPicks": "Course staff haven’t published final exam question picks, so nothing is marked recommended.",
  "timed": {
@@ -56,6 +69,12 @@
   "balanced": true,
   "minBuckets": 4,
   "buckets": [
+   {
+    "id": "gleam",
+    "topics": [
+     "GLEAM"
+    ]
+   },
    {
     "id": "sql",
     "topics": [
@@ -105,7 +124,7 @@
     ]
    }
   ],
-  "intro": "Each exam draws original past exam problems from the whole course at random and balances them across topics: early material, recursion and lists, trees/objects/iterators/efficiency, and SQL. The 50-minute exam draws 3 problems from different topic groups. No more than one problem comes from the same source exam when there’s a choice. They aren’t modified, so you may have seen some of them."
+  "intro": "Each exam draws original past exam problems from the whole course at random and balances them across topics: early material, recursion and lists, trees/objects/iterators/efficiency, SQL, and Gleam (problems adapted from Scheme by this site, labeled as such). The 50-minute exam draws 3 problems from different topic groups. No more than one problem comes from the same source exam when there’s a choice. Past-exam problems aren’t modified, so you may have seen some of them."
  },
  "exams": [
   {
@@ -129,16 +148,20 @@
    "note": "A past final."
   },
   {
+   "exam": "61a-fa26-gleam-adapted",
+   "note": "Written by this site, not the course staff: past Scheme exam problems rewritten in Gleam, since Gleam replaced Scheme this semester. Answers follow the official Scheme solutions, and code answers are checked by compiling and running them with the Gleam compiler. There are no past Gleam exams yet."
+  },
+  {
    "exam": "61a-su25-final",
-   "note": "A past final: Scheme questions are out of scope this semester."
+   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
    "exam": "61a-su24-final",
-   "note": "A past final: Scheme questions are out of scope this semester."
+   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
    "exam": "61a-su23-final",
-   "note": "A past final: Scheme questions are out of scope this semester."
+   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
    "exam": "61a-fa25-mt2",

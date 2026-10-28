@@ -2,14 +2,14 @@
 import { st, cs } from './state.js';
 import { $, esc, slide, confirmBtn, confetti, reduced, AI_ICON, wireAI } from './util.js';
 import { segHTML, wireFills, FILLS } from './highlight.js';
-import { grade, keyText, GV, pyLoaded, howChecked, runs } from './grading.js';
+import { grade, keyText, GV, howChecked, runs, loadingText, isGleam } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { counts, collectionCounts, sharedIn, sortExams, sortOptions, SORTS } from './model.js';
 import { ev } from './events.js';
 import { ptHistNav, renderPT } from './timed.js';
 
 const m = $('#m'), nav = $('#nav'), flt = $('#flt');
-const TIPICON = { dn: '★', csm: '◆', oos: '⊘', note: 'ⓘ' }, BADGE = { dn: 'DeNero pick', csm: 'CSM pick', oos: 'Out of scope' };
+const TIPICON = { dn: '★', csm: '◆', oos: '⊘', note: 'ⓘ', adapted: '⇄' }, BADGE = { dn: 'DeNero pick', csm: 'CSM pick', oos: 'Out of scope' };
 const KIND = { mc: 'Multiple choice', sata: 'Select all that apply', blank: 'Fill in the blank' };
 export const FNAME = { todo: 'unanswered', no: 'incorrect', rec: 'recommended', scope: 'in-scope' };
 const shortT = t => t.replace(/\s*\([\d.?]+ pts\)$/, '');
@@ -79,7 +79,8 @@ export function render() {
   m.append(nt);
   ex.problems.forEach((P, j) => {
     const p = P.p, d = document.createElement('section'); d.className = 'prob'; d.id = `p-${st.cur}-${j}`; d.style.scrollMarginTop = '64px';
-    d.innerHTML = `<h2>${esc(p.t)}</h2>` + (P.tips ? `<div class="tips">${P.tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
+    const tips = [...(p.adapted ? [{ k: 'adapted', t: `Adapted to Gleam by this site from ${p.adapted.from}; not written by course staff` }] : []), ...(P.tips || [])];
+    d.innerHTML = `<h2>${esc(p.t)}</h2>` + (tips.length ? `<div class="tips">${tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
     let qi = 0;
     p.b.forEach(b => {
       if (b.s) { const t = document.createElement('div'); t.className = 'txt'; t.innerHTML = segHTML(b.s); wireFills(t); d.append(t); return; }
@@ -112,7 +113,7 @@ function card(x, P, ex) {
   let h = `<div class="qh"><div class="tag">${KIND[q.k]}${badges.join('')}</div><span class="fb" role="status" aria-live="polite"></span></div><div class="ql">${segHTML(q.l)}</div>`;
   if (q.k == 'blank') h += `<textarea rows="${q.r ? q.r.length : 1}" spellcheck="false" placeholder="Your answer…" aria-label="Your answer"></textarea>`;
   else q.o.forEach((o, i) => h += `<label class="o"><input type="${q.k == 'mc' ? 'radio' : 'checkbox'}" name="${esc(id)}" value="${i}"><span>${esc(o)}</span></label>`);
-  h += `<div class="row"><button class="p ck" data-tip="${esc(howChecked(q))}">Check</button><button class="sh">Show answer</button><button class="ai" hidden data-tip="Copies a prompt about your mistake. Paste it into ChatGPT, Claude, or any AI chat.">${AI_ICON}<span>Ask AI why</span></button><button class="rst" data-tip="${esc('Clear your answer to this question' + (also.length ? `. It also counts toward ${list(also)}, so it clears there too.` : ''))}">Reset</button></div><div class="out" hidden></div><div class="ans" hidden></div>`;
+  h += `<div class="row"><button class="p ck" data-tip="${esc(howChecked(q, p))}">Check</button><button class="sh">Show answer</button><button class="ai" hidden data-tip="Copies a prompt about your mistake. Paste it into ChatGPT, Claude, or any AI chat.">${AI_ICON}<span>Ask AI why</span></button><button class="rst" data-tip="${esc('Clear your answer to this question' + (also.length ? `. It also counts toward ${list(also)}, so it clears there too.` : ''))}">Reset</button></div><div class="out" hidden></div><div class="ans" hidden></div>`;
   c.innerHTML = h; wireFills(c);
   const ta = c.querySelector('textarea'), grow = () => { if (!ta) return; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 2 + 'px'; }, ins = [...c.querySelectorAll('input')], fb = c.querySelector('.fb'), an = c.querySelector('.ans'), out = c.querySelector('.out');
   const showKey = () => { an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + (q.x ? `<div class="x">${esc(q.x)}</div>` : ''); slide(an, true); };
@@ -123,7 +124,7 @@ function card(x, P, ex) {
     fb.innerHTML = ok ? '✓ ' + esc(msg || 'Correct') : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
     const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { const c0 = counts(st.S, ex); st.S[id].ok = true; st.S[id].m = 'Marked correct by you'; st.save(); show(true, st.S[id].m); out.hidden = true; stats(); complete(c0); };
     // A text-only blank that didn't match: say plainly that nothing was run.
-    if (!ok && !o && q.k == 'blank' && !runs(q)) o = 'Compared with the official answer text (ignoring spacing, capitalization and quote style). This answer wasn’t run, so if yours is equivalent, press “I was right”.';
+    if (!ok && !o && q.k == 'blank' && !runs(q)) o = `Compared with the official answer text (${isGleam(p) ? 'ignoring spacing; Gleam is case-sensitive' : 'ignoring spacing, capitalization and quote style'}). This answer wasn’t run, so if yours is equivalent, press “I was right”.`;
     out.hidden = !o; out.textContent = o || ''; if (ok && !an.hidden) slide(an, false);
   }
   const setInputs = v => { if (ta) ta.value = v; else ins.forEach(i => i.checked = q.k == 'mc' ? v === +i.value : v.includes(+i.value)); };
@@ -144,10 +145,10 @@ function card(x, P, ex) {
   if (ta) ta.addEventListener('input', draft); ins.forEach(i => i.addEventListener('change', draft));
   const ck = c.querySelector('.ck'); ck.onclick = async () => {
     const v = get(); if (v === null || (typeof v == 'string' && !v.trim()) || (Array.isArray(v) && !v.length)) { fb.className = 'fb no'; fb.textContent = 'Enter an answer first'; return; }
-    ck.disabled = true; fb.className = 'fb'; fb.textContent = q.r && !pyLoaded() ? 'Loading Python (first run takes a few seconds)…' : q.r ? 'Running…' : '';
+    ck.disabled = true; fb.className = 'fb'; fb.textContent = loadingText(q, p);
     const c0 = counts(st.S, ex);
     const g = await grade(q, v, p); ck.disabled = false; st.S[id] = { v, ok: g.ok, m: g.how, o: g.out, gv: GV }; if (st.S._dr) delete st.S._dr[id]; st.save(); show(g.ok, g.how, g.out); stats(); if (g.ok) confetti(ck);
-    ev('check', { x: ex.id, q: id, k: q.k, ok: g.ok, run: /^Ran your code/.test(g.how || g.out || '') }); complete(c0);
+    ev('check', { x: ex.id, q: id, k: q.k, ok: g.ok, run: !!g.ran }); complete(c0);
     if (!g.ok) { c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); }
   };
   c.addEventListener('animationend', () => c.classList.remove('shake'));

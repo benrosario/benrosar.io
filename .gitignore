@@ -59,3 +59,4 @@ critique.md
 
 # Practice site build output (npm run practice:build)
 /practice/public/
+/practice/.cache/

@@ -10,7 +10,8 @@ import { initSelector, select, fromURL } from './selector.js';
 import { $ } from './util.js';
 import { initSort } from './sort.js';
 
-const CONTENT = document.currentScript?.dataset.content || document.querySelector('script[data-content]').dataset.content;
+const TAG = document.currentScript || document.querySelector('script[data-content]'), CONTENT = TAG.dataset.content;
+st.gleam = { worker: TAG.dataset.gleamWorker, base: TAG.dataset.gleamBase };
 
 async function boot() {
   const bank = await fetch(CONTENT).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });

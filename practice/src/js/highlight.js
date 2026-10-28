@@ -1,16 +1,18 @@
-// Rendering of prose/code segments with lightweight syntax highlighting (Python, Scheme, SQL).
+// Rendering of prose/code segments with lightweight syntax highlighting (Python, Gleam, Scheme, SQL).
 // Code uses ⟪a⟫ for a lettered blank, ⟪⟫ for an unlabeled one, and ⟦text⟧ to mark filled-in answer text.
 import { esc, confirmBtn } from './util.js';
 
 const KW = { py: 'def class return if elif else for while in not and or is lambda yield from import None True False try except raise assert pass break continue with as global nonlocal del finally',
   scm: 'define lambda if cond let begin and or else quote define-macro cons-stream expect',
-  sql: 'SELECT FROM WHERE AS GROUP BY ORDER LIMIT HAVING CREATE TABLE UNION AND OR NOT DESC ASC JOIN ON INSERT INTO VALUES DISTINCT' };
+  sql: 'SELECT FROM WHERE AS GROUP BY ORDER LIMIT HAVING CREATE TABLE UNION AND OR NOT DESC ASC JOIN ON INSERT INTO VALUES DISTINCT',
+  gleam: 'fn pub let case if as import type opaque const assert todo panic use echo' };
 const BI = { py: 'print len range list map filter sum max min abs isinstance iter next str int float tuple sorted any all super type dict set zip enumerate reversed repr round pow self Link Tree',
   scm: 'car cdr cons list append null? nil #t #f length map filter reduce eq? equal? not display print cadr',
-  sql: 'COUNT SUM AVG MIN MAX ABS ROUND' };
+  sql: 'COUNT SUM AVG MIN MAX ABS ROUND',
+  gleam: 'list int float string dict option result io bool' };
 const HSETS = {}; for (const l in KW) HSETS[l] = [new Set(KW[l].split(' ')), new Set(BI[l].split(' '))];
-const TQ = /^("""|''')/, PROMPT = { py: /^(>>>|\.\.\.)(?=\s|$)/, scm: /^(scm>|\.\.\.>)/, sql: /^(sql>|\.\.\.>)/ },
-  COMMENT = { py: /^#.*/, scm: /^;.*/, sql: /^--.*/ }, WORD = { py: /^[A-Za-z_]\w*/, scm: /^[#A-Za-z_][\w\-?!*<>=]*/, sql: /^[A-Za-z_]\w*/ };
+const TQ = /^("""|''')/, PROMPT = { py: /^(>>>|\.\.\.)(?=\s|$)/, scm: /^(scm>|\.\.\.>)/, sql: /^(sql>|\.\.\.>)/, gleam: /^(?!)/ },
+  COMMENT = { py: /^#.*/, scm: /^;.*/, sql: /^--.*/, gleam: /^\/\/.*/ }, WORD = { py: /^[A-Za-z_]\w*/, scm: /^[#A-Za-z_][\w\-?!*<>=]*/, sql: /^[A-Za-z_]\w*/, gleam: /^[A-Za-z_]\w*/ };
 // Highlight one line. st.doc holds the open triple-quote while inside a docstring.
 function hlLine(line, lang, st) {
   const [kw, bi] = HSETS[lang]; let o = '', i = 0, prev = ''; const put = (c, t) => o += c ? `<span class="${c}">${esc(t)}</span>` : esc(t);
@@ -27,11 +29,12 @@ function hlLine(line, lang, st) {
     if (!o.replace(/&nbsp;|\s/g, '') && (m = r.match(PROMPT[lang]))) { put('hp', m[0]); i += m[0].length; continue; }
     if (m = r.match(COMMENT[lang])) { put('hc', m[0]); break; }
     if (m = r.match(/^(f?'(?:\\.|[^'\\⟦⟧])*'?|f?"(?:\\.|[^"\\⟦⟧])*"?)/)) { put('hs', m[0]); i += m[0].length; continue; }
-    if (m = r.match(/^\d+(\.\d+)?/)) { put('hn', m[0]); i += m[0].length; continue; }
+    if (m = r.match(/^\d[\d_]*(\.\d+)?/)) { put('hn', m[0]); i += m[0].length; continue; }
     if (m = r.match(WORD[lang])) {
       const w = m[0], key = lang == 'sql' ? w.toUpperCase() : w;
-      const fn = prev == 'def' || prev == 'class' || prev == 'define' || (lang == 'py' && /^\s*\(/.test(line.slice(i + w.length)) && !kw.has(w) && !bi.has(w));
-      put(kw.has(key) ? 'hk' : bi.has(key) ? 'hb' : fn ? 'hf' : '', w); prev = w; i += w.length; continue;
+      const fn = prev == 'def' || prev == 'class' || prev == 'define' || prev == 'fn' || ((lang == 'py' || lang == 'gleam') && /^\s*\(/.test(line.slice(i + w.length)) && !kw.has(w) && !bi.has(w) && !/^[A-Z]/.test(w));
+      // Gleam types and constructors (Int, Ok, Tree) are capitalized.
+      put(kw.has(key) ? 'hk' : bi.has(key) || (lang == 'gleam' && /^[A-Z]/.test(w)) ? 'hb' : fn ? 'hf' : '', w); prev = w; i += w.length; continue;
     }
     put('', line[i]); if (line[i].trim()) prev = ''; i++;
   }
@@ -65,7 +68,7 @@ export function segHTML(segs) {
     : `<p>${esc(g.p).replace(/_{3,}/g, '<span class="blank">&nbsp;</span>')}</p>`).join('');
 }
 // Plain-text versions for the copied AI prompt and stored attempt snapshots.
-const FENCE = { py: 'python', scm: 'scheme', sql: 'sql' };
+const FENCE = { py: 'python', scm: 'scheme', sql: 'sql', gleam: 'gleam' };
 export function segText(segs) {
   return segs.map(g => g.c != null ? '```' + FENCE[g.lang] + '\n' + g.c.replace(/⟪([a-z]?)⟫/g, (t, x) => '____' + (x ? '(' + x + ')' : '') + '____') + '\n```'
     : g.h ? g.h : g.p.replace(/_{3,}/g, '______')).join('\n\n');

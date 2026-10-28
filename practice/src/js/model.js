@@ -69,7 +69,11 @@ export function resolveCollection(bank, cid) {
           const t = questionTopics(p, q);
           if (drop.has(q.id)) { out = true; why = ce.dropWhy?.[q.id] || 'Not covered on this exam'; }
           else if (!t) { out = true; why = 'No topic tags, so not counted'; }
-          else { const miss = t.filter(x => !FORMAT_TAGS.has(x) && !allowed.has(x)); if (miss.length) { out = true; why = 'Not covered: ' + miss.map(topicName).join(', '); } }
+          else {
+            const miss = t.filter(x => !FORMAT_TAGS.has(x) && !allowed.has(x));
+            // A collection can explain a topic it leaves out (e.g. Scheme: "Gleam replaced it this semester").
+            if (miss.length) { out = true; why = miss.map(x => C.scope.why?.[x]).find(Boolean) || 'Not covered: ' + miss.map(topicName).join(', '); }
+          }
         }
         return { q, qid: QID(e.id, q), oos: out, why, tags: tags[q.id] || [] };
       });
@@ -109,7 +113,7 @@ export function timedPool(bank, view) {
     if (live.length < (T.minQuestions || 1)) continue;
     if (/\(0(\.0)? pts\)$/.test(P.p.t)) continue; // A+ problems (no points) aren't drawn for timed exams
     if (T.exclude?.includes(P.p.id)) continue;
-    out.push({ id: P.p.id, bucket: bucketOf(T, P, view), src: `${ex.t}, Q${P.p.n}`, exam: ex.id });
+    out.push({ id: P.p.id, bucket: bucketOf(T, P, view), src: P.p.adapted ? `Adapted to Gleam by this site from ${P.p.adapted.from}` : `${ex.t}, Q${P.p.n}`, exam: ex.id });
   }
   return out;
 }
@@ -151,7 +155,9 @@ const NAMES = { VARS_AND_FUNCTIONS: 'variables and functions', CONTROL: 'control
   ITERATORS: 'iterators', GENERATORS: 'generators', OBJECTS: 'objects', INHERITANCE: 'inheritance', REPRESENTATION: 'string representation',
   MUTABLE_TREES: 'mutable trees', LINKED_LISTS: 'linked lists', GROWTH: 'orders of growth', EFFICIENCY: 'efficiency',
   INTERPRETERS: 'interpreters', SQL: 'SQL', SCHEME: 'Scheme', SCHEME_LISTS: 'Scheme lists', MACROS: 'macros', TAIL_RECURSION: 'tail recursion',
-  PROGRAMS_AS_DATA: 'programs as data', NONLOCAL: 'nonlocal', SELF_REFERENCE: 'self-reference', BNF: 'BNF', REGEX: 'regular expressions', WWPD: 'what would Python display' };
+  PROGRAMS_AS_DATA: 'programs as data', NONLOCAL: 'nonlocal', SELF_REFERENCE: 'self-reference', BNF: 'BNF', REGEX: 'regular expressions', WWPD: 'what would Python display',
+  SCHEME_DATA_ABSTRACTION: 'Scheme data abstraction', GLEAM: 'Gleam', FUNCTIONAL_PROGRAMMING: 'functional programming', ALGEBRAIC_DATA_TYPES: 'algebraic data types',
+  IMMUTABLE_DATA: 'immutable data', PATTERN_MATCHING: 'pattern matching' };
 export const topicName = t => NAMES[t] || t.toLowerCase().replace(/_/g, ' ');
 
 // ---- sorting the sidebar's source exams ----
@@ -167,7 +173,8 @@ export const examKind = id => id.match(/-(mt1|mt2|midterm|final)$/)?.[1] || 'fin
 export const SORTS = {
   suggested: { label: 'Suggested', key: (ex, S, i) => i, dir: 'asc', asc: 'Suggested order', desc: 'Reversed' },
   // Within a term, exams were given in the order Midterm 1, (summer) midterm, Midterm 2, final.
-  date: { label: 'Exam date', key: ex => examDate(ex.id) + KINDS[examKind(ex.id)].rank / 10, dir: 'desc', asc: 'Oldest first', desc: 'Newest first' },
+  // (A set of problems adapted by this site isn't an exam and has no date.)
+  date: { label: 'Exam date', key: ex => ex.e?.src?.adapted ? null : examDate(ex.id) + KINDS[examKind(ex.id)].rank / 10, dir: 'desc', asc: 'Oldest first', desc: 'Newest first' },
   answered: { label: 'Answered', key: (ex, S) => counts(S, ex).a, dir: 'asc', asc: 'Fewest answered first', desc: 'Most answered first' },
   progress: { label: 'Progress', key: (ex, S) => { const c = counts(S, ex); return c.n ? c.ok / c.n : 0; }, dir: 'asc', asc: 'Least done first', desc: 'Most done first' },
   length: { label: 'Length', key: (ex, S) => counts(S, ex).n, dir: 'asc', asc: 'Shortest first', desc: 'Longest first' },
@@ -175,8 +182,8 @@ export const SORTS = {
 };
 // Sort options that make sense for a collection (no "Staff picks" where there are none).
 export const sortOptions = view => Object.keys(SORTS).filter(k => !SORTS[k].needsPicks || view.exams.some(ex => SORTS.picks.key(ex) > 0));
-// Indexes into view.exams in display order.
+// Indexes into view.exams in display order. Entries with no value (an undated set) go last either way.
 export function sortExams(view, S, by = 'suggested', desc = false) {
-  const s = SORTS[by] || SORTS.suggested, k = view.exams.map((ex, i) => s.key(ex, S, i)), d = view.exams.map(ex => SORTS.date.key(ex));
-  return view.exams.map((_, i) => i).sort((a, b) => (k[a] - k[b]) * (desc ? -1 : 1) || d[b] - d[a] || a - b);
+  const s = SORTS[by] || SORTS.suggested, k = view.exams.map((ex, i) => s.key(ex, S, i)), d = view.exams.map(ex => SORTS.date.key(ex) ?? 0);
+  return view.exams.map((_, i) => i).sort((a, b) => (k[a] == null) - (k[b] == null) || (k[a] - k[b]) * (desc ? -1 : 1) || d[b] - d[a] || a - b);
 }
