@@ -413,11 +413,18 @@ test('topic practice, progressive hints, missed review and a combined Gleam solu
   assert.equal(await q('document.querySelectorAll("#m .qw").length'),32);
   const i=await q('document.querySelector("#m .qw").id.split("-")[1]');
   const root=`#q-${i}-5`;
-  await q(`document.querySelector('${root} .hint').click()`);
+  // Each hint asks first; once both are shown the button hides and shows them.
+  const hintBtn = `document.querySelector('${root} .hint')`;
+  await q(`${hintBtn}.click()`);
+  assert.equal(await q(`document.querySelectorAll('${root} .hints p').length`),0,'the first click only asks');
+  await q(`${hintBtn}.click()`);
   assert.equal(await q(`document.querySelectorAll('${root} .hints p').length`),1);
   assert.equal(await q(`document.querySelector('${root} .ans').hidden`),true);
-  await q(`document.querySelector('${root} .hint').click()`);
+  await q(`${hintBtn}.click()`); await q(`${hintBtn}.click()`);
   assert.equal(await q(`document.querySelectorAll('${root} .hints p').length`),2);
+  await sleep(350); assert.equal(await q(`${hintBtn}.textContent`),'Hide hints');
+  await q(`${hintBtn}.click()`); await sleep(350);
+  assert.equal(await q(`${hintBtn}.textContent`),'Show hints'); assert.equal(await q(`document.querySelector('${root} .hints').hidden`),true);
   await q(`(()=>{const c=document.querySelector('${root}');c.querySelector('textarea').value='t0 == t1';c.querySelector('.ck').click()})()`);
   await page.waitFor(`document.querySelector('${root} .out').textContent.includes('Problem restriction')`);
   assert.ok((await saved())['61a-fa26-gleam-adapted|5'].misses);
@@ -520,6 +527,10 @@ test('themes and the existing study tools still work', async () => {
   // Show answer asks first, then reveals.
   await q('document.querySelector("#m .sh").click()'); await q('document.querySelector("#m .sh").click()'); await sleep(300);
   assert.match(await q('document.querySelector("#m .ans").textContent'), /Official answer/);
+  assert.equal(await q('document.querySelector("#m .sh").textContent'), 'Hide answer');
+  await q('document.querySelector("#m .sh").click()'); await sleep(300);
+  assert.equal(await q('document.querySelector("#m .ans").hidden'), true, 'Hide answer hides it without asking');
+  assert.equal(await q('document.querySelector("#m .sh").textContent'), 'Show answer');
   // Theme survives a reload (applied before the content loads).
   await page.reload(); await ready();
   assert.equal(await q('document.documentElement.dataset.theme'), 'dark');

@@ -11,17 +11,22 @@
       "custom_domain": true
     }
   ],
-  // Only POST /e (usage events) runs the Worker; everything else is served as static files.
+  // Only POST /e (usage events) and POST /f (feedback) run the Worker; everything else is served as static files.
   "main": "./worker.js",
   "assets": {
     "directory": "./public",
     "not_found_handling": "none",
-    "run_worker_first": ["/e"]
+    "run_worker_first": ["/e", "/f"]
   },
   "analytics_engine_datasets": [
     {
       "binding": "EVENTS",
       "dataset": "practice_events"
     }
-  ]
+  ],
+  // Feedback (POST /f) is emailed to the FEEDBACK_TO secret: `wrangler secret put FEEDBACK_TO --config practice/wrangler.jsonc`.
+  // It must be a verified destination address in Email Routing for benrosar.io. For local dev, put it in practice/.dev.vars.
+  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io" },
+  "send_email": [{ "name": "SEND_EMAIL", "allowed_sender_addresses": ["feedback@benrosar.io"] }],
+  "ratelimits": [{ "name": "FEEDBACK_LIMIT", "namespace_id": "6101", "simple": { "limit": 5, "period": 60 } }]
 }

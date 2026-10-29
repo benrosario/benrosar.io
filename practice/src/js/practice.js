@@ -236,8 +236,15 @@ function card(x, P, ex) {
   c.innerHTML = h; wireFills(c);
   const ta = c.querySelector('textarea'), grow = () => { if (!ta) return; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 2 + 'px'; }, ins = [...c.querySelectorAll('input')], fb = c.querySelector('.fb'), an = c.querySelector('.ans'), out = c.querySelector('.out');
   const showKey = () => { an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); slide(an, true); };
-  const hint = c.querySelector('.hint'), hints = hintsFor(p,q), hintBox = c.querySelector('.hints'); let shown = 0;
-  hint.onclick = () => { hintBox.hidden = false; hint.setAttribute('aria-expanded','true'); const item = document.createElement('p'); item.textContent = `${++shown}. ${hints[shown-1]}`; hintBox.append(item); hint.textContent = shown < hints.length ? 'Next hint' : 'Hints shown'; hint.disabled = shown >= hints.length; };
+  let relabelSh; function hideKey() { slide(an, false); relabelSh?.('Show answer'); }
+  // Hint asks first, then each hint slides in; once all are shown the button toggles them (Hide hints / Show hints).
+  const hint = c.querySelector('.hint'), hints = hintsFor(p,q), hintBox = c.querySelector('.hints'); let shown = 0, hintsOpen = false;
+  const hintsTo = open => { hintsOpen = open; slide(hintBox, open); hint.setAttribute('aria-expanded', open); };
+  const relabelHint = confirmBtn(hint, () => {
+    const item = document.createElement('p'); item.textContent = `${++shown}. ${hints[shown-1]}`; hintBox.append(item);
+    if (hintsOpen) { item.hidden = true; slide(item, true); } else hintsTo(true);
+    relabelHint(shown < hints.length ? 'Next hint' : 'Hide hints');
+  }, () => shown >= hints.length && (hintsTo(!hintsOpen), relabelHint(hintsOpen ? 'Hide hints' : 'Show hints'), true));
   const ai = c.querySelector('.ai'); wireAI(ai, () => { const s = st.S[id]; return s && aiPrompt(ex.t, p, q, s.v, s.o, st.view.label); });
   const complete = c0 => { const c1 = counts(st.S, ex); if (c1.ok == c1.n && c0.ok < c0.n) ev('exam_complete', { x: ex.id }); };
   function show(ok, msg, o) {
@@ -246,7 +253,7 @@ function card(x, P, ex) {
     const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { const c0 = counts(st.S, ex); st.S[id].ok = true; st.S[id].m = 'Marked correct by you'; st.save(); show(true, st.S[id].m); out.hidden = true; stats(); complete(c0); };
     // A text-only blank that didn't match: say plainly that nothing was run.
     if (!ok && !o && q.k == 'blank' && !runs(q)) o = `Compared with the official answer text (capitalization and string contents matter). This answer wasn’t run, so if yours is equivalent, press “I was right”.`;
-    out.hidden = !o; out.textContent = o || ''; if (ok && !an.hidden) slide(an, false);
+    out.hidden = !o; out.textContent = o || ''; if (ok && !an.hidden) hideKey();
   }
   const setInputs = v => { if (ta) ta.value = v; else ins.forEach(i => i.checked = q.k == 'mc' ? v === +i.value : v.includes(+i.value)); };
   if (sv) {
@@ -275,7 +282,7 @@ function card(x, P, ex) {
     if (!g.ok) { c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); }
   };
   c.addEventListener('animationend', () => c.classList.remove('shake'));
-  const sh = c.querySelector('.sh'); confirmBtn(sh, () => { showKey(); ev('reveal', { x: ex.id, q: id, k: q.k }); }, () => !an.hidden && (slide(an, false), true));
+  relabelSh = confirmBtn(c.querySelector('.sh'), () => { showKey(); relabelSh('Hide answer'); ev('reveal', { x: ex.id, q: id, k: q.k }); }, () => !an.hidden && (hideKey(), true));
   confirmBtn(c.querySelector('.rst'), () => { delete st.S[id]; if (st.S._dr) delete st.S._dr[id]; if(st.S._missed) delete st.S._missed[id]; st.save(); const nw = card(x, P, ex); nw.id = wrap.id; nw.style.scrollMarginTop = wrap.style.scrollMarginTop; wrap.replaceWith(nw); stats(); });
   if (ta) { ta.addEventListener('input', grow); requestAnimationFrame(grow); ta.onkeydown = e => { if (e.key == 'Enter' && (e.metaKey || e.ctrlKey)) ck.click(); }; }
   wrap.append(c, an); return wrap;

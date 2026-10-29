@@ -23,6 +23,7 @@ practice/
     sort.js              the Sort chips that order the sidebar's exams
     grading.js           answer checking (Pyodide for Python doctests, the Gleam worker for Gleam tests)
     gleam-worker.js, gleam-core.js  compiles and runs Gleam answers (official compiler, WebAssembly)
+    feedback.js          the "Send feedback" dialog (posts to /f)
     chrome.js, highlight.js, ai.js, events.js, util.js, state.js
   src/static/            copied as is (apple-touch-icon.jpg)
   content/exams/         source exams, each stored once (.json, or .mjs written with content/author.mjs)
@@ -32,7 +33,7 @@ practice/
   content/COVERAGE.md    where each option's questions come from, what they cover, and the known gaps
   scripts/               build, validate, preview sync, staff topic import, Gleam toolchain (gleam-toolchain.mjs)
   tests/                 Node tests, the Python answer check, and browser tests (tests/ui)
-  worker.js, wrangler.jsonc  deployment and the /e analytics endpoint
+  worker.js, wrangler.jsonc  deployment, the /e analytics endpoint and the /f feedback endpoint
 ```
 
 ## Commands (run from the `website/` folder)
@@ -90,6 +91,21 @@ Migration from schema 2 is repeatable and keeps the old fields, so a rollback st
 ## Analytics
 
 `worker.js` documents the event layout. Every event now carries the study collection in `blob8`, alongside the original source exam id in `blob4`. Events from before collections existed have an empty `blob8`, and they were all Midterm 3 practice. Collection switches are logged as `study_select`.
+
+## Feedback
+
+**Send feedback** at the bottom of the sidebar opens a dialog. The message goes to `POST /f`, and `worker.js` emails it,
+along with the page path, study collection and country. Visitors give no name or email, and Ben's address is never in the
+page or this repo: it's the `FEEDBACK_TO` Wrangler secret. The mail comes from `feedback@benrosar.io` (`FEEDBACK_FROM`).
+A hidden honeypot field and a rate limit of 5 messages a minute per IP keep bots out.
+
+One-time setup, in the Cloudflare dashboard and then from the `website/` folder:
+
+1. Turn on **Email Routing** for benrosar.io and add your address under **Destination addresses**, then click the link
+   Cloudflare emails you. The send binding only delivers to verified addresses.
+2. `npx wrangler secret put FEEDBACK_TO --config practice/wrangler.jsonc`, then paste that address.
+3. For `wrangler dev`, put `FEEDBACK_TO=you@example.com` in `practice/.dev.vars`, which is git-ignored. Locally, mail isn't
+   sent: wrangler logs it instead.
 
 ## Study and grading tools
 

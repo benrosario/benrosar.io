@@ -43,15 +43,16 @@ export function slide(el, open) {
   a.onfinish = () => { el.style.overflow = ''; if (!open) el.hidden = true; };
 }
 // Two-step button: first click asks "Are you sure?" (or `armed()`'s text), second click within 3s acts.
-// skip() can handle a click without asking.
+// skip() can handle a click without asking. Returns relabel(text), which sets the button's resting label (and disarms it).
 export function confirmBtn(btn, act, skip, armed) {
-  const label = btn.textContent; let t;
+  let label = btn.textContent, t;
   const disarm = () => { clearTimeout(t); if (!btn.classList.contains('arm')) return; swapLabel(btn, label, () => btn.classList.remove('arm')); };
   btn.onclick = () => {
     if (skip && skip()) return disarm(); if (btn.classList.contains('arm')) { disarm(); act(); return; }
     swapLabel(btn, armed ? armed() : label + ': are you sure?', () => btn.classList.add('arm')); t = setTimeout(disarm, 3000);
   };
   btn.onblur = () => setTimeout(() => { if (document.activeElement !== btn) disarm(); }, 150);
+  return text => { clearTimeout(t); label = text; swapLabel(btn, text, () => btn.classList.remove('arm')); };
 }
 // Burst of confetti from the middle of el. small: fewer, smaller pieces that stay close (the sidebar's finished-problem burst).
 export function confetti(el, small) {

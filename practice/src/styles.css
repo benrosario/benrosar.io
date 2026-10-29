@@ -159,11 +159,17 @@ button:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-v
 .save-notice[hidden]{display:none}.save-notice>div:first-child{flex:1;min-width:0}.save-notice strong{color:var(--no)}.save-notice p{max-width:85ch;margin:4px 0 0}.save-notice .save-action{font-weight:600}.save-buttons{display:flex;gap:8px;flex:none}.save-notice[data-state=saved]{border-color:var(--ok)}.save-notice[data-state=saved] strong{color:var(--fg)}
 /* Socials stay pinned to the bottom of the sidebar: below a short list, and over a long one while it scrolls */
 aside{display:flex;flex-direction:column}#nav{flex:1 0 auto}
-.socials{position:sticky;bottom:-10px;z-index:2;display:flex;gap:6px;margin:8px -8px -10px;padding:8px 8px 10px;background:var(--card);border-top:1px solid var(--bd)}
-.socials{container-type:inline-size}.socials a{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:6px 8px;border-radius:8px;font-size:13.5px;font-weight:600;color:#fff;transition:filter .18s}.socials a:hover{filter:brightness(1.1)}.socials svg{flex:none}.socials span{white-space:nowrap}
+.socials{position:sticky;bottom:-10px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;margin:8px -8px -10px;padding:8px 8px 10px;background:var(--card);border-top:1px solid var(--bd)}
+.socials{container-type:inline-size}.socials a{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border-radius:8px;font-size:13.5px;font-weight:600;color:#fff;transition:filter .18s}.socials a:hover{filter:brightness(1.1)}.socials svg{flex:none}.socials span{white-space:nowrap}
 /* Both labels need about 125px each; any narrower and the two equal buttons show just the logos */
-@container (max-width:259px){.socials span{display:none}.socials a{padding:7px 8px}.socials svg{width:18px;height:18px}}
+@container (max-width:259px){.socials a span{display:none}.socials a{padding:12px 8px}.socials svg{width:18px;height:18px}}
 .socials a.ig{background:linear-gradient(45deg,#fa7e1e,#d62976 35%,#962fbf 70%,#4f5bd5)}.socials a.li{background:#0a66c2}
+.socials .fb{flex:1 0 100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border-radius:8px;font-size:13.5px;font-weight:600;background:var(--code)}.socials .fb:hover{border-color:color-mix(in srgb,var(--mut) 45%,var(--bd))}.socials .fb svg{flex:none;color:var(--mut)}
+#fbd{width:min(440px,calc(100vw - 32px));padding:0;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--fg);box-shadow:0 10px 30px rgba(0,0,0,.18)}#fbd::backdrop{background:rgba(0,0,0,.35)}@media (min-width:761px){#fbd{width:max(440px,35vw)}}
+#fbd[open]{animation:fbin .16s ease}@keyframes fbin{from{opacity:0;transform:translateY(-6px) scale(.97)}}@media (prefers-reduced-motion:reduce){#fbd[open]{animation:none}}
+#fbf{display:flex;flex-direction:column;gap:10px;padding:16px}#fbd h3{margin:0;font-size:17px}#fbn{margin:0;font-size:14px;line-height:1.5;color:var(--mut)}
+#fbm{width:100%;min-height:130px;resize:vertical;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}#fbm:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.fbhp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.fbs{min-height:20px;font-size:13.5px;color:var(--mut)}.fbs.bad{color:var(--no)}.fbs.ok{color:var(--ok)}.fba{display:flex;justify-content:flex-end;gap:8px}
 /* Home: no exam is selected, so there's nothing to reset */
 body.athome #rs{display:none}
 .prob.home p{max-width:70ch;line-height:1.6}.prob.home h3{font-size:14px;margin:28px 0 8px;color:var(--mut)}

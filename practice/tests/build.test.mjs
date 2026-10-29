@@ -39,3 +39,24 @@ test('the analytics Worker stores the collection in blob8 and accepts study_sele
   assert.equal(points[1].blobs[5], 'final');
   assert.equal(points[2].blobs[7], '', 'events without a collection keep an empty blob8, like historical ones');
 });
+
+test('the feedback Worker emails the message to FEEDBACK_TO and drops honeypot, empty and rate-limited posts', async () => {
+  const sent = []; let allow = true;
+  const env = { FEEDBACK_TO: 'owner@example.com', FEEDBACK_FROM: 'feedback@benrosar.io',
+    SEND_EMAIL: { send: async m => { sent.push(m); } }, FEEDBACK_LIMIT: { limit: async () => ({ success: allow }) } };
+  const post = (body, e = env) => worker.fetch(new Request('https://practice.benrosar.io/f', { method: 'POST', body: JSON.stringify(body) }), e);
+  assert.equal((await post({ m: '  Q3 answer looks wrong  ', p: '/?exam=final', c: 'final' })).status, 204);
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].to, 'owner@example.com');
+  assert.equal(sent[0].from, 'feedback@benrosar.io');
+  assert.match(sent[0].text, /^Q3 answer looks wrong\n\n--\nPage: \/\?exam=final\nStudying for: final$/);
+  assert.equal((await post({ m: 'spam', hp: 'x' })).status, 204, 'a filled honeypot looks like success');
+  assert.equal((await post({ m: '   ' })).status, 400);
+  allow = false;
+  assert.equal((await post({ m: 'again' })).status, 429);
+  allow = true;
+  assert.equal((await post({ m: 'hi' }, { ...env, FEEDBACK_TO: undefined })).status, 503);
+  assert.equal((await post({ m: 'hi' }, { ...env, SEND_EMAIL: { send: async () => { throw new Error('nope'); } } })).status, 502);
+  assert.equal(sent.length, 1);
+  assert.equal((await worker.fetch(new Request('https://practice.benrosar.io/f'), env)).status, 405);
+});

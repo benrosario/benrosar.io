@@ -1,4 +1,5 @@
-// Receives batched usage events from the practice page (POST /e) and writes them to Workers Analytics Engine.
+// Receives batched usage events from the practice page (POST /e) and writes them to Workers Analytics Engine,
+// and emails feedback messages to Ben (POST /f, see feedback below).
 // Every other path is served straight from ./public without running this Worker (see run_worker_first).
 //
 // Data point layout (query with the Analytics Engine SQL API, dataset "practice_events"):
@@ -20,9 +21,38 @@ const NAMES = new Set(['exam_open', 'problem_open', 'check', 'reveal', 'exam_com
 const num = v => (Number.isFinite(v) ? v : 0);
 const str = (v, n = 120) => (typeof v === 'string' ? v.slice(0, n) : '');
 
+// POST /f {m: message, p: page path, c: collection, hp: honeypot}. The message is emailed to FEEDBACK_TO, a Wrangler
+// secret, so the address never appears in this public repo or the page; it must be a verified Email Routing destination.
+// It's sent from FEEDBACK_FROM on benrosar.io, and visitors give no address. A filled-in honeypot (a field people can't
+// see) gets a silent 204, and FEEDBACK_LIMIT caps each IP at a few messages a minute.
+async function feedback(req, env) {
+  if (req.method !== 'POST') return new Response(null, { status: 405 });
+  const text = await req.text();
+  if (text.length > 16384) return new Response(null, { status: 413 });
+  let body;
+  try { body = JSON.parse(text) } catch { return new Response(null, { status: 400 }) }
+  if (body?.hp) return new Response(null, { status: 204 });
+  const msg = str(body?.m, 4000).trim();
+  if (!msg) return new Response(null, { status: 400 });
+  const ip = req.headers.get('cf-connecting-ip') || '';
+  if (env.FEEDBACK_LIMIT && !(await env.FEEDBACK_LIMIT.limit({ key: ip })).success) return new Response(null, { status: 429 });
+  if (!env.FEEDBACK_TO || !env.FEEDBACK_FROM) return new Response(null, { status: 503 });
+  const about = [['Page', str(body?.p, 300)], ['Studying for', str(body?.c, 16)], ['Country', str(req.cf?.country, 8)]]
+    .filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join('\n');
+  try {
+    await env.SEND_EMAIL.send({ from: env.FEEDBACK_FROM, to: env.FEEDBACK_TO, subject: 'cs61a practice feedback', text: `${msg}\n\n--\n${about}` });
+  } catch (e) {
+    console.error('feedback email failed', e);
+    return new Response(null, { status: 502 });
+  }
+  return new Response(null, { status: 204 });
+}
+
 export default {
   async fetch(req, env) {
-    if (new URL(req.url).pathname !== '/e') return new Response('Not found', { status: 404 });
+    const path = new URL(req.url).pathname;
+    if (path === '/f') return feedback(req, env);
+    if (path !== '/e') return new Response('Not found', { status: 404 });
     if (req.method !== 'POST') return new Response(null, { status: 405 });
     const text = await req.text();
     if (text.length > 32768) return new Response(null, { status: 413 });
