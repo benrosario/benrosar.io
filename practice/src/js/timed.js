@@ -5,13 +5,13 @@
 // Each attempt records its collection (c), content version (cv), pool, problem ids, question keys and a small
 // snapshot of each question so it stays reviewable if the question bank changes later. History: S._pth (newest first, 20).
 import { st, cs } from './state.js';
-import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, AI_ICON, wireAI } from './util.js';
+import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, scrollToEl, AI_ICON, wireAI } from './util.js';
 import { segHTML, segText, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, howChecked, loadingText, runs } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { timedPool, timedLengths, pickTimed } from './model.js';
 import { ev } from './events.js';
-import { render } from './practice.js';
+import { render, syncHome } from './practice.js';
 import { explanationHTML } from './learning.js';
 
 const m = $('#m'), nav = $('#nav'), ptb = $('#ptb');
@@ -64,6 +64,7 @@ export function showPT(on) {
 }
 
 export function renderPT() {
+  syncHome();
   if (st.ptHist != null && !ptX()) st.ptHist = null;
   const X = ptX(); m.innerHTML = ''; nav.innerHTML = ''; FILLS.length = 0; if (!X) return ptHome();
   const rev = !!X.done, all = ptQs(X), nt = document.createElement('div'); nt.className = 'note';
@@ -139,7 +140,7 @@ function ptSide() {
   X.ids.forEach((id, pi) => { h += `<a href="#pt-${pi}" data-pi="${pi}"><span class="nm">${pi + 1}. ${esc((prob(X, id)?.t || X.snap?.t?.[id] || id).replace(/\s*\([\d.]+ pts\)$/, ''))}</span><span class="ct" id="ptc-${pi}"></span></a>`; });
   h += `<div class="ptbtns">${endButtons(X, rev, true)}</div>`;
   s.innerHTML = h; nav.append(s);
-  s.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById('pt-' + a.dataset.pi)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  s.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); scrollToEl(document.getElementById('pt-' + a.dataset.pi)); });
   ptCounts();
 }
 // Sidebar counts: answered/total while taking the exam, correct/total in review.

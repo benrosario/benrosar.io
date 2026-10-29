@@ -32,10 +32,12 @@ export function select(cid, { push = false, initial = false } = {}) {
   if (!initial && !st.ptView) cs().y = scrollY;
   // A finished attempt from the collection being left is done with (it's in that collection's history).
   if (!initial && st.S._pt?.done && st.S._pt.c === st.cid) { st.S._pt = null; st.ptHist = null; }
+  // Switching from the home page stays on the home page; otherwise each collection reopens its own exam (ex '' is home).
+  const home = !initial && st.cur < 0;
   st.cid = cid; st.S._c = cid; st.view = st.views[cid];
   const C = cs();
-  st.cur = Math.max(0, st.view.exams.findIndex(ex => ex.id === C.ex));
-  if (!C.open) C.open = { [st.view.exams[st.cur].id]: 1 };
+  st.cur = home || C.ex === '' ? -1 : Math.max(0, st.view.exams.findIndex(ex => ex.id === C.ex));
+  if (!C.open) C.open = st.cur < 0 ? {} : { [st.view.exams[st.cur].id]: 1 };
   $('#flt').value = C.f || 'all'; if (!$('#flt').value) $('#flt').value = 'all'; ddSync();
   st.save(); draw(); if (!initial) drawSort(); setURL(cid, push);
   if (!initial) { if (st.ptView) renderPT(); else render(); scrollTo(0, st.ptView ? 0 : C.y || 0); ptTick(); ev('study_select', { v: cid }); }

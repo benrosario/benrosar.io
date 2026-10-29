@@ -6,7 +6,7 @@ export const st = {
   views: {},          // resolved collections by id (model.resolveCollection)
   cid: null,          // selected collection id
   view: null,         // st.views[st.cid]
-  cur: 0,             // index of the selected source exam in st.view.exams
+  cur: 0,             // index of the selected source exam in st.view.exams, or -1 on the home page (none selected)
   ptView: false,      // showing timed practice instead of the practice questions
   ptHist: null,       // submit time of a past attempt being reviewed, or null
   gleam: null,        // {worker, base}: URLs of the Gleam checking worker and compiler assets

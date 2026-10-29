@@ -170,6 +170,84 @@ test('saved data from before study collections migrates and keeps Midterm 3', as
   await pick('midterm3'); assert.match(await examTitle(), /Fall 2023 Midterm 2/);
 });
 
+test('the header title goes home, closing the exam without ending a running practice exam', async () => {
+  await open(null, '?exam=midterm1');
+  const exam = await examTitle();
+  await q('document.querySelector("#ptb").click()'); await page.waitFor('document.querySelector(".pthome")');
+  await q('document.querySelector("#ptgo").click()'); await page.waitFor('document.querySelector("#ptclock")');
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
+  assert.equal(await q('document.querySelectorAll("#nav details.cur").length'), 0, 'no exam is selected');
+  assert.equal(await q('getComputedStyle(document.querySelector("#rs")).display'), 'none');
+  assert.match(await q('document.querySelector("#ptb").textContent'), /^Exam · /);
+  assert.equal((await saved())._cs.midterm1.ex, '');
+  // Home survives a reload and switching collections; it offers the exam that was open and the running attempt.
+  await page.reload(); await ready(); await pick('final'); await pick('midterm1');
+  assert.ok(await q('!!document.querySelector("#m .home")'));
+  assert.deepEqual(await q('[...document.querySelectorAll(".homebtns button")].map(b=>b.textContent)'), ['Continue ' + exam.replace(/\.$/, ''), 'Return to your Midterm 1 practice exam']);
+  await q('document.querySelector(".homebtns [data-act=pt]").click()'); await page.waitFor('document.querySelector("#ptclock")');
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
+  await q('document.querySelector(".homebtns [data-act=last]").click()'); await sleep(50);
+  assert.equal(await examTitle(), exam);
+  assert.equal(await q('document.querySelectorAll("#nav details.cur").length'), 1);
+  // The home page's styles stay out of the header: its progress bar still stretches (wider, with Reset exam hidden).
+  const barW = () => q('document.querySelector("header .bar").getBoundingClientRect().width');
+  const examBar = await barW();
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
+  assert.equal(await q('getComputedStyle(document.querySelector("header .bar")).flexGrow'), '1');
+  assert.ok(await barW() >= examBar, 'header progress bar fills the width on the home page');
+  // Jumping from home to a late problem scrolls there quickly, not over several seconds.
+  await q('[...document.querySelectorAll("#nav details[open] .lst a")].at(-1).click()'); await sleep(600);
+  const y = await q('scrollY');
+  assert.ok(y > 0);
+  assert.ok(await q(`(()=>{const el=[...document.querySelectorAll("#m .prob")].at(-1);el.scrollIntoView({block:"start",behavior:"instant"});return Math.abs(scrollY-${y})<2})()`), 'scroll finished within 600 ms');
+  // The title toggles: a second click goes back to the same exam at the same scroll position…
+  const at = await q('scrollY');
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
+  assert.ok(await q('document.body.classList.contains("athome")'));
+  assert.equal(await q('document.querySelector("#home").dataset.tip'), 'Back to where you were');
+  await q('document.querySelector("#home").click()'); await sleep(50);
+  assert.equal(await examTitle(), exam);
+  assert.ok(Math.abs(await q('scrollY') - at) < 2, 'scroll position restored');
+  assert.equal(await q('document.body.classList.contains("athome")'), false);
+  // …and from the timed exam view, back to the running attempt.
+  await q('document.querySelector("#ptb").click()'); await page.waitFor('document.querySelector("#ptclock")');
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#ptclock")');
+  await q('document.querySelector("#ptb").click()'); await sleep(50);
+  assert.equal(await examTitle(), exam, 'leaving the timed view still shows the exam that was open');
+  // The socials stay at the bottom of the sidebar.
+  assert.ok(await q('(()=>{const s=document.querySelector("#side"),f=document.querySelector(".socials");return Math.abs(s.getBoundingClientRect().bottom-f.getBoundingClientRect().bottom)<2})()'));
+  // They're always the same width; in a narrow sidebar they show just the logos rather than clip their labels.
+  const socials = sw => q(`(async()=>{document.documentElement.style.setProperty("--sw","${sw}px");await new Promise(r=>requestAnimationFrame(r));
+    const as=[...document.querySelectorAll(".socials a")];return {w:as.map(a=>Math.round(a.getBoundingClientRect().width)),labels:as.every(a=>a.querySelector("span").offsetWidth>0),clipped:as.some(a=>a.scrollWidth>a.clientWidth+1)}})()`);
+  for (const sw of [200, 240, 324, 620]) {
+    const s = await socials(sw);
+    assert.equal(s.w[0], s.w[1], `equal widths at ${sw}px`); assert.equal(s.clipped, false, `nothing clipped at ${sw}px`);
+    assert.equal(s.labels, sw >= 324, `labels at ${sw}px`);
+  }
+  await q('document.documentElement.style.removeProperty("--sw")');
+  assert.deepEqual(page.logs, []);
+});
+
+test('the home page lists progress for every study option, most correct first', async () => {
+  // Every question of this semester's Midterm 1 answered correctly: Midterm 1 leads, the final (whole course) gains a little.
+  await open(null, '?exam=midterm2');
+  await q(`(async()=>{const b=await fetch(document.querySelector("script[data-content]").dataset.content).then(r=>r.json());
+    const e=b.exams.find(e=>e.id=="61a-fa26-mt1"),S=JSON.parse(localStorage.getItem("${KEY}"));
+    for(const p of e.p)for(const x of p.b)if(x.k)S[e.id+"|"+x.id]={v:"",ok:true};S._cs.midterm2.ex="";localStorage.setItem("${KEY}",JSON.stringify(S))})()`);
+  await page.reload(); await page.waitFor('document.querySelector("#m .home .cprogs")');
+  const rows = await q('[...document.querySelectorAll(".cprogs button")].map(b=>({c:b.dataset.c,pct:+b.querySelector(".num").textContent.match(/(\\d+)%/)[1],cur:b.getAttribute("aria-current")}))');
+  assert.deepEqual(rows.map(r => r.c).sort(), ['final', 'midterm1', 'midterm2', 'midterm3']);
+  assert.equal(rows[0].c, 'midterm1'); assert.ok(rows[0].pct > 0);
+  assert.ok(rows.every((r, i) => !i || rows[i - 1].pct >= r.pct), 'sorted by share correct, highest first');
+  assert.equal(rows.find(r => r.cur)?.c, 'midterm2');
+  // Choosing a row switches what you're studying for and stays on the home page.
+  await q('document.querySelector(".cprogs [data-c=final]").click()'); await sleep(50);
+  assert.equal(await selected(), 'final');
+  assert.ok(await q('!!document.querySelector("#m .home .cprogs [data-c=final][aria-current]")'));
+  assert.deepEqual(page.logs, []);
+});
+
 test('timed practice is per collection, survives switching, submits itself and stays reviewable', async () => {
   await open(null, '?exam=midterm1');
   await q('document.querySelector("#ptb").click()'); await page.waitFor('document.querySelector(".pthome")');

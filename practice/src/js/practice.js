@@ -1,15 +1,16 @@
 // The practice view: sidebar of source exams in the selected collection, the selected exam's problems, and progress.
 import { st, cs } from './state.js';
-import { $, esc, slide, confirmBtn, confetti, reduced, AI_ICON, wireAI } from './util.js';
+import { $, esc, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, wireAI } from './util.js';
 import { segHTML, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, GV, howChecked, runs, loadingText, canCheckSolution, gradeSolution, solutionQuestions } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { counts, collectionCounts, sharedIn, sortExams, sortOptions, SORTS } from './model.js';
 import { ev } from './events.js';
-import { ptHistNav, renderPT } from './timed.js';
+import { ptHistNav, renderPT, showPT } from './timed.js';
 import { dropdown, ddSync } from './chrome.js';
 import { hintsFor, explanationHTML } from './learning.js';
 import { topicStats, matchesTopic, missedQuestion } from './study.js';
+import { select } from './selector.js';
 
 const m = $('#m'), nav = $('#nav'), flt = $('#flt');
 const TIPICON = { dn: '★', csm: '◆', oos: '⊘', note: 'ⓘ', adapted: '⇄' }, BADGE = { dn: 'DeNero pick', csm: 'CSM pick', oos: 'Out of scope' };
@@ -87,7 +88,7 @@ let lastSel = null;
 export function sidebar() {
   if (st.ptView) return;
   // Note where each exam sits on screen so the redraw can slide it from there (FLIP). Only within one collection.
-  const sel = st.cid + '|' + st.view.exams[st.cur].id, same = lastSel?.startsWith(st.cid + '|'), moved = sel !== lastSel; lastSel = sel;
+  const sel = st.cid + '|' + (st.view.exams[st.cur]?.id ?? ''), same = lastSel?.startsWith(st.cid + '|'), moved = sel !== lastSel; lastSel = sel;
   const was = same && !reduced() ? new Map([...nav.querySelectorAll('details[data-x]')].map(d => [d.dataset.x, d.getBoundingClientRect().top])) : new Map();
   nav.innerHTML = ''; const f = flt.value, C = cs(), fl = f != 'all' || !!C.topic, finished = []; let any = 0;
   const t = collectionCounts(st.S, st.view), cp = document.createElement('div'); cp.className = 'cprog'; cp.id = 'cprog';
@@ -143,7 +144,8 @@ function toggleExam(d, id, open) {
 // The main area always shows the selected exam (its problems in this collection) in full; the filter only narrows the sidebar.
 let evEx = null;
 export function render() {
-  if (st.ptView) return renderPT(); const ex = st.view.exams[st.cur]; cs().ex = ex.id; st.save(); m.innerHTML = ''; FILLS.length = 0;
+  syncHome(); if (st.ptView) return renderPT(); if (st.cur < 0) return renderHome();
+  const ex = st.view.exams[st.cur]; cs().ex = ex.id; st.save(); m.innerHTML = ''; FILLS.length = 0;
   const key = st.cid + ':' + ex.id; if (key !== evEx) { evEx = key; ev('exam_open', { x: ex.id }); }
   const nt = document.createElement('div'); nt.className = 'note';
   const staff = st.view.scope.basis == 'staff';
@@ -168,6 +170,46 @@ export function render() {
   wireReset(ex);
   stats();
 }
+// Home (the header title): no exam selected. Closing the timed exam view doesn't end a running attempt; the sidebar
+// button and the button here go back to it. The title toggles: on the home page it returns to where home was opened
+// from (C.back: timed view or not, the attempt being reviewed, the exam and the scroll position).
+export function goHome() {
+  if (st.cur < 0 && !st.ptView) return goBack();
+  const ex = st.view.exams[st.cur], C = cs(); if (ex) C.last = ex.id;
+  C.back = { pt: st.ptView ? 1 : 0, h: st.ptHist, ex: ex?.id || '', y: scrollY };
+  st.cur = -1; if (st.ptView) showPT(false); else { render(); scrollTo(0, 0); }
+}
+// pt: return to the timed exam view (else the last exam). The scroll position comes back only for the view home was opened from.
+function goBack(pt = !!cs().back?.pt) {
+  const C = cs(), b = C.back || {}, i = st.view.exams.findIndex(ex => ex.id === (pt ? b.ex : C.last));
+  if (!pt && i < 0) return;
+  st.cur = i; if (pt) { st.ptHist = b.pt ? b.h ?? null : null; showPT(true); } else render();
+  scrollTo(0, !b.pt === !pt ? b.y || 0 : 0);
+}
+// The title's tooltip and pressed look say whether it leaves the current exam or goes back to it.
+export function syncHome() {
+  const home = st.cur < 0 && !st.ptView, C = cs(), back = home && (C.back?.pt || st.view.exams.some(ex => ex.id === C.last));
+  document.body.classList.toggle('athome', home);
+  $('#home').dataset.tip = !home ? 'Home: close the open exam' : back ? 'Back to where you were' : 'Home';
+}
+function renderHome() {
+  cs().ex = ''; st.save(); m.innerHTML = ''; FILLS.length = 0; evEx = null;
+  const last = st.view.exams.findIndex(ex => ex.id === cs().last), X = st.S._pt, live = X && !X.done;
+  // Every study option's progress (the final is the whole course), most correct first; ties keep the menu's order.
+  const share = t => t.n ? t.ok / t.n : 0;
+  const all = st.bank.collections.map(c => ({ v: st.views[c.id], t: collectionCounts(st.S, st.views[c.id]) })).sort((a, b) => share(b.t) - share(a.t));
+  const rows = all.map(({ v, t }) => { const cur = v.id === st.cid, pct = Math.round(100 * share(t));
+    return `<li><button type="button" data-c="${esc(v.id)}"${cur ? ' aria-current="true"' : ''} data-tip="${esc(cur ? `You're studying for ${v.label}` : `Study for ${v.label}`)}"><span class="cn"><b>${esc(v.label)}</b><span class="sub">${esc(v.sub)}</span>${cur ? '<span class="now">Studying for</span>' : ''}</span><span class="num">${t.ok}/${t.n} correct · ${pct}%</span><span class="bar" role="img" aria-label="${pct}% correct"><i style="width:${100 * share(t)}%"></i></span><span class="cans">${t.a} answered</span></button></li>`; }).join('');
+  m.innerHTML = `<section class="prob home"><h2>Studying for ${esc(st.view.label)}</h2>
+${st.view.coverage?.text ? `<p class="mut">${esc(st.view.coverage.text)}</p>` : ''}
+<p>Pick an exam in the sidebar to work through its questions, or take a timed practice exam.</p>
+<div class="homebtns">${last >= 0 ? `<button class="p" data-act="last">Continue ${esc(st.view.exams[last].t)}</button>` : ''}<button${last < 0 ? ' class="p"' : ''} data-act="pt">${live ? `Return to your ${esc(st.views[X.c]?.label || '')} practice exam` : 'Take a timed practice exam'}</button></div>
+<h3>Your progress</h3><ol class="cprogs">${rows}</ol></section>`;
+  m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c, { push: true }));
+  const b = m.querySelector('[data-act=last]'); if (b) b.onclick = () => goBack(false);
+  m.querySelector('[data-act=pt]').onclick = () => cs().back?.pt ? goBack(true) : showPT(true);
+  stats();
+}
 // "Problems 1 and 5 of the original exam aren’t on this site (…)."
 function omittedText(o) {
   const ns = o.map(x => x.n), why = [...new Set(o.map(x => x.why))];
@@ -178,7 +220,7 @@ export function goTo(i, j, qid) {
   if (st.cur != i) { st.cur = i; render(); } else sidebar(); const ex = st.view.exams[i];
   ev('problem_open', { x: ex.id, q: shortT(ex.problems[j].p.t) });
   const el = document.getElementById(qid != null ? `q-${i}-${qid}` : `p-${i}-${j}`) || document.getElementById(`p-${i}-${j}`);
-  el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  scrollToEl(el);
 }
 
 function card(x, P, ex) {
@@ -251,6 +293,6 @@ function wireReset(ex) {
 }
 
 export function stats() {
-  if (st.ptView) return; sidebar(); const c = counts(st.S, st.view.exams[st.cur]);
+  if (st.ptView) return; sidebar(); const c = st.cur < 0 ? collectionCounts(st.S, st.view) : counts(st.S, st.view.exams[st.cur]);
   $('#pb').style.width = (c.n ? 100 * c.ok / c.n : 0) + '%'; $('#stat').textContent = `${c.ok}/${c.n} correct · ${c.a} answered`;
 }

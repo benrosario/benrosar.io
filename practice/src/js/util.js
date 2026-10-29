@@ -2,6 +2,18 @@
 export const $ = s => document.querySelector(s);
 export const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Scroll the page to `el` (honoring its scroll-margin) in at most ~450 ms however far it is; native smooth scrolling
+// takes seconds across a long exam. Wheel, touch or key input stops it where it is.
+let scrollRun = 0;
+export function scrollToEl(el) {
+  if (!el) return; const y0 = scrollY; el.scrollIntoView({ block: 'start', behavior: 'instant' }); const y1 = scrollY;
+  if (reduced() || Math.abs(y1 - y0) < 2) return; scrollTo({ top: y0, behavior: 'instant' });
+  const run = ++scrollRun, t0 = performance.now(), dur = Math.min(450, 200 + Math.abs(y1 - y0) / 20), ac = new AbortController();
+  for (const t of ['wheel', 'touchstart', 'keydown']) addEventListener(t, () => { scrollRun++; ac.abort(); }, { passive: true, signal: ac.signal });
+  const step = now => { if (run !== scrollRun) return ac.abort(); const k = Math.min(1, (now - t0) / dur);
+    scrollTo({ top: y0 + (y1 - y0) * (1 - (1 - k) ** 3), behavior: 'instant' }); if (k < 1) requestAnimationFrame(step); else ac.abort(); };
+  requestAnimationFrame(step);
+}
 export const SV = p => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 export const fmtT = ms => { const t = Math.ceil(ms / 1e3), h = Math.floor(t / 3600), mm = String(Math.floor(t / 60) % 60).padStart(2, '0'), ss = String(t % 60).padStart(2, '0'); return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`; };
 // 50 -> "50 minutes", 110 -> "1 hour 50 minutes"; short form "50 min", "1 h 50 min"; clock form "50:00", "1:50:00".

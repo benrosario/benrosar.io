@@ -4,7 +4,7 @@ import { load, saver } from './store.js';
 import { resolveCollection } from './model.js';
 import { initEvents } from './events.js';
 import { initTheme, initChrome, applyZoom } from './chrome.js';
-import { render, initTopicControls } from './practice.js';
+import { render, initTopicControls, goHome } from './practice.js';
 import { initTimed } from './timed.js';
 import { initSelector, select, fromURL } from './selector.js';
 import { $ } from './util.js';
@@ -26,6 +26,7 @@ async function boot() {
   // A URL that names a collection wins; otherwise the last one used (Midterm 3 for people with schema-2 data).
   select(fromURL() || st.S._c, { initial: true });
   initSelector(); initChrome(); initSort(); initTopicControls();
+  $('#home').onclick = e => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); goHome(); };
   render(); applyZoom(true);
   initTimed();
 }
