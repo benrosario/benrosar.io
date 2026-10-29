@@ -1,7 +1,7 @@
 // Storage migration: representative saved data from before study collections (schema 2) keeps everything.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { migrate, load, KEY, BACKUP } from '../src/js/store.js';
+import { migrate, load, saver, storageError, KEY, BACKUP } from '../src/js/store.js';
 
 const legacyOrder = ['61a-sp23-mt2', '61a-su23-final', '61a-fa23-mt2', '61a-sp24-mt2'];
 const ctx = { legacyOrder, defaultCollection: 'final', collections: ['midterm1', 'midterm2', 'midterm3', 'final'] };
@@ -61,4 +61,53 @@ test('load backs up the schema 2 copy once and never discards unreadable data', 
   const bad = fakeStorage({ [KEY]: '{not json' });
   assert.equal(load({ ...ctx }, bad)._c, 'final');
   assert.equal(bad.getItem(KEY + ':unreadable'), '{not json');
+});
+
+test('save failures distinguish browser quota, denied access, unavailable storage and unknown errors',()=>{
+  for(const [name,reason] of [['QuotaExceededError','full'],['NS_ERROR_DOM_QUOTA_REACHED','full'],['SecurityError','blocked'],['NotAllowedError','blocked'],['NotSupportedError','unavailable'],['Error','unknown']]) {
+    const notices=[],state={draft:'keep me'},ls={setItem(){throw Object.assign(new Error('simulated'),{name});}};
+    assert.equal(saver(state,ls,n=>notices.push(n))(),false);
+    assert.equal(notices[0].reason,reason); assert.equal(notices[0].operation,'save');
+    assert.deepEqual(state,{draft:'keep me'});
+    assert.doesNotMatch(notices[0].detail,/internet|connection/i);
+  }
+  assert.equal(storageError({code:22}).reason,'full');
+  assert.equal(storageError({code:1014}).reason,'full');
+});
+
+test('retry saves the latest in-memory work and reports recovery',()=>{
+  const ls=fakeStorage(),set=ls.setItem,notices=[],state={draft:'first'};
+  ls.setItem=()=>{throw new DOMException('full','QuotaExceededError');};
+  const save=saver(state,ls,n=>notices.push(n));
+  assert.equal(save(),false); state.draft='latest'; ls.setItem=set;
+  assert.equal(save(),true); assert.equal(JSON.parse(ls.getItem(KEY)).draft,'latest');
+  assert.deepEqual(notices.at(-1),{ok:true});
+});
+
+test('a throwing localStorage getter does not prevent practice or get misdiagnosed as a connection failure',()=>{
+  const original=Object.getOwnPropertyDescriptor(globalThis,'localStorage'),notices=[];
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw new DOMException('denied','SecurityError');}});
+  try {
+    const state=load(ctx,undefined,n=>notices.push(n));
+    assert.equal(state._c,'final');
+    assert.equal(saver(state,undefined,n=>notices.push(n))(),false);
+    assert.ok(notices.every(n=>n.reason==='blocked'));
+  }finally{if(original)Object.defineProperty(globalThis,'localStorage',original);else delete globalThis.localStorage;}
+});
+
+test('recovering from a failed initial read never overwrites earlier saved progress',()=>{
+  let blocked=true,writes=0;
+  const raw=JSON.stringify({_sv:3,_c:'final',_cs:{},earlier:'preserve me'}),notices=[];
+  const ls={getItem(){if(blocked)throw new DOMException('denied','SecurityError');return raw;},setItem(){writes++;}};
+  const state=load(ctx,ls,n=>notices.push(n)); state.current='new answer'; blocked=false;
+  assert.equal(saver(state,ls,n=>notices.push(n))(),false);
+  assert.equal(writes,0); assert.equal(notices.at(-1).reason,'recovery'); assert.equal(state.current,'new answer');
+});
+
+test('recovering an initially unavailable empty store saves current work',()=>{
+  let blocked=true;
+  const ls=fakeStorage(),get=ls.getItem;
+  ls.getItem=k=>{if(blocked)throw new DOMException('denied','SecurityError');return get(k);};
+  const state=load(ctx,ls); state.current='new answer'; blocked=false;
+  assert.equal(saver(state,ls)(),true); assert.equal(JSON.parse(get(KEY)).current,'new answer');
 });

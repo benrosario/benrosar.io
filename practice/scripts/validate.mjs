@@ -36,6 +36,10 @@ export function checkProblem(p, where, E) {
     if (b.also && !(b.k == 'mc' && Array.isArray(b.also) && b.also.every(i => Number.isInteger(i) && i >= 0 && i < b.o.length && i !== b.a))) E.push(`${w}: bad also-accepted choices`);
     if (b.k == 'sata' && !(Array.isArray(b.o) && Array.isArray(b.a) && b.a.length && b.a.every(i => Number.isInteger(i) && i >= 0 && i < b.o.length) && new Set(b.a).size == b.a.length)) E.push(`${w}: select-all needs options and answer indexes`);
     if (b.k == 'blank' && !(Array.isArray(b.a) && b.a.length && b.a.every(x => typeof x == 'string' && x.trim()))) E.push(`${w}: blank needs accepted answers`);
+    if (b.hints && !(Array.isArray(b.hints) && b.hints.length >= 2 && b.hints.every(h => typeof h === 'string' && h.trim()))) E.push(`${w}: progressive hints need at least two nonempty strings`);
+    if (b.code && !(Array.isArray(b.code) && b.code.every(id => id in (p.run?.b || {})))) E.push(`${w}: unknown whole-solution code blank`);
+    if (b.sql && !(p.sql?.chunks?.[b.sql.chunk]?.f?.[b.sql.key] != null)) E.push(`${w}: unknown SQL query or blank`);
+    for (const rule of b.rules || []) if (!rule.message || !(rule.forbid?.length || rule.require?.length || rule.treeEquality)) E.push(`${w}: invalid problem restriction`);
     if (b.r) {
       if (!p.run) E.push(`${w}: runs code but the problem has no run section`);
       else for (const id of b.r) {
@@ -49,6 +53,7 @@ export function checkProblem(p, where, E) {
   if (p.run && p.run.lang && p.run.lang != 'gleam') E.push(`${where}: unknown run language ${p.run.lang}`);
   for (const b of p.b) if (b.ev && !(b.k == 'blank' && p.run?.lang == 'gleam')) E.push(`${where} q${b.id}: "evaluates to" questions need a Gleam problem`);
   if (p.adapted && !(p.adapted.from && p.adapted.problem)) E.push(`${where}: adapted problems need from and problem`);
+  if (p.sql && !(p.sql.chunks?.length && p.sql.fixtures?.length >= 3)) E.push(`${where}: SQL needs queries and at least three datasets`);
 }
 
 export function validate(bank) {
@@ -56,8 +61,9 @@ export function validate(bank) {
   for (const e of bank.exams) {
     if (examIds.has(e.id)) E.push(`duplicate exam id ${e.id}`); examIds.add(e.id);
     if (!e.t) E.push(`${e.id}: missing title`);
+    if(e.src?.site && !e.p.every(p=>p.authored)) E.push(`${e.id}: site-authored problems must be labeled`);
     if (e.src?.adapted) { if (!e.p.every(p => p.adapted)) E.push(`${e.id}: every problem in an adapted set must say what it was adapted from`); }
-    else if (!e.src?.exam || !e.src?.sol) E.push(`${e.id}: missing source links`);
+    else if (!e.src?.site && (!e.src?.exam || !e.src?.sol)) E.push(`${e.id}: missing source links`);
     const qids = new Set();
     for (const p of e.p) {
       if (p.id !== `${e.id}/${p.n}`) E.push(`${e.id}: problem id ${p.id} should be ${e.id}/${p.n}`);

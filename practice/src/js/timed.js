@@ -12,6 +12,7 @@ import { aiPrompt } from './ai.js';
 import { timedPool, timedLengths, pickTimed } from './model.js';
 import { ev } from './events.js';
 import { render } from './practice.js';
+import { explanationHTML } from './learning.js';
 
 const m = $('#m'), nav = $('#nav'), ptb = $('#ptb');
 const PTICON = SV('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>'), BACKICON = SV('<path d="M19 12H5M12 19l-7-7 7-7"/>');
@@ -22,7 +23,8 @@ const label = c => st.views[c]?.label || c;
 function prob(X, id) { lookup(); return X.pool == 'source' ? PROB[id]?.p || null : MOD[X.set || 'midterm3']?.[id] || null; }
 const srcOf = (X, id) => { lookup(); const P = PROB[id]?.p;
   if (X.pool != 'source') return prob(X, id)?.src || X.snap?.src?.[id] || '';
-  return P ? (P.adapted ? `Adapted to Gleam by this site from ${P.adapted.from}` : `${PROB[id].e.t}, Q${P.n}`) : X.snap?.src?.[id] || ''; };
+  return P ? (P.authored ? 'Original practice written by this site' : P.adapted ? `Adapted to Gleam by this site from ${P.adapted.from}` : `${PROB[id].e.t}, Q${P.n}`) : X.snap?.src?.[id] || ''; };
+const pendingCount = X => Object.values(X.res || {}).filter(r=>r.pending).length;
 const blankAns = v => v == null || (typeof v == 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
 export const ptX = () => st.ptHist != null ? (st.S._pth || []).find(h => h.d === st.ptHist && h.ids) : st.S._pt;
 
@@ -67,17 +69,18 @@ export function renderPT() {
   const rev = !!X.done, all = ptQs(X), nt = document.createElement('div'); nt.className = 'note';
   const other = X.c !== st.cid ? `<b>This is your ${esc(label(X.c))} practice exam.</b> You’re studying for ${esc(st.view.label)}; switching didn’t pause or restart it. ` : '';
   const changed = all.some(x => x.gone) ? ' Some questions have changed since this attempt, so they show only the saved question text and answer key.' : '';
-  const fromPool = X.pool == 'source' ? 'Each problem is an original past exam problem; its source is shown under the title.' : 'Each problem is a modified version of a recommended past exam problem; its source is shown under the title.';
+  const fromPool = X.pool == 'source' ? 'Sources are shown under each title; site-authored and adapted exercises are labeled.' : 'Each problem is a modified version of a recommended past exam problem; its source is shown under the title.';
   if (rev) {
+    const pending = all.filter(k=>X.res[k.key]?.pending).length;
     const ok = all.filter(k => X.res[k.key]?.ok).length, used = X.sub - X.start;
-    nt.innerHTML = other + (st.ptHist != null ? `<b>${esc(label(X.c))} attempt from ${esc(ptDate(X.d))}.</b> ` : '') + (X.lost ? 'Your answers to this attempt weren’t saved, so only the questions and official answers are shown. ' : '') + `<b>Score: ${ok}/${all.length} questions (${Math.round(100 * ok / all.length)}%).</b> ${X.sub >= X.end - 500 ? 'Time ran out, so the exam submitted itself.' : `Submitted after ${fmtT(used)} of ${fmtClock(X.min)}.`} <span class="mut">${fromPool}${changed}</span>`;
-  } else nt.innerHTML = other + `<b>${esc(label(X.c))} practice exam · ${fmtMin(X.min)}.</b> ${X.ids.length} problems, ${all.length} questions. Your answers save as you type. Nothing is checked until you submit, and the exam submits itself when time runs out.${X.pool == 'source' ? ' These are original past exam problems, so you may have seen some of them.' : ''}`;
+    nt.innerHTML = other + (st.ptHist != null ? `<b>${esc(label(X.c))} attempt from ${esc(ptDate(X.d))}.</b> ` : '') + (X.lost ? 'Your answers to this attempt weren’t saved, so only the questions and official answers are shown. ' : '') + `<b>${pending ? 'Provisional score' : 'Score'}: ${ok}/${all.length - pending} checked questions (${all.length > pending ? Math.round(100 * ok / (all.length - pending)) : 0}%).</b> ${pending ? `${pending} answers could not be checked and have not been marked wrong. Use Retry unavailable checks. ` : ''} ${X.sub >= X.end - 500 ? 'Time ran out, so the exam submitted itself.' : `Submitted after ${fmtT(used)} of ${fmtClock(X.min)}.`} <span class="mut">${fromPool}${changed}</span>`;
+  } else nt.innerHTML = other + `<b>${esc(label(X.c))} practice exam · ${fmtMin(X.min)}.</b> ${X.ids.length} problems, ${all.length} questions. Your answers save as you type. Nothing is checked until you submit, and the exam submits itself when time runs out.${X.pool == 'source' ? ' This pool includes past-exam and labeled site-authored practice; you may have seen some problems before.' : ''}`;
   m.append(nt);
   X.ids.forEach((id, pi) => {
     const p = prob(X, id) || { t: X.snap?.t?.[id] || id, b: [] }, d = document.createElement('section'); d.className = 'prob'; d.id = 'pt-' + pi; d.style.scrollMarginTop = '64px';
     const src = srcOf(X, id);
     // Adapted problems say so during the exam too; other sources are only shown afterwards.
-    const tip = p.adapted ? `<span class="tip adapted">⇄ ${esc(rev ? src : 'Adapted to Gleam by this site from a Scheme exam problem')}</span>` : rev && src ? `<span class="tip oos">${X.pool == 'source' ? 'From' : 'Based on'} ${esc(src)}</span>` : '';
+    const tip = p.authored ? '<span class="tip note">Original practice written by this site; not a course-staff problem</span>' : p.adapted ? `<span class="tip adapted">⇄ ${esc(rev ? src : 'Adapted to Gleam by this site from a Scheme exam problem')}</span>` : rev && src ? `<span class="tip oos">${X.pool == 'source' ? 'From' : 'Based on'} ${esc(src)}</span>` : '';
     d.innerHTML = `<h2>${pi + 1}. ${esc(p.t)}</h2>` + (tip ? `<div class="tips">${tip}</div>` : '');
     const mine = all.filter(x => x.pi == pi), keys = new Set(mine.map(x => x.key));
     p.b.forEach(b => {
@@ -93,6 +96,7 @@ export function renderPT() {
   ptSide(); ptWire(document); ptTick();
 }
 function endButtons(X, rev, side) {
+  if (rev && Object.values(X.res || {}).some(r=>r.pending)) return '<button class="p" data-act="retry">Retry unavailable checks</button><button data-act="back">Back to practice questions</button>';
   if (st.ptHist != null) return '<button class="p" data-act="home">' + (st.S._pt && !st.S._pt.done ? 'Back to your exam' : 'Practice exam home') + '</button><button data-act="back">Back to practice questions</button>';
   if (rev) return '<button class="p" data-act="new">Take another exam</button><button data-act="back">Back to practice questions</button>';
   return '<button class="p" data-act="submit">Submit exam</button>' + (side ? '<button data-act="quit" data-tip="Throw away this attempt">Quit exam</button>' : '');
@@ -100,7 +104,7 @@ function endButtons(X, rev, side) {
 
 function ptCard(x, p, rev, X) {
   const { q, key } = x, w = document.createElement('div'), c = document.createElement('div'), v = X.ans[key], r = rev ? X.res[key] : null, busy = !!X.grading;
-  w.className = 'qw'; w.id = 'ptq-' + key.replace('|', '-'); c.className = 'q' + (r && !X.lost ? r.ok ? ' ok' : ' no' : '');
+  w.className = 'qw'; w.id = 'ptq-' + key.replace('|', '-'); c.className = 'q' + (r && !r.pending && !X.lost ? r.ok ? ' ok' : ' no' : '');
   const tag = { mc: 'Multiple choice', sata: 'Select all that apply', blank: 'Fill in the blank' }[q.k], dis = rev || busy ? ' disabled' : '';
   let h = `<div class="qh"><div class="tag">${tag}</div><span class="fb" role="status"></span></div><div class="ql">${segHTML(q.l)}</div>`;
   if (q.k == 'blank') h += `<textarea rows="1" spellcheck="false" aria-label="Your answer" placeholder="${rev ? X.lost ? '(not saved)' : '(no answer)' : 'Your answer…'}"${dis}></textarea>`;
@@ -118,19 +122,19 @@ function ptCard(x, p, rev, X) {
   }
   w.append(c);
   if (r) {
-    const fb = c.querySelector('.fb'); fb.className = 'fb ' + (X.lost ? '' : r.ok ? 'ok' : 'no');
-    fb.innerHTML = r.ok ? '✓ ' + esc(r.m || 'Correct') : X.lost ? 'Your answer wasn’t saved' : r.none ? '✗ Not answered' : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
+    const fb = c.querySelector('.fb'); fb.className = 'fb ' + (X.lost || r.pending ? '' : r.ok ? 'ok' : 'no');
+    fb.innerHTML = r.pending ? 'Not checked · retry available' : r.ok ? '✓ ' + esc(r.m || 'Correct') : X.lost ? 'Your answer wasn’t saved' : r.none ? '✗ Not answered' : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
     const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { r.ok = true; r.m = 'Marked correct by you'; const hs = (st.S._pth || []).find(h => h.d == X.sub); if (hs) { hs.ok++; if (hs !== X && hs.res && hs.res[key]) Object.assign(hs.res[key], { ok: true, m: r.m }); } st.save(); const y = scrollY; renderPT(); scrollTo(0, y); };
     const out = c.querySelector('.out'); if (out) { const o = r.o || (q.k == 'blank' && !runs(q) ? 'Compared with the official answer text; this answer wasn’t run.' : ''); out.hidden = !o; out.textContent = o; }
     const ai = c.querySelector('.ai'); if (ai) wireAI(ai, () => aiPrompt('Timed practice exam', p, q, v, r.o, label(X.c)));
-    const an = document.createElement('div'); an.className = 'ans'; an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + (q.x ? `<div class="x">${esc(q.x)}</div>` : ''); w.append(an);
+    const an = document.createElement('div'); an.className = 'ans'; an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); w.append(an);
   } else if (!rev) c.querySelector('.qh .tag').dataset.tip = howChecked(q, p) + ' when you submit.';
   return w;
 }
 
 function ptSide() {
   const X = ptX(), rev = !!X.done, all = ptQs(X), s = document.createElement('div'); s.className = 'ptside';
-  let h = rev ? `<div class="ptscore">${all.filter(k => X.res[k.key]?.ok).length}/${all.length}</div><div class="ptsub mut">questions correct</div>`
+  let h = rev ? `<div class="ptscore">${all.filter(k => X.res[k.key]?.ok).length}/${all.length-pendingCount(X)}</div><div class="ptsub mut">${pendingCount(X) ? 'checked questions correct · ' + pendingCount(X) + ' pending' : 'questions correct'}</div>`
     : `<div class="ptclock" id="ptclock">${fmtT(Math.max(0, X.end - Date.now()))}</div><div class="ptsub mut" id="ptleft">left of ${fmtClock(X.min)}${X.c !== st.cid ? ' · ' + esc(label(X.c)) : ''}</div>`;
   X.ids.forEach((id, pi) => { h += `<a href="#pt-${pi}" data-pi="${pi}"><span class="nm">${pi + 1}. ${esc((prob(X, id)?.t || X.snap?.t?.[id] || id).replace(/\s*\([\d.]+ pts\)$/, ''))}</span><span class="ct" id="ptc-${pi}"></span></a>`; });
   h += `<div class="ptbtns">${endButtons(X, rev, true)}</div>`;
@@ -152,6 +156,7 @@ function ptWire(root) {
     if (b._w) return; b._w = 1; const a = b.dataset.act;
     if (a == 'submit') confirmBtn(b, () => ptSubmit());
     else if (a == 'quit') confirmBtn(b, () => { st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); });
+    else if (a == 'retry') b.onclick = () => ptSubmit(true, ptX());
     else if (a == 'new') b.onclick = () => { st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); };
     else if (a == 'back') b.onclick = () => showPT(false);
     else if (a == 'home') b.onclick = () => { st.ptHist = null; if (st.S._pt && st.S._pt.done) { st.S._pt = null; st.save(); } renderPT(); scrollTo(0, 0); ptTick(); };
@@ -166,12 +171,12 @@ function ptHome() {
   m.innerHTML = `<section class="prob pthome"><h2>Timed practice exam · ${esc(V.label)}</h2>
 <p>${esc(T.intro)}</p>
 ${Ls.length ? `<div class="ptopts" role="radiogroup" aria-label="Exam length">${Ls.map(L => `<button type="button" class="ptopt" role="radio" aria-checked="${L === sel}" data-min="${L.min}"${L.ok ? '' : ' disabled'}><b>${fmtMin(L.min)}</b><span>${L.ok ? `${L.count} problems · about ${q(L.count)} questions${L.note ? ' · ' + esc(L.note) : ''}` : `Needs ${L.count} problems; ${pool.length} available`}</span></button>`).join('')}</div>` : ''}
-<ul class="ptrules"><li>The clock starts when you press Start exam.</li><li>Nothing is checked until you submit. Then you get your score and every official answer with explanations.</li><li>Python fill-in blanks that come with doctests are checked by running your code; everything else is compared with the official answer, and you can mark an equivalent text answer correct.</li><li>When time runs out, the exam submits itself.</li><li>Answers are saved in this browser, so reloading the page won't lose them.</li></ul>
+<ul class="ptrules"><li>The clock starts when you press Start exam.</li><li>Nothing is checked until you submit. Then you get your score, accepted answers, available explanations and topic walkthroughs.</li><li>Python code runs against doctests; Gleam code is compiled and tested; SQL runs in SQLite on several datasets. Other blanks use text comparison. Individual code blanks use official answers for the other blanks, and stated restrictions still apply.</li><li>When time runs out, the exam submits itself.</li><li>Answers are saved in this browser, so reloading the page won't lose them.</li></ul>
 ${sel ? '<button class="p" id="ptgo">Start exam</button>' : `<p class="mut">There aren’t enough ${esc(V.label)} problems for a timed exam yet.</p>`}
-${H.length ? `<h3>Past ${esc(V.label)} attempts</h3><table class="pth"><thead><tr><th>Date</th><th>Length</th><th>Score</th><th>Time used</th></tr></thead><tbody>${H.map(x => `<tr><td>${x.ids ? `<a href="#" class="pthl" data-d="${x.d}">${esc(ptDate(x.d))}</a>` : esc(ptDate(x.d))}</td><td>${fmtClock(x.min)}</td><td>${x.ok}/${x.n} (${Math.round(100 * x.ok / x.n)}%)</td><td>${fmtT(x.used)}</td></tr>`).join('')}</tbody></table>` : ''}
+${H.length ? `<h3>Past ${esc(V.label)} attempts</h3><table class="pth"><thead><tr><th>Date</th><th>Length</th><th>Score</th><th>Time used</th></tr></thead><tbody>${H.map(x => `<tr><td>${x.ids ? `<a href="#" class="pthl" data-d="${x.d}">${esc(ptDate(x.d))}</a>` : esc(ptDate(x.d))}</td><td>${fmtClock(x.min)}</td><td>${x.ok}/${x.n-pendingCount(x)}${pendingCount(x) ? ' · pending' : ` (${Math.round(100*x.ok/x.n)}%)`}</td><td>${fmtT(x.used)}</td></tr>`).join('')}</tbody></table>` : ''}
 ${others ? `<p class="mut">You have ${others} past attempt${others > 1 ? 's' : ''} for other exams. Switch “Studying for” to see ${others > 1 ? 'them' : 'it'}.</p>` : ''}
 </section>`;
-  nav.innerHTML = '<div class="ptside"><div class="fhint">Pick a length, then press Start exam. Use the button in the top left to go back to the practice questions.</div></div>';
+  nav.innerHTML = '<div class="ptside"><div class="fhint">Pick a length, then press Start exam. Use the button at the top of the sidebar to go back to the practice questions.</div></div>';
   const opts = [...m.querySelectorAll('.ptopt')];
   opts.forEach(o => o.onclick = () => { if (o.disabled) return; C.ptlen = +o.dataset.min; sel = Ls.find(L => L.min == C.ptlen); st.save(); opts.forEach(x => x.setAttribute('aria-checked', x === o)); });
   const go = $('#ptgo'); if (go) go.onclick = () => ptStart(sel);
@@ -189,14 +194,14 @@ function ptOpen(d) { st.ptHist = d; st.ptView = true; st.S._view = 'pt'; st.save
 export function ptHistNav(nav) {
   const H = (st.S._pth || []).filter(x => x.c == st.cid); if (!H.length) return; const box = document.createElement('div'); box.className = 'hist';
   box.innerHTML = '<div class="histh">Practice exam history</div>' + H.map(x => {
-    const lab = `<span class="nm">${esc(ptDate(x.d))} · ${fmtMin(x.min, true)}</span><span class="ct">${x.ok}/${x.n}</span>`;
+    const lab = `<span class="nm">${esc(ptDate(x.d))} · ${fmtMin(x.min, true)}</span><span class="ct">${x.ok}/${x.n-pendingCount(x)}${pendingCount(x) ? ' pending' : ''}</span>`;
     return x.ids ? `<a href="#" data-d="${x.d}" data-tip="Review this attempt">${lab}</a>` : `<div class="old" data-tip="Only the score was saved for this attempt">${lab}</div>`;
   }).join('');
   box.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); ptOpen(+a.dataset.d); }); nav.append(box);
 }
 
-async function ptSubmit() {
-  const X = st.S._pt; if (!X || X.done || ptBusy) return; ptBusy = true; X.grading = 1; X.sub = X.sub || Math.min(Date.now(), X.end); st.save();
+async function ptSubmit(retry = false, target = st.S._pt) {
+  const X = target; if (!X || X.done && !retry || ptBusy) return; ptBusy = true; X.grading = 1; X.sub = X.sub || Math.min(Date.now(), X.end); st.save();
   if (st.ptView) { const y = scrollY; renderPT(); scrollTo(0, y); } ptTick();
   const all = ptQs(X), res = {}; let i = 0;
   for (const { p, q, key, gone } of all) {
@@ -204,15 +209,19 @@ async function ptSubmit() {
     if (c) { c.classList.add('busy'); c.textContent = !blankAns(v) && /^Loading/.test(loadingText(q, p)) ? loadingText(q, p).replace(/ \(.*/, '') : `Grading ${i}/${all.length}`; }
     if (blankAns(v)) { res[key] = { ok: false, none: 1 }; continue; }
     if (gone) { res[key] = { ok: false, o: 'This question changed before the exam was graded.' }; continue; }
-    try { const g = await grade(q, v, p); res[key] = { ok: g.ok, m: g.how, o: g.out }; } catch (e) { res[key] = { ok: false, o: String(e) }; }
+    if (retry && X.res[key] && !X.res[key].pending) { res[key] = X.res[key]; continue; }
+    try { const g = await grade(q, v, p); res[key] = { ok: g.ok, m: g.how, o: g.out, ...(g.unavailable ? {pending:true} : {}) }; } catch (e) { res[key] = { ok: false, pending:true, o: 'Could not check. Retry available. ' + String(e) }; }
+  }
+  if(X.pool==='source') for(const {p,q,key} of all) if(!res[key].ok && !res[key].pending && !res[key].none) {
+    st.S._missed ||= {}; st.S._missed[p.id.slice(0,p.id.lastIndexOf('/'))+'|'+q.id] = true;
   }
   const ok = all.filter(k => res[k.key].ok).length;
-  X.res = res; X.done = 1; delete X.grading; ptBusy = false;
+  X.res = res; X.done = 1; if(st.S._pt?.sub===X.sub && st.S._pt!==X) Object.assign(st.S._pt,{res,done:1}); delete X.grading; ptBusy = false;
   ev('pt_submit', { c: X.c, x: 'pt' + X.min, q: X.ids.join(','), v: X.sub >= X.end - 500 ? 'timeout' : 'manual', ok, tot: all.length, sec: Math.round((X.sub - X.start) / 1e3) });
   const kept = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v.o ? { ...v, o: v.o.slice(0, 600) } : v]));
   const H = { d: X.sub, c: X.c, cv: X.cv, pool: X.pool, set: X.set, min: X.min, ok, n: all.length, used: X.sub - X.start, ids: X.ids, keys: X.keys, ans: X.ans, res: kept, snap: X.snap, start: X.start, end: X.end, sub: X.sub, done: 1 };
   if (!H.keys) delete H.keys; if (!H.snap) delete H.snap; if (!H.set) delete H.set;
-  st.S._pth = [H, ...(st.S._pth || [])].slice(0, 20); st.save();
+  st.S._pth = [H, ...(st.S._pth || []).filter(h=>h.d!==X.sub)].slice(0, 20); st.save();
   if (st.ptView) { renderPT(); scrollTo(0, 0); } ptTick();
 }
 

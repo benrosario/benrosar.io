@@ -114,9 +114,9 @@ test('sidebar sorting: date, answered, direction and ties', () => {
   // Newest first; within a term the order the exams were given (final after the midterms).
   assert.deepEqual(ids('date', true).slice(0, 5), ['61a-fa26-mt1', '61a-sp26-mt2', '61a-fa25-final', '61a-fa25-mt2', '61a-fa25-mt1']);
   // Oldest first is the reverse, except that the undated adapted set stays last.
-  assert.deepEqual(ids('date', false).slice(0, -1), ids('date', true).slice(0, -1).reverse());
-  assert.equal(ids('date', false).at(-1), '61a-fa26-gleam-adapted');
-  assert.equal(ids('date', true).at(-1), '61a-fa26-gleam-adapted');
+  assert.deepEqual(ids('date', false).slice(0, -2), ids('date', true).slice(0, -2).reverse());
+  assert.deepEqual(ids('date', false).slice(-2), ['61a-fa26-gleam-adapted','61a-fa26-extra-practice']);
+  assert.deepEqual(ids('date', true).slice(-2), ['61a-fa26-gleam-adapted','61a-fa26-extra-practice']);
   // There's no exam-type sort; a saved one falls back to the suggested order.
   assert.ok(!sortOptions(v).includes('kind'));
   assert.deepEqual(ids('kind', false), ids('suggested', false));

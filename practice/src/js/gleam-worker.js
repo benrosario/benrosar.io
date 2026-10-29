@@ -16,7 +16,7 @@ async function init(b) {
 }
 onmessage = async e => {
   const { id, base: b, source } = e.data;
-  try { await (ready ||= init(b)); } catch (err) { ready = null; postMessage({ id, r: { ok: false, err: 'Gleam failed to load: ' + (err.message || err) } }); return; }
+  try { await (ready ||= init(b)); } catch (err) { ready = null; postMessage({ id, r: { ok: false, unavailable: true, err: 'Gleam failed to load: ' + (err.message || err) } }); return; }
   postMessage({ id, loaded: true }); // the page's time limit for running the code starts now
   if (!source) return postMessage({ id, r: { ok: true, n: 0 } }); // warm-up
   G.write_module(0, 'solution', source);

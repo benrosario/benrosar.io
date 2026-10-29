@@ -1,7 +1,7 @@
 // Page chrome: theme and code-color toggles, sidebar resizing, zoom, tooltips, the filter dropdown and the countdown timer.
 import { st, cs } from './state.js';
 import { $, esc, SV } from './util.js';
-import { sidebar } from './practice.js';
+import { sidebar, render, firstMatch } from './practice.js';
 import { ev } from './events.js';
 
 const m = $('#m'), side = $('#side'), th = $('#th'), hlb = $('#hlb'), flt = $('#flt');
@@ -60,7 +60,7 @@ export function dropdown(dd, { opt = o => esc(o.text), label = o => o.text, head
 const filterMenu = dropdown($('#dd'));
 export const ddSync = () => filterMenu.sync();
 function initFilter() {
-  flt.onchange = () => { cs().f = flt.value; st.save(); const t0 = m.getBoundingClientRect().top; sidebar(); ddSync(); const dy = m.getBoundingClientRect().top - t0; if (dy) scrollBy({ top: dy, behavior: 'instant' }); };
+  flt.onchange = () => { const wasReview = cs().f === 'missed'; cs().f = flt.value; if (flt.value === 'missed') { const i = firstMatch(); if (i >= 0) st.cur = i; } st.save(); const t0 = m.getBoundingClientRect().top; if (wasReview || flt.value === 'missed') render(); else sidebar(); ddSync(); const dy = m.getBoundingClientRect().top - t0; if (dy) scrollBy({ top: dy, behavior: 'instant' }); };
   ddSync();
 }
 
@@ -69,6 +69,8 @@ const grip = $('#grip'), setW = w => { w = Math.max(200, Math.min(620, Math.roun
 function initLayout() {
   const hdr = $('header'), setHH = () => document.documentElement.style.setProperty('--hh', hdr.offsetHeight + 'px'); setHH(); new ResizeObserver(setHH).observe(hdr);
   if (st.S._sw) setW(st.S._sw);
+  // Once the exam list scrolls under the sidebar's pinned top controls, a hairline marks where they end.
+  const top = side.querySelector('.sidetop'); side.addEventListener('scroll', () => top.classList.toggle('stuck', side.scrollTop > 0), { passive: true });
   grip.onpointerdown = e => {
     e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add('on'); document.body.classList.add('drag');
     grip.onpointermove = ev => { setW(ev.clientX - side.getBoundingClientRect().left); if (st.S._zoom == 'fit') applyZoom(true); };
@@ -119,7 +121,8 @@ function initZoom() {
   zv.onfocus = () => { zv.value = zv.value.replace('%', ''); zv.select(); };
   zv.onkeydown = e => { if (e.key == 'Enter') zoomTo(); if (e.key == 'Escape') { zv.blur(); applyZoom(); } };
   zv.onblur = () => { const typed = zv.value.replace('%', '').trim(), shown = String(Math.round(zShown * 100)); if (typed !== shown) zoomTo(); else zv.value = shown + '%'; };
-  $('#zf').onclick = () => { st.S._zoom = st.S._zoom == 'fit' ? 1 : 'fit'; st.save(); applyZoom(); };
+  // Turning fit off goes back to the zoom set before fit was turned on.
+  $('#zf').onclick = () => { if (st.S._zoom == 'fit') st.S._zoom = st.S._zprev ?? 1; else { st.S._zprev = st.S._zoom ?? 1; st.S._zoom = 'fit'; } st.save(); applyZoom(); };
   addEventListener('resize', () => { if (st.S._zoom == 'fit') applyZoom(true); });
 }
 

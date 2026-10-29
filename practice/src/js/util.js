@@ -41,13 +41,14 @@ export function confirmBtn(btn, act, skip, armed) {
   };
   btn.onblur = () => setTimeout(() => { if (document.activeElement !== btn) disarm(); }, 150);
 }
-export function confetti(el) {
+// Burst of confetti from the middle of el. small: fewer, smaller pieces that stay close (the sidebar's finished-problem burst).
+export function confetti(el, small) {
   if (reduced()) return;
-  const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, C = ['#1f8a4c', '#2a5bd7', '#f2b705', '#e8505b', '#8e5cd9', '#14b8a6'];
-  for (let i = 0; i < 26; i++) {
-    const p = document.createElement('span'); p.className = 'cf'; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.background = C[i % C.length]; document.body.append(p);
-    const a = Math.random() * Math.PI * 2, v = 40 + Math.random() * 60, dx = Math.cos(a) * v, dy = Math.sin(a) * v - 30;
-    p.animate([{ transform: 'translate(-50%,-50%) rotate(0)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + 70}px)) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }], { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => p.remove();
+  const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, C = ['#1f8a4c', '#2a5bd7', '#f2b705', '#e8505b', '#8e5cd9', '#14b8a6'], k = small ? .45 : 1;
+  for (let i = 0; i < (small ? 14 : 26); i++) {
+    const p = document.createElement('span'); p.className = small ? 'cf sm' : 'cf'; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.background = C[i % C.length]; document.body.append(p);
+    const a = Math.random() * Math.PI * 2, v = (40 + Math.random() * 60) * k, dx = Math.cos(a) * v, dy = (Math.sin(a) * v - 30 * k);
+    p.animate([{ transform: 'translate(-50%,-50%) rotate(0)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + 70 * k}px)) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }], { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => p.remove();
   }
 }
 export async function copyText(t) {

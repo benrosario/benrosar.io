@@ -124,7 +124,7 @@
     ]
    }
   ],
-  "intro": "Each exam draws original past exam problems from the whole course at random and balances them across topics: early material, recursion and lists, trees/objects/iterators/efficiency, SQL, and Gleam (problems adapted from Scheme by this site, labeled as such). The 50-minute exam draws 3 problems from different topic groups. No more than one problem comes from the same source exam when there’s a choice. Past-exam problems aren’t modified, so you may have seen some of them."
+  "intro": "Each exam draws past exam and site-authored practice problems from the whole course at random and balances them across topics: early material, recursion and lists, trees/objects/iterators/efficiency, SQL, and Gleam and interpreters (including site-authored exercises, labeled as such). The 50-minute exam draws 3 problems from different topic groups. No more than one problem comes from the same source exam when there’s a choice. Past-exam problems aren’t modified, so you may have seen some of them."
  },
  "exams": [
   {
@@ -150,6 +150,10 @@
   {
    "exam": "61a-fa26-gleam-adapted",
    "note": "Written by this site, not the course staff: past Scheme exam problems rewritten in Gleam, since Gleam replaced Scheme this semester. Answers follow the official Scheme solutions, and code answers are checked by compiling and running them with the Gleam compiler. There are no past Gleam exams yet."
+  },
+  {
+   "exam": "61a-fa26-extra-practice",
+   "note": "Original practice written by this site, not course staff or a past exam. Covers interpreters, custom types, Results and immutable list processing."
   },
   {
    "exam": "61a-su25-final",

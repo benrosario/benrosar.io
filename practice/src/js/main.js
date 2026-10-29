@@ -4,26 +4,28 @@ import { load, saver } from './store.js';
 import { resolveCollection } from './model.js';
 import { initEvents } from './events.js';
 import { initTheme, initChrome, applyZoom } from './chrome.js';
-import { render } from './practice.js';
+import { render, initTopicControls } from './practice.js';
 import { initTimed } from './timed.js';
 import { initSelector, select, fromURL } from './selector.js';
 import { $ } from './util.js';
 import { initSort } from './sort.js';
+import { initSaveNotice } from './save-notice.js';
 
 const TAG = document.currentScript || document.querySelector('script[data-content]'), CONTENT = TAG.dataset.content;
 st.gleam = { worker: TAG.dataset.gleamWorker, base: TAG.dataset.gleamBase };
+const reportSaving = initSaveNotice(() => st.save());
 
 async function boot() {
   const bank = await fetch(CONTENT).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
   const ids = bank.collections.map(c => c.id);
   st.bank = bank;
-  st.S = load({ legacyOrder: bank.legacyOrder, defaultCollection: bank.defaultCollection, collections: ids });
-  st.save = saver(st.S);
+  st.S = load({ legacyOrder: bank.legacyOrder, defaultCollection: bank.defaultCollection, collections: ids }, undefined, reportSaving);
+  st.save = saver(st.S, undefined, reportSaving);
   for (const id of ids) st.views[id] = resolveCollection(bank, id);
   initEvents(); initTheme();
   // A URL that names a collection wins; otherwise the last one used (Midterm 3 for people with schema-2 data).
   select(fromURL() || st.S._c, { initial: true });
-  initSelector(); initChrome(); initSort();
+  initSelector(); initChrome(); initSort(); initTopicControls();
   render(); applyZoom(true);
   initTimed();
 }

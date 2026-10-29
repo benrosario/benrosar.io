@@ -10,6 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validate } from './validate.mjs';
 import { gleamAssets, GLEAM } from './gleam-toolchain.mjs';
+import { enrich } from '../content/enrich.mjs';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const hash = s => createHash('sha256').update(s).digest('hex').slice(0, 10);
@@ -26,8 +27,9 @@ export async function loadBank() {
   const collections = index.order.map(id => json(`content/collections/${id}.json`));
   const timed = {};
   for (const f of readdirSync(join(ROOT, 'content/timed')).filter(f => f.endsWith('.json'))) timed[f.replace(/\.json$/, '')] = json('content/timed/' + f);
+  enrich(exams);
   const bank = { exams, collections, timed, defaultCollection: index.defaultCollection, legacyOrder: json('content/order-legacy.json'),
-    prelude: readFileSync(join(ROOT, 'content/python-prelude.py'), 'utf8') };
+    prelude: readFileSync(join(ROOT, 'content/python-prelude.py'), 'utf8'), sqlPrelude: readFileSync(join(ROOT, 'content/sql-prelude.py'), 'utf8') };
   bank.version = hash(JSON.stringify(bank));
   return bank;
 }

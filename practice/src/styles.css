@@ -24,12 +24,13 @@ aside details{margin-bottom:2px}aside summary{list-style:none;display:flex;align
 aside summary::-webkit-details-marker{display:none}aside summary{padding-left:2px}
 .tg{flex:none;display:grid;place-items:center;width:36px;height:36px;margin:-4px 0;padding:0;border:0;border-radius:7px;background:none;color:var(--mut);cursor:pointer}
 .tg:hover{background:var(--bd);color:var(--fg)}.tg svg{width:14px;height:14px;transition:transform .2s}aside details[open]>summary .tg svg{transform:rotate(90deg)}
-aside summary:hover,aside a:hover{background:var(--code)}aside details.cur>summary{color:var(--acc)}
+aside summary:hover,aside a:hover{background:var(--code)}aside details.cur>summary{color:var(--acc)}aside details.cur{position:relative;z-index:1;background:var(--card)}
 aside .nm{flex:1}aside .ct{font-weight:400;font-size:14.5px;color:var(--mut)}
 aside a{display:flex;gap:6px;align-items:center;padding:5px 10px 5px 46px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:15.5px}
 aside a .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .done{flex:none;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#1f8a4c;color:#fff;font-size:11px;font-weight:700}
 .done.sm{width:14px;height:14px;font-size:9px}
+.ring{flex:none;transform:rotate(-90deg)}.ring circle{fill:none;stroke:color-mix(in srgb,var(--mut) 40%,transparent);stroke-width:2.5}.ring .arc{stroke:var(--acc);stroke-linecap:round}
 @media (max-width:760px){.grip{display:none}.wrap{display:block}aside{position:static;width:auto;height:auto;max-height:45vh;border-right:0;border-bottom:1px solid var(--bd)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 @keyframes flash{0%{box-shadow:0 0 0 0 rgba(230,80,80,.0)}30%{box-shadow:0 0 0 4px rgba(230,80,80,.35);background:rgba(240,110,110,.22)}100%{box-shadow:0 0 0 0 rgba(230,80,80,0)}}
@@ -61,7 +62,7 @@ aside .star{color:#d9a400;font-size:14.5px}aside .dia{color:#3b74e6;font-size:13
  .ddm li.hi{background:var(--code)}}
 .fhint{font-size:14.5px;color:var(--mut);padding:4px 8px 8px}
 pre.lnums{counter-reset:ln}pre.lnums .ln{counter-increment:ln}pre.lnums .ln::before{content:counter(ln) ':';display:inline-block;width:2.4em;margin-right:.6em;text-align:right;color:var(--mut);opacity:.7;user-select:none}
-.sidetop{position:sticky;top:-10px;z-index:3;background:var(--card);margin:-10px -8px 8px;padding:10px 8px;border-bottom:1px solid var(--bd)}.sidetop{font-size:18px}.sidetop .ddm li{font-size:17px}.sidetop .ddb{width:100%}.sidetop select{width:100%}
+.sidetop{position:sticky;top:-10px;z-index:3;background:var(--card);margin:-10px -8px 8px;padding:10px 8px}.sidetop{font-size:18px}.sidetop .ddm li{font-size:17px}.sidetop .ddb{width:100%}.sidetop select{width:100%}
 .tipbox{position:fixed;z-index:50;max-width:260px;padding:6px 9px;border-radius:7px;background:#1d1d1f;color:#f5f5f7;font-size:12px;line-height:1.35;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transform:translateY(-2px);transition:opacity .12s,transform .12s}
 .tipbox.in{opacity:1;transform:none}:root[data-theme=dark] .tipbox{background:#f0f0f2;color:#1d1d1f}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tipbox{background:#f0f0f2;color:#1d1d1f}}
@@ -74,7 +75,7 @@ pre.lnums{counter-reset:ln}pre.lnums .ln{counter-increment:ln}pre.lnums .ln::bef
 .q{border:1px solid var(--bd);border-radius:10px;padding:12px;margin:10px 0}.q.ok{border-color:var(--ok);background:var(--okb)}.q.no{border-color:var(--no);background:var(--nob)}
 .ql{font-weight:600;margin-bottom:6px;white-space:pre-wrap}label.o{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 textarea{width:100%;font:13px ui-monospace,Menlo,monospace;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);resize:none;overflow:hidden;min-height:36px;field-sizing:content}
-.cf{position:fixed;width:7px;height:7px;border-radius:2px;pointer-events:none;z-index:9}
+.cf{position:fixed;width:7px;height:7px;border-radius:2px;pointer-events:none;z-index:9}.cf.sm{width:4px;height:4px;border-radius:1px}
 .row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}.fb{font-size:13px}.fb.ok{color:var(--ok)}.fb.no{color:var(--no)}
 .out{font:13px ui-monospace,Menlo,monospace;white-space:pre-wrap;color:var(--mut);margin-top:6px}
 .qw{margin:10px 0}.qw>.q{margin:0}.ans{margin-top:8px;border:1px solid var(--bd);border-left:4px solid var(--acc);border-radius:10px;background:var(--card);padding:12px 14px}
@@ -90,7 +91,7 @@ textarea{width:100%;font:13px ui-monospace,Menlo,monospace;padding:8px;border:1p
 .tmh{font-size:12px;color:var(--mut);margin-bottom:12px;min-height:18px}.tmh.bad{color:var(--no)}
 .tmk{display:flex;gap:6px}.tmk button{flex:1}.tmk #tmgo{flex:1.4}.tms{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--mut);cursor:pointer}
 @media (max-width:760px){.tm{position:static}.tmp{top:calc(100% + 6px);left:16px;right:16px;width:auto;transform-origin:top center}}
-#ptb{display:flex;align-items:center;gap:7px;height:41px;padding:0 14px;font-weight:600;white-space:nowrap}#ptb.run{border-color:var(--acc);color:var(--acc);font-variant-numeric:tabular-nums}
+#ptb{flex:1 0 100%;display:flex;align-items:center;justify-content:center;gap:7px;height:41px;padding:0 14px;font-weight:600;white-space:nowrap}#ptb.run{border-color:var(--acc);color:var(--acc);font-variant-numeric:tabular-nums}
 body.ptm #dd,body.ptm #rs{display:none}body.ptm .bar{visibility:hidden;min-width:0}body.ptm #stat{display:none}
 .pthome p{max-width:70ch;line-height:1.6}.pthome h3{font-size:14px;margin:24px 0 6px;color:var(--mut)}
 .ptopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.ptopt{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:14px 16px;border-radius:12px;text-align:left}
@@ -108,7 +109,7 @@ label.o.right>span{color:var(--ok);font-weight:600}label.o.wrong>span{color:var(
 /* "Studying for" sits beside the filter in the sidebar's top bar, in the same dropdown style */
 .sidetop{display:flex;gap:6px}.sidetop .dd{flex:1 1 0;min-width:0}
 .sidetop .ddb{min-width:0}.sidetop .ddb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sidetop .ddm{min-width:max(100%,220px)}#dd .ddm{left:auto;right:0}
+.sidetop .ddm{min-width:max(100%,220px)}
 .ddm .ddh{padding:4px 8px 6px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);cursor:default}
 .ddm li .sub{margin-left:auto;padding-left:16px;font-size:13px;font-weight:400;color:var(--mut)}
 .cprog{font-size:13.5px;color:var(--mut);padding:0 8px 8px}
@@ -127,8 +128,35 @@ label.o.right>span{color:var(--ok);font-weight:600}label.o.wrong>span{color:var(
 .srto button{font-size:13.5px;padding:5px 12px;border-radius:999px}
 .srto button[aria-checked=true]{background:var(--acc);border-color:var(--acc);color:#fff}
 @media (prefers-reduced-motion:reduce){.srtp{transition:none}}
+/* Sort is one split chip: the label opens the options, the arrow at its end reverses the order */
+#srtb{border-radius:999px 0 0 999px;padding-right:9px}#srtd{margin-left:-1px;border-radius:0 999px 999px 0;padding:4px 8px}
+/* The Sort pill and the Topic chip share the row and grow to fill it; when both don't fit, Topic wraps to its own full row */
+.sortbar .srt{display:flex;flex:1 1 auto;max-width:100%}#srtb{flex:1;min-width:0}#srtb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#srtd{flex:none}
+#srtd svg{transition:transform .28s cubic-bezier(.3,.7,.2,1.3)}#srtd.desc svg{transform:rotate(180deg)}
+#srtd.rev{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}#srtd.rev:hover{background:color-mix(in srgb,var(--acc) 20%,transparent)}
+@media (prefers-reduced-motion:reduce){#srtd svg{transition:none}}
+/* The Sort and Topic chips sit below the line that closes the sidebar's top controls, just above the progress line, and stay
+   pinned with them while the exam list scrolls. Topic's menu spans the row and lists each topic with a thin progress bar. */
+.sortbar{position:relative;flex-basis:calc(100% + 16px);margin:4px -8px 0;padding:10px 8px 0;border-top:1px solid var(--bd)}.sidetop.stuck{box-shadow:0 1px 0 var(--bd)}
+.sortbar .dd{display:flex;flex:1 1 auto;min-width:0;max-width:100%}.sortbar .ddb{width:100%;min-width:0;gap:5px;justify-content:space-between}.sortbar .ddb span{min-width:0}.sortbar .ddb svg{flex:none}
+.sortbar select{width:100%;font-size:13.5px;padding:4px 10px;border-radius:999px;color:var(--mut)}
+#tdd{position:static}#tddm{left:8px;right:8px;min-width:0;width:auto;max-height:min(60vh,440px);overflow-y:auto}
+#tddm li{font-size:14px;white-space:normal}.tpn{flex:1;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;min-width:0}
+.tpl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tpn .sub{padding:0;font-size:12.5px;font-variant-numeric:tabular-nums}
+.tpb{grid-column:1/-1;height:3px;border-radius:2px;background:var(--bd);overflow:hidden}.tpb i{display:block;height:100%;background:var(--acc)}
 body.ptm .sortbar{display:none}
 @media (max-width:760px){.chip,.srto button{min-height:36px}}
 .tip.adapted{color:#7a3fb8;background:#f3ebfc;border-color:#d9c2f2}
 :root[data-theme=dark] .tip.adapted{color:#cfa8ff;background:#2a1d3a;border-color:#4a3466}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tip.adapted{color:#cfa8ff;background:#2a1d3a;border-color:#4a3466}}
+
+.hints{font-size:14px;line-height:1.6;padding:4px 0}.hints p{max-width:70ch;margin:8px 0}.walkthrough{margin-top:12px;font-size:14px;line-height:1.6}.walkthrough summary{cursor:pointer;color:var(--acc)}.walkthrough p{max-width:70ch}.walkthrough .mut{font-size:12px}
+.whole{border-top:1px solid var(--bd);padding-top:14px;margin-top:20px}.whole p{font-size:13px;max-width:70ch;margin:6px 0}.whole-result{white-space:pre-wrap;font:13px/1.6 ui-monospace,Menlo,monospace;margin-top:10px}.whole-result.ok{color:var(--ok)}.authored{color:var(--mut);font-size:13px;max-width:70ch}
+button:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(max-width:760px){.hint,.whole button{min-height:40px}}
+
+.save-notice{position:sticky;top:var(--hh,66px);z-index:3;display:flex;align-items:center;gap:16px;padding:12px 19px;background:var(--card);border-bottom:1px solid var(--no);font-size:14px;line-height:1.5}
+.save-notice[hidden]{display:none}.save-notice>div:first-child{flex:1;min-width:0}.save-notice strong{color:var(--no)}.save-notice p{max-width:85ch;margin:4px 0 0}.save-notice .save-action{font-weight:600}.save-buttons{display:flex;gap:8px;flex:none}.save-notice[data-state=saved]{border-color:var(--ok)}.save-notice[data-state=saved] strong{color:var(--fg)}
+@media(min-width:761px){body.has-save-notice aside,body.has-save-notice .grip{top:calc(var(--hh,66px) + var(--save-h,0px));height:calc(100vh - var(--hh,66px) - var(--save-h,0px))}}
+@media(max-width:760px){.save-notice{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 16px}.save-buttons button{min-height:40px}}
+

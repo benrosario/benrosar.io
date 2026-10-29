@@ -3,7 +3,7 @@
 // Usage: node practice/tests/check-python-answers.mjs [exam-id-prefix]   Exit code 1 on any failure.
 import { spawnSync } from 'node:child_process';
 import { loadBank } from '../scripts/build.mjs';
-import { fill, dedent } from '../src/js/grading.js';
+import { fill, dedent, canCheckSolution, solutionQuestions, answerParts, pythonSolutionTests } from '../src/js/grading.js';
 
 // Accepted answers the staff allow on paper that aren't runnable Python; the site accepts them by text match.
 // Also official answers that don't run as written (see the explanation on those questions).
@@ -17,6 +17,12 @@ export async function pythonJobs(filter = '') {
   const bank = await loadBank(), jobs = [];
   const add = (where, p) => {
     const R = p.run; if (!R || R.lang == 'gleam') return; // Gleam is checked by check-gleam-answers.mjs
+    if(canCheckSolution(p)) {
+      const vals={};
+      for(const q of solutionQuestions(p)) Object.assign(vals,answerParts(q,q.k==='blank'?q.a[0]:q.o[q.k==='mc'?q.a:q.a[0]]));
+      const full=R.c.map(c=>fill(c,R.b,vals)).join('\n\n');
+      jobs.push({where:`${where} whole solution (student choices)`,full,test:pythonSolutionTests(R,vals)});
+    }
     // 1. Every chunk that has blanks, all official answers.
     R.c.forEach((c, i) => { if (/⟦B/.test(c)) jobs.push({ where: `${where} chunk ${i}`, full: R.c.map(x => fill(x, R.b, R.v)).join('\n\n'), test: fill(c, R.b, R.v) }); });
     // 2. Each accepted answer of each code-checked blank question, others official (as the site grades it).

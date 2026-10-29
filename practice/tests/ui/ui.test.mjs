@@ -230,11 +230,11 @@ test('text-only answers say they were compared, not run', async () => {
   await open(null, '?exam=final');
   const i = await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent).indexOf("Fall 2025 Final")');
   await clickExam(i);
-  assert.match(await q(`document.querySelector('#q-${i}-36 .ck').dataset.tip`), /not run/);
-  await q(`(()=>{const c=document.querySelector('#q-${i}-36');c.querySelector('textarea').value='ON id GROUP BY ta';c.querySelector('.ck').click()})()`);
-  await page.waitFor(`document.querySelector('#q-${i}-36 .q.no')`);
-  assert.match(await q(`document.querySelector('#q-${i}-36 .out').textContent`), /wasn’t run/);
-  assert.ok(await q(`!document.querySelector('#q-${i}-36 .ai').hidden`), 'Ask AI button shows after a miss');
+  assert.match(await q(`document.querySelector('#q-${i}-1 .ck').dataset.tip`), /not executed/);
+  await q(`(()=>{const c=document.querySelector('#q-${i}-1');c.querySelector('textarea').value='incorrect output';c.querySelector('.ck').click()})()`);
+  await page.waitFor(`document.querySelector('#q-${i}-1 .q.no')`);
+  assert.match(await q(`document.querySelector('#q-${i}-1 .out').textContent`), /wasn’t run/);
+  assert.ok(await q(`!document.querySelector('#q-${i}-1 .ai').hidden`), 'Ask AI button shows after a miss');
 });
 
 test('Python blanks run doctests', { skip: !!process.env.PRACTICE_SKIP_PYODIDE, timeout: 120000 }, async () => {
@@ -247,23 +247,26 @@ test('Python blanks run doctests', { skip: !!process.env.PRACTICE_SKIP_PYODIDE, 
 test('sort chips order the sidebar, reverse it, and are remembered per study option', async () => {
   await open(null, '?exam=final');
   const names = () => q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent)');
+  // The selected exam always comes first; the sort orders the rest.
+  const rest = async () => { const n = await names(); assert.equal(n[0], await q('document.querySelector("#nav details.cur summary .nm").textContent')); return n.slice(1); };
   // Its own row under the two menus, styled as pills.
   const r = await q('(()=>{const s=document.querySelector("#srtb").getBoundingClientRect(),d=document.querySelector("#dd").getBoundingClientRect();return {st:s.top,db:d.bottom}})()');
   assert.ok(r.st >= r.db, JSON.stringify(r));
-  assert.equal(await q('getComputedStyle(document.querySelector("#srtb")).borderRadius'), '999px');
+  assert.equal(await q('getComputedStyle(document.querySelector("#srtb")).borderRadius'), '999px 0px 0px 999px', 'one split pill with the arrow');
   assert.equal(await q('document.querySelector("#srtb").textContent'), 'Sort: Suggested');
-  assert.equal(await q('document.querySelector("#srtd").textContent'), 'Suggested order');
+  assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Suggested order. Press to reverse.');
   const suggested = await names();
   await q('document.querySelector("#srtb").click()'); await sleep(200);
   assert.equal(await q('document.querySelector("#srtb").getAttribute("aria-expanded")'), 'true');
   assert.deepEqual(await q('[...document.querySelectorAll("#srto button")].map(b=>b.textContent)'), ['Suggested', 'Exam date', 'Answered', 'Progress', 'Length']);
   await q('document.querySelector("#srto [data-k=date]").click()'); await sleep(200);
   assert.equal(await q('document.querySelector("#srtp").hidden'), true);
-  assert.equal(await q('document.querySelector("#srtd").textContent'), 'Newest first');
-  assert.deepEqual((await names()).slice(0, 3), ['Fall 2026 Midterm 1', 'Spring 2026 Midterm 2', 'Fall 2025 Final']);
+  assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Newest first. Press to reverse.');
+  assert.equal((await names())[0], 'Fall 2025 Final');
+  assert.deepEqual((await rest()).slice(0, 2), ['Fall 2026 Midterm 1', 'Spring 2026 Midterm 2']);
   await q('document.querySelector("#srtd").click()');
-  assert.equal(await q('document.querySelector("#srtd").textContent'), 'Oldest first');
-  assert.equal((await names())[0], 'Spring 2023 Midterm 2');
+  assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Oldest first. Press to reverse.');
+  assert.equal((await rest())[0], 'Spring 2023 Midterm 2');
   // Length, by keyboard: arrows move between options, Enter picks, Escape closes.
   await q('document.querySelector("#srtb").click()'); await sleep(200);
   assert.equal(await q('document.activeElement.dataset.k'), 'date');
@@ -271,9 +274,9 @@ test('sort chips order the sidebar, reverse it, and are remembered per study opt
   assert.equal(await q('document.activeElement.dataset.k'), 'length');
   await page.key('Enter', 'Enter', 13); await sleep(200);
   assert.equal(await q('document.querySelector("#srtb").textContent'), 'Sort: Length');
-  assert.equal(await q('document.querySelector("#srtd").textContent'), 'Shortest first');
+  assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Shortest first. Press to reverse.');
   assert.equal(await q('document.activeElement.id'), 'srtb');
-  assert.equal((await names())[0], 'Spring 2025 Final');
+  assert.equal((await rest())[0], 'Spring 2025 Final');
   await q('document.querySelector("#srtb").click()'); await sleep(200); await page.key('Escape', 'Escape', 27); await sleep(200);
   assert.equal(await q('document.querySelector("#srtp").hidden'), true);
   // Each study option keeps its own sort; the choice survives a reload.
@@ -323,6 +326,73 @@ test('Gleam questions compile and run in the browser, and adapted problems are l
   r = await check(32, '["c", "a", "b"]'); assert.equal(r.ok, false); assert.match(r.out, /doesn’t equal the value/);
   r = await check(32, '3'); assert.equal(r.ok, false); assert.match(r.out, /didn’t compile as a Gleam value of the right type/);
   r = await check(32, '["B", "C", "A"]'); assert.equal(r.ok, false);
+});
+
+test('topic practice, progressive hints, missed review and a combined Gleam solution', {timeout:120000}, async()=>{
+  await open(null,'?exam=final');
+  await q(`(()=>{const s=document.querySelector('#topic');s.value='GLEAM';s.onchange({target:s})})()`);
+  assert.equal(await q('document.querySelector("#topic").value'),'GLEAM');
+  assert.equal(await q('document.querySelectorAll("#m .qw").length'),32);
+  const i=await q('document.querySelector("#m .qw").id.split("-")[1]');
+  const root=`#q-${i}-5`;
+  await q(`document.querySelector('${root} .hint').click()`);
+  assert.equal(await q(`document.querySelectorAll('${root} .hints p').length`),1);
+  assert.equal(await q(`document.querySelector('${root} .ans').hidden`),true);
+  await q(`document.querySelector('${root} .hint').click()`);
+  assert.equal(await q(`document.querySelectorAll('${root} .hints p').length`),2);
+  await q(`(()=>{const c=document.querySelector('${root}');c.querySelector('textarea').value='t0 == t1';c.querySelector('.ck').click()})()`);
+  await page.waitFor(`document.querySelector('${root} .out').textContent.includes('Problem restriction')`);
+  assert.ok((await saved())['61a-fa26-gleam-adapted|5'].misses);
+  await q(`(()=>{const c=document.querySelector('${root}');c.querySelector('textarea').value='t0.label == t1.label';c.querySelector('.ck').click()})()`);
+  await page.waitFor(`document.querySelector('${root} .q').classList.contains('ok')`);
+  assert.match(await q('document.querySelector("#flt option[value=missed]").textContent'),/^Previously missed \(1\)$/);
+  await q(`(()=>{const s=document.querySelector('#flt');s.value='missed';s.onchange()})()`);
+  assert.equal(await q('document.querySelector("#flt").value'),'missed');
+  assert.equal(await q('document.querySelectorAll("#m .qw").length'),1,'corrected mistakes stay in review');
+  await q(`(()=>{const s=document.querySelector('#flt');s.value='all';s.onchange()})()`);
+  const answers={1:'#(first0, first1)',2:'rest0, rest1',3:'[]',5:'t0.label == t1.label',6:'t0.label == t1.label',7:'treequals(p.0, p.1)',8:'zip(t0.branches, t1.branches)'};
+  await q(`(()=>{for(const [id,value] of Object.entries(${JSON.stringify(answers)})){const t=document.querySelector('#q-${i}-'+id+' textarea');t.value=value;t.dispatchEvent(new Event('input'));}document.querySelector('#p-${i}-0 .whole button').click()})()`);
+  await page.waitFor(`document.querySelector('#p-${i}-0 .whole-result').textContent.includes('tests failed')`,60000);
+  await q(`(()=>{const t=document.querySelector('#q-${i}-6 textarea');t.value='list.length(t0.branches) == list.length(t1.branches)';t.dispatchEvent(new Event('input'));document.querySelector('#p-${i}-0 .whole button').click()})()`);
+  await page.waitFor(`document.querySelector('#p-${i}-0 .whole-result').textContent.includes('all 3 tests passed')`,60000);
+});
+
+test('runtime startup errors preserve drafts and allow retry without recording a wrong answer',async()=>{
+  await open(null,'?exam=final');
+  const i=await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent).indexOf("Scheme problems adapted to Gleam")');
+  await clickExam(i);
+  await q(`(()=>{window.RealWorker=window.Worker;window.Worker=class {constructor(){throw new Error('test startup failure')}};const c=document.querySelector('#q-${i}-30');c.querySelector('textarea').value='-1 + k';c.querySelector('textarea').dispatchEvent(new Event('input'));c.querySelector('.ck').click()})()`);
+  await page.waitFor(`document.querySelector('#q-${i}-30 .fb').textContent.includes('Could not check')`);
+  assert.equal((await saved())['61a-fa26-gleam-adapted|30'],undefined);
+  assert.equal(await q(`document.querySelector('#q-${i}-30 .ck').disabled`),false);
+  await q('window.Worker=window.RealWorker');
+});
+
+test('SQL executes equivalent answers and catches a boundary error in the browser', {skip:!!process.env.PRACTICE_SKIP_PYODIDE,timeout:120000},async()=>{
+  await open(null,'?exam=final');
+  const check=async answer=>{
+    await q(`(()=>{const c=document.querySelector('#q-0-36');c.querySelector('.q').classList.remove('ok','no');c.querySelector('textarea').value=${JSON.stringify(answer)};c.querySelector('.ck').click()})()`);
+    await page.waitFor('!document.querySelector("#q-0-36 .ck").disabled',90000);
+    return q('({fb:document.querySelector("#q-0-36 .fb").textContent,out:document.querySelector("#q-0-36 .out").textContent})');
+  };
+  let r=await check('ON id = discussion_id GROUP BY id HAVING 20 < COUNT(*)');
+  assert.match(r.fb,/SQL results match on all 3 datasets/);
+  r=await check('ON id = discussion_id GROUP BY id HAVING COUNT(*) >= 20');
+  assert.match(r.out,/Dataset/);
+});
+
+test('unavailable timed checks stay ungraded and can be retried', {timeout:120000},async()=>{
+  const now=Date.now();
+  await open({_sv:3,_c:'final',_cs:{},_view:'pt',_pt:{c:'final',pool:'source',min:50,ids:['61a-fa26-gleam-adapted/4'],keys:['0|30'],start:now,end:now+3000000,ans:{'0|30':'-1 + k'}}},'?exam=final');
+  await q('window.RealWorker=window.Worker;window.Worker=class {constructor(){throw new Error("test offline")}}');
+  await q('document.querySelector("[data-act=submit]").click();document.querySelector("[data-act=submit]").click()');
+  await page.waitFor('document.querySelector("[data-act=retry]")');
+  assert.equal((await saved())._pt.res['0|30'].pending,true);
+  assert.match(await q('document.querySelector("#m .note").textContent'),/Provisional score: 0\/0/);
+  await q('window.Worker=window.RealWorker;document.querySelector("[data-act=retry]").click()');
+  await page.waitFor('document.querySelector(".ptscore")?.textContent==="1/1"',60000);
+  assert.equal((await saved())._pt.res['0|30'].ok,true);
+  assert.equal((await saved())._pth.length,1,'retry updates the original attempt');
 });
 
 test('keyboard: the study menu works like the filter menu', async () => {
@@ -376,4 +446,38 @@ test('themes and the existing study tools still work', async () => {
   await page.reload(); await ready();
   assert.equal(await q('document.documentElement.dataset.theme'), 'dark');
   assert.deepEqual(page.logs.filter(l => !/favicon/.test(l)), []);
+});
+
+test('saving reports the actual browser reason, preserves work, retries and also works offline',async()=>{
+  await open(null,'?exam=final');
+  await q(`window.originalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===${JSON.stringify(KEY)})throw new DOMException('test quota','QuotaExceededError');return window.originalSetItem.call(this,k,v);}`);
+  try {
+    await q(`(()=>{const t=document.querySelector('#q-0-1 textarea');t.value='unsaved draft';t.dispatchEvent(new Event('input'))})()`);
+    await page.waitFor('document.querySelector("#save-notice").dataset.state==="full"');
+    assert.match(await q('document.querySelector("#save-notice").textContent'),/Browser storage limit reached/);
+    assert.equal(await q('document.querySelector("#q-0-1 textarea").value'),'unsaved draft');
+    assert.equal((await saved())._dr?.['61a-fa25-final|1'],undefined,'failed write preserves earlier storage');
+    await page.viewport(390,844,true);
+    assert.ok(await q('document.documentElement.scrollWidth<=innerWidth+1'));
+    await page.screenshot('/private/tmp/practice-save-warning-mobile.png');
+    await page.viewport(1280,900);
+    await q('Storage.prototype.setItem=window.originalSetItem;document.querySelector(".save-retry").click()');
+    await page.waitFor('document.querySelector("#save-notice").dataset.state==="saved"');
+    assert.equal((await saved())._dr['61a-fa25-final|1'],'unsaved draft');
+    await q('document.querySelector(".save-dismiss").click()');
+    assert.equal(await q('document.querySelector("#save-notice").hidden'),true);
+    // Network state has no role in storing a draft once the page is loaded.
+    await page.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
+    await q(`(()=>{const t=document.querySelector('#q-0-1 textarea');t.value='saved while offline';t.dispatchEvent(new Event('input'))})()`);
+    await page.waitFor(`JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}))._dr['61a-fa25-final|1']==='saved while offline'`);
+    assert.equal(await q('document.querySelector("#save-notice").hidden'),true);
+    await q(`Storage.prototype.setItem=function(k,v){if(k===${JSON.stringify(KEY)})throw new DOMException('test blocked','SecurityError');return window.originalSetItem.call(this,k,v);};document.querySelector('#q-0-1 textarea').value='blocked draft';document.querySelector('#q-0-1 textarea').dispatchEvent(new Event('input'));`);
+    await page.waitFor('document.querySelector("#save-notice").dataset.state==="blocked"');
+    assert.match(await q('document.querySelector("#save-notice").textContent'),/Browser storage is blocked/);
+    assert.doesNotMatch(await q('document.querySelector("#save-notice").textContent'),/internet|connection/i);
+  }finally{
+    await q('Storage.prototype.setItem=window.originalSetItem');
+    await page.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+    await page.viewport(1280,900);
+  }
 });

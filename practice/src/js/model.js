@@ -113,7 +113,7 @@ export function timedPool(bank, view) {
     if (live.length < (T.minQuestions || 1)) continue;
     if (/\(0(\.0)? pts\)$/.test(P.p.t)) continue; // A+ problems (no points) aren't drawn for timed exams
     if (T.exclude?.includes(P.p.id)) continue;
-    out.push({ id: P.p.id, bucket: bucketOf(T, P, view), src: P.p.adapted ? `Adapted to Gleam by this site from ${P.p.adapted.from}` : `${ex.t}, Q${P.p.n}`, exam: ex.id });
+    out.push({ id: P.p.id, bucket: bucketOf(T, P, view), src: P.p.authored ? 'Original practice written by this site' : P.p.adapted ? `Adapted to Gleam by this site from ${P.p.adapted.from}` : `${ex.t}, Q${P.p.n}`, exam: P.p.authored ? P.p.id : ex.id });
   }
   return out;
 }
@@ -174,7 +174,7 @@ export const SORTS = {
   suggested: { label: 'Suggested', key: (ex, S, i) => i, dir: 'asc', asc: 'Suggested order', desc: 'Reversed' },
   // Within a term, exams were given in the order Midterm 1, (summer) midterm, Midterm 2, final.
   // (A set of problems adapted by this site isn't an exam and has no date.)
-  date: { label: 'Exam date', key: ex => ex.e?.src?.adapted ? null : examDate(ex.id) + KINDS[examKind(ex.id)].rank / 10, dir: 'desc', asc: 'Oldest first', desc: 'Newest first' },
+  date: { label: 'Exam date', key: ex => ex.e?.src?.adapted || ex.e?.src?.site ? null : examDate(ex.id) + KINDS[examKind(ex.id)].rank / 10, dir: 'desc', asc: 'Oldest first', desc: 'Newest first' },
   answered: { label: 'Answered', key: (ex, S) => counts(S, ex).a, dir: 'asc', asc: 'Fewest answered first', desc: 'Most answered first' },
   progress: { label: 'Progress', key: (ex, S) => { const c = counts(S, ex); return c.n ? c.ok / c.n : 0; }, dir: 'asc', asc: 'Least done first', desc: 'Most done first' },
   length: { label: 'Length', key: (ex, S) => counts(S, ex).n, dir: 'asc', asc: 'Shortest first', desc: 'Longest first' },

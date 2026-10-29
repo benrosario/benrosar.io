@@ -65,5 +65,5 @@ def run_tests(src, test_src=None):
     out = io.StringIO()
     runner = doctest.DocTestRunner(optionflags=flags)
     runner.run(test, out=out.write)
-    r = runner.summarize(verbose=False)
-    return {'ok': r.failed == 0, 'n': r.attempted, 'failed': r.failed, 'err': out.getvalue()[-1500:]}
+    r = doctest.TestResults(runner.failures, runner.tries)
+    return {'ok': r.attempted > 0 and r.failed == 0, 'n': r.attempted, 'failed': r.failed, 'err': out.getvalue()[-1500:] or ('No tests were found.' if not r.attempted else '')}

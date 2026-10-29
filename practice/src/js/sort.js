@@ -1,26 +1,29 @@
-// Sorting the sidebar's source exams: the "Sort" chip opens a small panel of options and the arrow chip reverses
-// the order. The choice is remembered per collection (S._cs[c].sort = {by, desc}).
+// Sorting the sidebar's source exams: one split chip. Its label opens a small panel of options and the arrow at its
+// end reverses the order. The arrow turns to point down for descending and is tinted blue when the order is the
+// reverse of that option's usual one. The choice is remembered per collection (S._cs[c].sort = {by, desc}).
 import { st, cs } from './state.js';
 import { $, esc, SV, reduced } from './util.js';
 import { SORTS, sortOptions } from './model.js';
 import { sidebar, sortState } from './practice.js';
 
-const btn = $('#srtb'), panel = $('#srtp'), opts = $('#srto'), dirb = $('#srtd'), m = $('#m');
+const btn = $('#srtb'), panel = $('#srtp'), opts = $('#srto'), dirb = $('#srtd'), m = $('#m'), nav = $('#nav');
 const ICON = SV('<path d="M4 6h16M7 12h10M10 18h4"/>');
-const ARROW = desc => SV(desc ? '<path d="M12 5v14M6 13l6 6 6-6"/>' : '<path d="M12 19V5M6 11l6-6 6 6"/>');
+const ARROW = SV('<path d="M12 19V5M6 11l6-6 6 6"/>');
 
 export function drawSort() {
   const { by, desc } = sortState(), s = SORTS[by], dir = desc ? s.desc : s.asc;
   btn.innerHTML = ICON + `<span>Sort: ${esc(s.label)}</span>`; btn.setAttribute('aria-label', `Sort exams by ${s.label}`);
   btn.dataset.tip = 'Choose how the exams in the sidebar are ordered';
-  dirb.innerHTML = ARROW(desc) + `<span>${esc(dir)}</span>`;
-  dirb.setAttribute('aria-label', `Order: ${dir}. Press to reverse.`); dirb.dataset.tip = 'Reverse the order';
+  const rev = desc !== (s.dir == 'desc'); if (!dirb.firstChild) dirb.innerHTML = ARROW;
+  dirb.classList.toggle('desc', desc); dirb.classList.toggle('rev', rev);
+  dirb.setAttribute('aria-label', `Order: ${dir}. Press to reverse.`); dirb.dataset.tip = `${dir} · press to reverse`;
   opts.innerHTML = sortOptions(st.view).map(k => `<button type="button" role="radio" aria-checked="${k == by}" tabindex="${k == by ? 0 : -1}" data-k="${k}">${esc(SORTS[k].label)}</button>`).join('');
 }
-// Apply a sort, keeping the sidebar list in place on screen.
+// Apply a sort, keeping the sidebar list in place on screen, and fade the list in so the new order reads as a change.
 function set(by, desc) {
   cs().sort = { by, desc }; st.save(); drawSort();
   const t0 = m.getBoundingClientRect().top; sidebar(); const dy = m.getBoundingClientRect().top - t0; if (dy) scrollBy({ top: dy, behavior: 'instant' });
+  if (!reduced() && nav.animate) nav.animate([{ opacity: .15, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
 }
 function open() {
   panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); requestAnimationFrame(() => panel.classList.add('in'));

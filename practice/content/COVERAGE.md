@@ -60,7 +60,7 @@ Exam facts, from <https://cs61a.org/fa26/> and <https://cs61a.org/fa26/syllabus/
 | Midterm 1 | **New:** Fall 2026 MT1 (this semester's), Fall 2025 MT1, Spring 2025 MT1, Fall 2024 MT1. **Reused by topic:** Summer 2025 Midterm Q2, Summer 2023 Midterm Q3(b–c), Summer 2024 Final Q2, Fall 2024 MT2 Q4(a), Spring 2026 MT2 Q2(b–c) | 100 | 50 min, 4 original problems, one from each of: environment diagrams, WWPD, control, higher-order functions (23 in the pool) |
 | Midterm 2 | **New:** Summer 2025 Midterm Q2–4, Summer 2023 Midterm Q3–5. **Reused by topic:** recursion, tree recursion, list and linked-list problems from the ten existing exams | 140 | 50 min, 3 original problems, balanced across linked lists, tree recursion, lists, recursion and basics (23 in the pool). Labeled with the one-hour CBTF slot. |
 | Midterm 3 | Unchanged: the ten curated exams | 418 | Unchanged: 50 min / 4 or 1 h 50 min / 8 problems from the 13 modified problems |
-| Final | All 18 exams, plus the 4 Scheme problems this site adapted to Gleam (labeled). **New finals:** Fall 2025 Final (all but its Scheme Q6), Spring 2025 Final Q3 and Q8 (SQL) | 584 | 50 min / 3, 1 h 50 min / 6 or 3 h / 9 problems, round-robin across early material, recursion and lists, MT3 topics, SQL and Gleam. The Gleam problems are the labeled adaptations. The 50-minute exam takes one problem from each of 3 different topic groups. At most one problem per source exam when possible. A+ problems are never drawn. |
+| Final | All 18 source exams, the 4 Scheme problems this site adapted to Gleam, and 6 original site-authored problems (all labeled). **New finals:** Fall 2025 Final (all but its Scheme Q6), Spring 2025 Final Q3 and Q8 (SQL) | 600 | 50 min / 3, 1 h 50 min / 6 or 3 h / 9 problems, round-robin across early material, recursion and lists, MT3 topics, SQL and Gleam. The Gleam problems are the labeled adaptations. The 50-minute exam takes one problem from each of 3 different topic groups. At most one problem per source exam when possible. A+ problems are never drawn. |
 
 Every imported answer was checked against the solution PDFs:
 
@@ -112,7 +112,7 @@ Homework 7 pins Gleam v1.18.1 compiled to JavaScript and tests answers with plai
 
 - **Material taught after Midterm 3 has almost no past-exam questions.** Gleam has only this site's adaptations so far; see the Gleam section.
   - No past exam material exists for: functional programming, algebraic data types, immutable data, coding agents, browsers, applications, software testing, software tracing, ethics.
-  - **Interpreters:** every past interpreter question uses Scheme, so the Final has no interpreter questions.
+  - **Interpreters:** past interpreter questions use Scheme. The Final now has three original interpreter exercises: expression-tree evaluation in Python, name lookup/local bindings in Python, and a Gleam expression interpreter. They are site-authored practice, not past exams or a claim about the unpublished course scope.
   - **SQL:** five past SQL problems are in the Final. A sixth problem in the timed pool is the Summer 2023 Final WWPD, which has an SQL part.
   - The final's scope and any staff review recommendations aren't published yet. Revisit when the final study guide appears.
 - **Midterm 2 had no staff practice exam reachable**, because the PrairieLearn practice midterm needs a login. The real exam was computer-based. This site's version is paper-style past-exam problems.
@@ -121,3 +121,11 @@ Homework 7 pins Gleam v1.18.1 compiled to JavaScript and tests answers with plai
 - **Midterm 3 curation questions, kept unchanged and flagged for review:**
   - The Summer 2023 and 2024 finals are listed as "full exam" Midterm 3 practice, but they include Scheme and SQL problems that aren't Midterm 3 topics.
   - Summer 2025 Final Q3(g) is marked out of scope for "orders of growth" while efficiency is on Midterm 3.
+
+## Practice expansion
+
+The Final includes six original site-authored problems (16 questions) in `61a-fa26-extra-practice.mjs`, with executable tests, worked explanations and two hints per question. The expanded source bank has 668 questions; 113 carry question-specific notes/explanations. All 32 adapted Gleam questions and all new questions have site-authored explanations. Topic walkthroughs provide additional worked examples and are labeled separately from exact solutions.
+
+Five source SQL problems now execute in SQLite on three varied datasets apiece, including the zero-point A+ SQL problem. SQL multiple-choice questions still use their accepted choice keys. Errata in SQL templates/keys were corrected for execution (see README); existing question ids remain stable.
+
+Topic filtering, per-topic progress and review of missed questions are available across study collections. Whole-solution checking is available for completely mapped code/SQL templates; it verifies submitted blanks together rather than mixing each one with the key. The incomplete imports and course-material availability gaps above remain separate from these additions.

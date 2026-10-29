@@ -9,9 +9,9 @@ export function aiPrompt(title, p, q, v, out, studying) {
   const block = (t, lang) => '```' + (lang || '') + '\n' + t + '\n```';
   const gleam = p.run?.lang == 'gleam' || p.b.some(b => b.s?.some(g => g.lang == 'gleam'));
   const lang = q.k == 'blank' && /[()=\[\].]/.test(q.a[0]) ? (gleam ? 'gleam' : 'python') : '';
-  return `I'm studying for a CS 61A (UC Berkeley, Fall 2026: Python, Gleam and SQL) exam${studying ? ` (${studying})` : ''} and got a past exam question wrong. Please help me understand my mistake.
+  return `I'm studying for a CS 61A (UC Berkeley, Fall 2026: Python, Gleam and SQL) exam${studying ? ` (${studying})` : ''} and got a practice question wrong. Please help me understand my mistake.
 
-## Problem: ${title}, ${p.t}${p.adapted ? `\n(Not official course material: a practice site adapted this to Gleam from ${p.adapted.from}, a Scheme exam problem.)` : ''}
+## Problem: ${title}, ${p.t}${p.authored ? '\n(Original practice written by the practice site, not course staff or a past exam.)' : p.adapted ? `\n(Not official course material: a practice site adapted this to Gleam from ${p.adapted.from}, a Scheme exam problem.)` : ''}
 ${p.b.filter(b => b.s).map(b => segText(b.s)).join('\n\n')}
 
 ## The question I answered (${kind})
@@ -20,8 +20,8 @@ ${ask}${opts}
 ## My answer
 ${block(answerText(q, v), lang)}
 
-## Official answer
-${block(answerText(q, q.k == 'blank' ? q.a[0] : q.a), lang)}${q.k == 'blank' && q.a.length > 1 ? '\nOther accepted forms:\n' + q.a.slice(1).map(x => block(x, lang)).join('\n') : ''}${q.x ? '\n\nStaff explanation: ' + q.x : ''}${out ? '\n\n## What happened when my answer was checked\n' + block(out) : ''}
+## Accepted answer
+${block(answerText(q, q.k == 'blank' ? q.a[0] : q.a), lang)}${q.k == 'blank' && q.a.length > 1 ? '\nOther accepted forms:\n' + q.a.slice(1).map(x => block(x, lang)).join('\n') : ''}${q.x ? '\n\n' + (q.explanationBy === 'site' ? 'Explanation by the practice site: ' : 'Answer note: ') + q.x : ''}${out ? '\n\n## What happened when my answer was checked\n' + block(out) : ''}
 
 ## What I'd like from you
 1. Pinpoint exactly where my reasoning goes wrong. Name the specific concept or misconception (for example: mutation vs. creating a new object, which frame a name is looked up in, off-by-one, base case, iterator exhaustion).
