@@ -7,6 +7,12 @@
   "text": "Fall 2026 Final (Fri 12/18, 11:30am–2:30pm, 75 points, paper). The course pages don’t state its scope; this option assumes the whole course, including Gleam (which replaced Scheme this semester).",
   "url": "https://cs61a.org/fa26/"
  },
+ "advice": "Recommended problems (★ and ◆) are everything course staff recommended for Midterms 1–3; each says which exam it was picked for. As of 10/29/2026, staff haven’t named final practice problems. A TA said to assume everything through the end of the course may be on the final, with detailed scope posted about a week before the exam.",
+ "picksFrom": [
+  "midterm1",
+  "midterm2",
+  "midterm3"
+ ],
  "scope": {
   "basis": "topics",
   "topics": [
@@ -49,7 +55,6 @@
    "PROGRAMS_AS_DATA": "Scheme isn’t taught this semester (Gleam replaced it)"
   }
  },
- "noPicks": "Course staff haven’t published final exam question picks, so nothing is marked recommended.",
  "timed": {
   "pool": "source",
   "lengths": [
@@ -129,7 +134,7 @@
  "exams": [
   {
    "exam": "61a-fa25-final",
-   "note": "Last fall’s final, from the same instructors.",
+   "note": "The most recent final from Prof. DeNero.",
    "keep": [
     25,
     26
@@ -144,79 +149,78 @@
    }
   },
   {
-   "exam": "61a-sp25-final",
-   "note": "A past final."
+   "exam": "61a-su26-final",
+   "note": "The most recent past final; its Scheme questions are left out because Gleam replaced Scheme this semester."
+  },
+  {
+   "exam": "61a-sp25-final"
   },
   {
    "exam": "61a-fa26-gleam-adapted",
-   "note": "Written by this site, not the course staff: past Scheme exam problems rewritten in Gleam, since Gleam replaced Scheme this semester. Answers follow the official Scheme solutions, and code answers are checked by compiling and running them with the Gleam compiler. There are no past Gleam exams yet."
+   "note": "Past Scheme exam problems rewritten in Gleam, since Gleam replaced Scheme this semester and there are no past Gleam exams yet. Answers follow the official Scheme solutions, and code answers are checked by compiling and running them with the Gleam compiler."
   },
   {
    "exam": "61a-fa26-extra-practice",
-   "note": "Original practice written by this site, not course staff or a past exam. Covers interpreters, custom types, Results and immutable list processing."
+   "note": "Original practice, not from a past exam, covering interpreters, custom types, Results and immutable list processing."
   },
   {
    "exam": "61a-su25-final",
-   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
+   "note": "Its Scheme questions are out of scope, since Gleam replaced Scheme this semester; some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
    "exam": "61a-su24-final",
-   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
+   "note": "Its Scheme questions are out of scope, since Gleam replaced Scheme this semester; some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
    "exam": "61a-su23-final",
-   "note": "A past final. Its Scheme questions are out of scope (Gleam replaced Scheme this semester); some are adapted to Gleam in “Scheme problems adapted to Gleam”."
+   "note": "Its Scheme questions are out of scope, since Gleam replaced Scheme this semester; some are adapted to Gleam in “Scheme problems adapted to Gleam”."
   },
   {
-   "exam": "61a-fa25-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-fa25-mt2"
   },
   {
-   "exam": "61a-sp25-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-sp25-mt2"
   },
   {
-   "exam": "61a-fa24-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-fa24-mt2"
   },
   {
-   "exam": "61a-sp24-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-sp24-mt2"
   },
   {
-   "exam": "61a-fa23-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-fa23-mt2"
   },
   {
-   "exam": "61a-sp23-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-sp23-mt2"
   },
   {
-   "exam": "61a-sp26-mt2",
-   "note": "A past midterm: all of its topics are on the final."
+   "exam": "61a-sp26-mt2"
   },
   {
    "exam": "61a-fa26-mt1",
    "note": "This semester’s Midterm 1."
   },
   {
-   "exam": "61a-fa25-mt1",
-   "note": "A past Midterm 1."
+   "exam": "61a-fa25-mt1"
   },
   {
-   "exam": "61a-sp25-mt1",
-   "note": "A past Midterm 1."
+   "exam": "61a-sp25-mt1"
   },
   {
-   "exam": "61a-fa24-mt1",
-   "note": "A past Midterm 1."
+   "exam": "61a-fa24-mt1"
   },
   {
-   "exam": "61a-su25-midterm",
+   "exam": "61a-su25-midterm"
+  },
+  {
+   "exam": "61a-su23-midterm"
+  },
+  {
+   "exam": "61a-su26-midterm",
    "note": "A summer midterm."
   },
   {
-   "exam": "61a-su23-midterm",
+   "exam": "61a-su24-midterm",
    "note": "A summer midterm."
   }
  ]

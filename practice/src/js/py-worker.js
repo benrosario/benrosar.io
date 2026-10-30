@@ -1,25 +1,25 @@
 // Classic worker (Pyodide's loader uses importScripts) that runs Python with the Pyodide this site serves.
 // Practice checks send {full, test} (doctests, through the prelude's run_tests) or {sql} (run_sql, after loading
-// sqlite3). The playground sends {source, stdin, mode: 'main' | 'tests'}; what a program prints arrives as {p: {out}}
-// while it runs. Every request carries base (the Pyodide directory) and the prelude, used when the worker starts.
+// sqlite3). The playground sends {source, stdin, mode: 'main' | 'tests' | 'trace'}; what a program prints arrives as
+// {p: {out}} while it runs. 'trace' (the playground's Step) also returns every step the program took (run.py's trace_program). Every request carries base (the Pyodide directory) and the prelude, used when the worker starts.
 // The page restarts the worker if a run takes too long, or when a result says {restart: true}.
 import RUN from '../py/run.py';
 import { collector } from './output.js';
 
-let py, ready, sqlReady, runProgram;
+let py, ready, sqlReady, runProgram, traceProgram;
 async function init(base, prelude) {
   importScripts(base + 'pyodide.js');
   py = await loadPyodide({ indexURL: base });
   py.setStdin({ stdin: () => null }); // input() outside a playground run: EOFError (the default calls prompt(), which workers lack)
   py.runPython(prelude); py.runPython(RUN);
-  runProgram = py.globals.get('run_program');
+  runProgram = py.globals.get('run_program'); traceProgram = py.globals.get('trace_program');
 }
 const json = (code, vars) => { for (const k in vars) py.globals.set(k, vars[k]); return JSON.parse(py.runPython(`__import__("json").dumps(${code})`)); };
 
 function play(id, { source, stdin = '', mode }) {
   if (mode === 'tests') return { ...json('run_tests(SRC)', { SRC: source }), out: [] };
   const { out, write } = collector(o => postMessage({ id, p: { out: o } }));
-  return { ...JSON.parse(runProgram(source, stdin, write)), out };
+  return { ...JSON.parse((mode === 'trace' ? traceProgram : runProgram)(source, stdin, write)), out };
 }
 
 onmessage = async ({ data }) => {

@@ -2,8 +2,10 @@
 // precompiled standard library. Practice checks send {source}: a `solution` module whose *_test functions are run.
 // The playground sends {source, mode: 'main' | 'tests', erlang}: a `main` module whose main (or tests) is run; it gets
 // the compiled code and warnings first ({p: {compiled}}), then what the program prints as it runs ({p: {out}}).
+// mode 'trace' (the playground's Step) also compiles a copy with probes (gleam-step.js) and returns every step main took.
 // The page restarts the worker if a run takes too long (an infinite loop).
-import { linkImports, withEchoDict, runTests, runMain, capture } from './gleam-core.js';
+import { linkImports, withEchoDict, runTests, runMain, capture, describe } from './gleam-core.js';
+import { instrument, rewrite, recorder } from './gleam-step.js';
 
 let G, inspect, base, ready, last = 'solution';
 async function init(b) {
@@ -24,8 +26,8 @@ function compile(name, source) {
   G.reset_warnings(0); G.write_module(0, name, source); G.compile_package(0, 'javascript');
 }
 const warnings = () => { const w = []; for (let x; (x = G.pop_warning(0)) !== undefined;) w.push(x.trim()); return w; };
-async function load(name) {
-  const js = linkImports(withEchoDict(G.read_compiled_javascript(0, name)), base + 'build/');
+async function load(name, edit = js => js) {
+  const js = linkImports(withEchoDict(edit(G.read_compiled_javascript(0, name))), base + 'build/');
   const url = URL.createObjectURL(new Blob([js], { type: 'text/javascript' }));
   try { return await import(url); } finally { URL.revokeObjectURL(url); }
 }
@@ -42,9 +44,26 @@ async function play(id, { source, mode, erlang }) {
   const emit = out => postMessage({ id, p: { out } });
   let mod;
   try { mod = await load('main'); } catch (err) { return { ...r, ok: false, out: [], err: String(err.message || err) }; }
+  if (mode === 'trace') return { ...r, ...await trace(source, emit) };
   if (mode !== 'tests') return { ...r, ...runMain(mod, inspect, emit) };
   let t; const out = capture(() => { t = runTests(mod, inspect); }, emit);
   return { ...r, ...t, out };
+}
+
+// Step: compile the source again with probes and run its main, recording each step. The source has already compiled.
+async function trace(source, emit) {
+  const no = { ok: false, nostep: true, out: [], err: 'Stepping isn’t available for this code. Run still works.' }, ins = instrument(source);
+  if (!ins) return no;
+  let mod;
+  try { compile('main', ins.source); mod = await load('main', js => rewrite(js, ins.lines)); } catch { return no; }
+  let size = () => 0;
+  const rec = recorder({ show: inspect, size: () => size(), describe: (fn, e) => describe(fn, e, inspect) });
+  globalThis.__gleamStep = rec.hooks;
+  try {
+    const r = runMain(mod, inspect, emit, col => { size = col.size; });
+    rec.end();
+    return rec.cut ? { ...r, ok: true, err: '', steps: rec.steps, cut: true } : { ...r, steps: rec.steps };
+  } finally { delete globalThis.__gleamStep; }
 }
 
 onmessage = async e => {

@@ -2,8 +2,9 @@
 // numbers. The textarea does the typing, selection and scrolling; the copy behind it scrolls with it.
 // Keys: Tab and Shift+Tab indent and outdent (after Escape, they move focus on or back instead), Enter keeps the line's indent
 // (one more after `:` or an opening bracket), Backspace in leading spaces removes one indent, a closing bracket on an
-// empty line outdents it, ⌘/ or Ctrl+/ comments lines in or out, ⌘↵ or Ctrl+Enter runs.
+// empty line outdents it, ⌘/ or Ctrl+/ comments lines in or out, ⌘↵ or Ctrl+Enter runs (onRun gets the key event, for Shift).
 // Edits made by these keys go through insertText, so the browser's own undo and redo still work.
+// mark(next, prev) highlights two lines for the playground's Debug: the line about to run, and the one that just ran.
 import { hl } from './highlight.js';
 
 const UNIT = { py: '    ', gleam: '  ' }, MARK = { py: '#', gleam: '//' }, PAIRS = { '(': ')', '[': ']', '{': '}' };
@@ -11,8 +12,10 @@ const UNIT = { py: '    ', gleam: '  ' }, MARK = { py: '#', gleam: '//' }, PAIRS
 export function createEditor(root, { lang, value = '', label, onChange, onRun }) {
   root.classList.add('ed');
   root.innerHTML = '<div class="edln" aria-hidden="true"><div></div></div><pre class="code edhl" aria-hidden="true"></pre>'
+    + '<div class="edmk" aria-hidden="true"><div class="edprev" hidden></div><div class="ednext" hidden></div></div>'
     + '<textarea class="edta" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea>';
   const gut = root.querySelector('.edln > div'), pre = root.querySelector('pre'), ta = root.querySelector('textarea');
+  const marks = { next: root.querySelector('.ednext'), prev: root.querySelector('.edprev') }, marked = { next: 0, prev: 0 };
   ta.setAttribute('aria-label', label); ta.value = value;
   let lines = 0, escaped = false;
 
@@ -22,7 +25,11 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
     if (n !== lines) { lines = n; gut.textContent = Array.from({ length: n }, (_, i) => i + 1).join('\n'); root.style.setProperty('--gd', String(n).length); }
     sync();
   }
-  function sync() { pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; gut.style.transform = `translateY(${-ta.scrollTop}px)`; }
+  function sync() {
+    pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; gut.style.transform = `translateY(${-ta.scrollTop}px)`;
+    if (marked.next || marked.prev) { const { top, h } = metrics(); for (const k in marks) marks[k].style.transform = `translateY(${top + (marked[k] - 1) * h - ta.scrollTop}px)`; }
+  }
+  const metrics = () => { const cs = getComputedStyle(ta); return { top: parseFloat(cs.paddingTop), h: parseFloat(cs.lineHeight) }; };
   ta.addEventListener('input', e => { paint(); onChange?.(ta.value); if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') revealCaret(); });
   ta.addEventListener('scroll', sync, { passive: true });
 
@@ -61,12 +68,13 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
   }
 
   ta.addEventListener('keydown', e => {
+    if (ta.readOnly) return; // debugging: the playground has the keys
     const v = ta.value, s = ta.selectionStart, end = ta.selectionEnd, mod = e.metaKey || e.ctrlKey;
     const lineStart = v.lastIndexOf('\n', s - 1) + 1, before = v.slice(lineStart, s);
     if (e.key === 'Escape') { escaped = true; return; }
     if (['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return; // pressing Shift for Shift+Tab keeps the Escape
     const wasEscaped = escaped; escaped = false;
-    if (e.key === 'Enter' && mod) { e.preventDefault(); onRun?.(); return; }
+    if (e.key === 'Enter' && mod) { e.preventDefault(); onRun?.(e); return; }
     if (e.key === '/' && mod) { e.preventDefault(); comment(); return; }
     if (e.altKey || mod) return;
     if (e.key === 'Tab') {
@@ -101,5 +109,17 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
     state: () => ({ sel: [ta.selectionStart, ta.selectionEnd], scroll: [ta.scrollTop, ta.scrollLeft] }),
     restore({ sel, scroll } = {}) { if (sel) ta.setSelectionRange(...sel); if (scroll) { ta.scrollTop = scroll[0]; ta.scrollLeft = scroll[1]; } sync(); },
     focus: () => ta.focus({ preventScroll: true }),
+    readOnly(on) { ta.readOnly = on; root.classList.toggle('ro', on); },
+    // Highlight line next (about to run) and line prev (just ran), 1-based; 0 clears one. The next line scrolls into
+    // view, to the middle when it's out of sight.
+    mark(next = 0, prev = 0) {
+      Object.assign(marked, { next, prev: prev === next ? 0 : prev });
+      for (const k in marks) { marks[k].hidden = !marked[k]; marks[k].style.height = metrics().h + 'px'; }
+      if (next) {
+        const { top, h } = metrics(), y = top + (next - 1) * h;
+        if (y < ta.scrollTop || y + h > ta.scrollTop + ta.clientHeight) ta.scrollTop = y - (ta.clientHeight - h) / 2;
+      }
+      sync();
+    },
   };
 }

@@ -1,11 +1,71 @@
-// Summer 2023 Midterm (the summer term's only midterm), problems 3-5, transcribed from the official exam and solutions.
-// The staff topic index lists this exam as "su23-mt2". Problems 1, 2 and 6 aren't imported (see `omitted`).
+// Summer 2023 Midterm (the summer term's only midterm), transcribed from the official exam and solutions.
+// The staff topic index lists this exam as "su23-mt2". Problems 1, 2 and 6 were added later, so their question ids
+// (30 on) come after problems 3-5's. Pictures (problem 2's environment diagram, problem 6's example trees) are
+// described in text.
 // Erratum: the official answer to 3(b)(iii) is "pow(10, i) * n % 10", which Python evaluates as (pow(10, i) * n) % 10
 // and which fails the doctests; the explanation on that question says so, and both forms are accepted.
-import { exam, problem, text, py, blank, mc, h } from '../author.mjs';
+import { exam, problem, text, py, blank, mc, sata, h } from '../author.mjs';
+import { TREE_ADT } from '../trees.mjs';
 
 const RULE = 'You may not use str or repr or [ or ] or for.';
+// The answer choices problem 1(a)(vii), (ix) and (x) share.
+const O9 = ['True', 'False', '101', '102', '1', '0', 'Function', 'Error', 'Nothing'];
 const e = exam('61a-su23-midterm', 'Summer 2023 Midterm', 'su23/mt1/61a-su23-midterm', 'su23-mt2', [
+  problem('1', 'What Would Python Display (8.0 pts)', [{ n: '1', t: ['ITERATORS', 'LAMBDAS', 'LISTS', 'WWPD'] }], [
+    text('For each expression below, choose the correct option or write the output displayed by the interactive Python interpreter when the expression is evaluated. The output may have multiple lines.', '• If an error occurs, write “Error”, but include all output displayed before the error.', '• If evaluation would run forever, write “Forever”.', '• To display a function value, write “Function”.', '• If the evaluated expression wouldn’t display anything, write “Nothing”. The interactive interpreter displays the value of a successfully evaluated expression, unless it is None.'),
+    h('(a)'),
+    py(`>>> (1 or 2) and (3 or 4)`),
+    mc(30, 'i. What is displayed?', ['True', 'False', '0', '1', '2', '3', '4'], 5),
+    py(`>>> ('Barbie' or 'Ken') * 2`),
+    mc(31, 'ii. What is displayed?', ["'Barbie'", "'BarbieBarbie'", "'Ken'", "'KenKen'", "'BarbieKen'", "'KenBarbie'", "'BarbieBarbieKenKen'", '2', 'Error', 'Nothing'], 1),
+    text('For the rest of this question, assume the following code has been executed.'),
+    py(`>>> it = iter([2, ['a', 'b'], 'c', 3])`),
+    py(`>>> next(it)`),
+    blank(32, 'iii. What is displayed?', '2'),
+    py(`>>> next(it)`),
+    blank(33, 'iv. What is displayed?', "['a', 'b']"),
+    py(`>>> list(it)`),
+    blank(34, 'v. What is displayed?', "['c', 3]"),
+    py(`>>> next(it)`),
+    blank(35, 'vi. What is displayed?', 'Error'),
+    text('For the rest of this question, assume the following code has been executed.'),
+    py(`
+dreamhouse = 101
+beach = lambda pink: pink(dreamhouse)
+dreamhouse = 102
+
+def is_even(n):
+    return n % 2 == 0`),
+    py(`>>> beach(is_even)`),
+    mc(36, 'vii. What is displayed?', O9, 0),
+    py(`>>> beach(dreamhouse)`),
+    mc(37, 'viii. What is displayed?', ['True', 'False', '101', '1', '0', 'Function', 'Error', 'Nothing'], 6),
+    py(`>>> pink = beach(print)`),
+    mc(38, 'ix. What is displayed?', O9, 3),
+    py(`>>> pink`),
+    mc(39, 'x. What is displayed?', O9, 8),
+  ]),
+  problem('2', 'The Fellowship of the List (10.0 pts)', [{ n: '2', t: ['ENVIRONMENT_DIAGRAMS', 'LISTS', 'MUTABILITY'] }], [
+    text('Given the environment diagram and skeleton code, answer the questions below.', 'The environment diagram (a picture on the exam, described here):', '• Global frame: form_fellowship → func form_fellowship(group) [parent=Global]; gandalf → func ring(adventurer) [parent=f1]; sword: None; axe: None.', '• f1: form_fellowship [parent=Global]: group → the list ["Frodo", "Aragorn", None]; ring → func ring(adventurer) [parent=f1]; Return value → func ring(adventurer) [parent=f1].', '• f2: ring [parent=f1]: adventurer: "Aragorn"; Return value: None.', '• f3: ring [parent=f1]: adventurer: None; Return value: None.'),
+    py(`
+def form_fellowship(__1__):
+    def ring(__2__):
+        return ____3____
+    return ____4____
+
+gandalf = form_fellowship(____5____)
+sword = _____6_____
+_____7_____ = _____8_____`),
+    h('(a)'),
+    blank(40, 'i. Fill in blank (1).', 'group'),
+    blank(41, 'ii. Fill in blank (2).', 'adventurer'),
+    sata(42, 'iii. Which of these could go in 3? Select all that apply.', ['group + adventurer', 'adventurer + group', 'group.extend(adventurer)', 'group.extend([adventurer])', 'adventurer.extend(group)', 'adventurer.extend([group])', 'group.append(adventurer)', 'group.append([adventurer])', 'adventurer.append(group)', 'adventurer.append([group])', 'group + adventurer[:]', 'group[:] + adventurer'], [3, 6]),
+    blank(43, 'iv. Fill in blank (4).', 'ring'),
+    mc(44, 'v. Which of these could go in 5? Select one.', ["['Frodo']", "'Frodo'", "['Frodo', 'Aragorn']", "'Aragorn'", "['Frodo', 'Aragorn', None]", 'None'], 0),
+    blank(45, 'vi. Fill in blank (6). You may only make one call expression and may not use or, and, if, or else.', ['gandalf("Aragorn")', "gandalf('Aragorn')"]),
+    blank(46, 'vii. Fill in blank (7).', 'axe'),
+    sata(47, 'viii. Which of these could go in 8? Select all that apply.', ['gandalf(sword)', 'gandalf(sword.append(None))', 'gandalf(group)', 'gandalf(adventurer)', 'gandalf(None)', "sword('Aragorn')", 'sword(None)'], [0, 4]),
+  ]),
   problem('3', 'Digit Widgets (13.0 pts)', [{ n: '3a', t: ['CONTROL', 'HIGHER_ORDER_FUNCTIONS', 'RECURSION'] }, { n: '3b', t: ['CONTROL', 'HIGHER_ORDER_FUNCTIONS'] }, { n: '3c', t: ['CONTROL', 'HIGHER_ORDER_FUNCTIONS'] }], [
     text('In this question, we will be testing your understanding of both iterative and recursive solutions. Hint: pow(b, n) raises b to the power of n. For example, pow(10, 3) is 1000.'),
     h('(a) (5.0 points)'),
@@ -72,12 +132,12 @@ def digit_widget_iter(d):
             ⟪k⟫
         return result
     return ⟪l⟫`, { g: 'n > 0', h: 'n % 10 != d', i: 'pow(10, i) * (n % 10)', j: 'i += 1', k: 'n = n // 10', l: 'remove_digit' }),
-    mc(7, 'i. Fill in blank (a) (lettered (g) in the code).', ['n == d', 'n == 0', 'n % 10 == 0', 'n > 0', 'n >= 0', 'n < 0'], 3),
-    mc(8, 'ii. Fill in blank (b) (lettered (h) in the code).', ['n % 10 == 0', 'n // 10 != 0', 'n % 10 == d', 'n % 10 != d', 'n % pow(10, d) == 0', 'n // 10 == pow(10, d)'], 3),
-    blank(9, 'iii. Fill in blank (c) (lettered (i) in the code).', ['pow(10, i) * (n % 10)', 'pow(10, i) * n % 10'], { r: 'i', x: 'The official solutions give pow(10, i) * n % 10. Python evaluates that as (pow(10, i) * n) % 10, which fails the doctests, so this site shows the parenthesized form the solution intends and accepts both.' }),
-    mc(10, 'iv. Fill in blank (d) (lettered (j) in the code).', ['n = n % pow(10, i)', 'i = pow(10, i)', 'i += 1', 'n = n % 10', 'n = n // 10', 'n -= 1'], 2),
-    mc(11, 'v. Fill in blank (e) (lettered (k) in the code).', ['n = n % pow(10, i)', 'i = pow(10, i)', 'i += 1', 'n = n % 10', 'n = n // 10', 'n -= 1'], 4),
-    blank(12, 'vi. Fill in blank (f) (lettered (l) in the code).', 'remove_digit', { r: 'l' }),
+    mc(7, 'i. Fill in blank (g) (the exam’s (a) in this part).', ['n == d', 'n == 0', 'n % 10 == 0', 'n > 0', 'n >= 0', 'n < 0'], 3),
+    mc(8, 'ii. Fill in blank (h) (the exam’s (b) in this part).', ['n % 10 == 0', 'n // 10 != 0', 'n % 10 == d', 'n % 10 != d', 'n % pow(10, d) == 0', 'n // 10 == pow(10, d)'], 3),
+    blank(9, 'iii. Fill in blank (i) (the exam’s (c) in this part).', ['pow(10, i) * (n % 10)', 'pow(10, i) * n % 10'], { r: 'i', x: 'The official solutions give pow(10, i) * n % 10. Python evaluates that as (pow(10, i) * n) % 10, which fails the doctests, so this site shows the parenthesized form the solution intends and accepts both.' }),
+    mc(10, 'iv. Fill in blank (j) (the exam’s (d) in this part).', ['n = n % pow(10, i)', 'i = pow(10, i)', 'i += 1', 'n = n % 10', 'n = n // 10', 'n -= 1'], 2),
+    mc(11, 'v. Fill in blank (k) (the exam’s (e) in this part).', ['n = n % pow(10, i)', 'i = pow(10, i)', 'i += 1', 'n = n % 10', 'n = n // 10', 'n -= 1'], 4),
+    blank(12, 'vi. Fill in blank (l) (the exam’s (f) in this part).', 'remove_digit', { r: 'l' }),
     h('(c) (3.0 points)'),
     text('Implement digit_machine, which takes a positive integer n. It returns n where all instances of 4 and 8 have been removed. ' + RULE + ' Assume digit_widget is implemented correctly (and you may use it).'),
     py(`
@@ -93,7 +153,7 @@ def digit_machine(n):
     20
     """
     return ⟪m⟫`, { m: 'digit_widget(4)(digit_widget(8)(n))' }),
-    blank(13, 'i. Fill in blank (a) (lettered (m) in the code).', ['digit_widget(4)(digit_widget(8)(n))', 'return digit_widget(4)(digit_widget(8)(n))'], { r: 'm', x: 'The official solution writes return digit_widget(4)(digit_widget(8)(n)), repeating the return already in the code.' }),
+    blank(13, 'i. Fill in blank (m) (the exam’s (a) in this part).', ['digit_widget(4)(digit_widget(8)(n))', 'return digit_widget(4)(digit_widget(8)(n))'], { r: 'm', x: 'The official solution writes return digit_widget(4)(digit_widget(8)(n)), repeating the return already in the code.' }),
   ], { run: true }),
   problem('4', 'Goatda (8.0 pts)', [{ n: '4', t: ['HIGHER_ORDER_FUNCTIONS', 'LAMBDAS', 'RECURSION'] }], [
     text('This question will test the debugging skills you’ve learned in the class so far. We have included an implementation of the goatda function which accepts a single argument function lamb and a non-negative integer n. It returns a single argument function that applies lamb to the argument n times. However, the included implementation is buggy!'),
@@ -174,10 +234,10 @@ def alternating_tower(b, c, k):
         else:
             return 1 + helper(⟪f⟫, c_item, curr_layer + 1, not is_cupcakes)
     return helper(⟪g⟫, c, k + 1, True)`, { d: 'b_item < 0 or c_item < 0', e: '1 + helper(b_item, c_item - 2 * curr_layer, curr_layer + 1, not is_cupcakes)', f: 'b_item - 3 * curr_layer', g: 'b - 3 * k' }),
-    mc(21, 'i. Fill in blank (a) (lettered (d) in the code).', ['b_item < 0 or c_item < 0', 'b_item', 'b_item == 0 or c_item == 0', 'b_item > 0 or c_item > 0', 'c_item', 'b_item < 0 and c_item < 0', 'c_item * 2 == k or b_item * 3 == k', 'b_item * 3 <= k'], 0),
-    mc(22, 'ii. Fill in blank (b) (lettered (e) in the code).', ['helper(b_item - 3 * curr_layer, c_item, curr_layer + 1, is_cupcakes) - 1', '1 + helper(b_item - 3 * curr_layer, c_item - 2 * curr_layer, curr_layer - 1, not is_cupcakes)', '1 + helper(b_item, c_item - 2 * curr_layer, curr_layer + 1, not is_cupcakes)', 'helper(b_item - 3 * curr_layer, c_item - 2 * curr_layer, curr_layer - 1, is_cupcakes)', 'helper(b_item, b_item - 2 * curr_layer, curr_layer + 1, not is_cupcakes)', 'helper(b_item - 3 * curr_layer, c_item, curr_layer + 1, not is_cupcakes) + helper(b_item, c_item - 2 * curr_layer, curr_layer + 1, is_cupcakes)'], 2),
-    mc(23, 'iii. Fill in blank (c) (lettered (f) in the code).', ['b_item', 'b_item - 3 * (curr_layer + 1)', 'b_item - 3 * curr_layer', '3 * b_item', 'b_item + c_item * 3 * curr_layer', 'b_item // 3 * (curr_layer + 1)', 'b_item // 3 * curr_layer', 'b_item - 3 // curr_layer'], 2),
-    blank(24, 'iv. Fill in blank (d) (lettered (g) in the code).', 'b - 3 * k', { r: 'g' }),
+    mc(21, 'i. Fill in blank (d) (the exam’s (a) in this part).', ['b_item < 0 or c_item < 0', 'b_item', 'b_item == 0 or c_item == 0', 'b_item > 0 or c_item > 0', 'c_item', 'b_item < 0 and c_item < 0', 'c_item * 2 == k or b_item * 3 == k', 'b_item * 3 <= k'], 0),
+    mc(22, 'ii. Fill in blank (e) (the exam’s (b) in this part).', ['helper(b_item - 3 * curr_layer, c_item, curr_layer + 1, is_cupcakes) - 1', '1 + helper(b_item - 3 * curr_layer, c_item - 2 * curr_layer, curr_layer - 1, not is_cupcakes)', '1 + helper(b_item, c_item - 2 * curr_layer, curr_layer + 1, not is_cupcakes)', 'helper(b_item - 3 * curr_layer, c_item - 2 * curr_layer, curr_layer - 1, is_cupcakes)', 'helper(b_item, b_item - 2 * curr_layer, curr_layer + 1, not is_cupcakes)', 'helper(b_item - 3 * curr_layer, c_item, curr_layer + 1, not is_cupcakes) + helper(b_item, c_item - 2 * curr_layer, curr_layer + 1, is_cupcakes)'], 2),
+    mc(23, 'iii. Fill in blank (f) (the exam’s (c) in this part).', ['b_item', 'b_item - 3 * (curr_layer + 1)', 'b_item - 3 * curr_layer', '3 * b_item', 'b_item + c_item * 3 * curr_layer', 'b_item // 3 * (curr_layer + 1)', 'b_item // 3 * curr_layer', 'b_item - 3 // curr_layer'], 2),
+    blank(24, 'iv. Fill in blank (g) (the exam’s (d) in this part).', 'b - 3 * k', { r: 'g' }),
     h('(c) (6.0 points)'),
     text('Implement sweetest_tower, which takes a positive integer c, the number of cupcakes, positive integer b, the number of brownies, and k, the size of the smallest layer that can hold k donuts. It returns the maximum number of dessert layers that can be formed using brownies and cupcakes. As previously stated, since those items are smaller than donuts, each k-sized donut layer can hold twice as many cupcakes and thrice as many brownies. Unlike alternating_tower, layers can be in any order.'),
     py(`
@@ -198,12 +258,110 @@ def sweetest_tower(b, c, k):
     if ⟪j⟫:
         with_cupcakes = ⟪k⟫
     return ⟪l⟫(with_brownies, with_cupcakes)`, { h: 'b >= 3 * k', i: '1 + sweetest_tower(b - 3 * k, c, k + 1)', j: 'c >= 2 * k', k: '1 + sweetest_tower(b, c - 2*k, k + 1)', l: 'max' }),
-    mc(25, 'i. Fill in blank (a) (lettered (h) in the code).', ['b >= 3 * k', 'b > 3 * k', 'b', 'b == 3 * k', 'b > c', 'b // 3 < k', 'b // 3 == k', 'b >= 0'], 0),
-    mc(26, 'ii. Fill in blank (b) (lettered (i) in the code).', ['1 + sweetest_tower(b // 3 - k, c, k - 1)', 'sweetest_tower(b - 3 * k, c, k + 1)', '1 + sweetest_tower(b - 3 * k, c, k + 1)', 'sweetest_tower(b - 3 * k, c, k - 1)', '3 * sweetest_tower(b, c - 2 * k, k + 1)', '3 + sweetest_tower(b, c - 2 * k, k + 1)', 'sweetest_tower(b - 3 // k, c - 2 * k, k + 1)'], 2),
-    blank(27, 'iii. Fill in blank (c) (lettered (j) in the code).', 'c >= 2 * k', { r: 'j' }),
-    blank(28, 'iv. Fill in blank (d) (lettered (k) in the code).', '1 + sweetest_tower(b, c - 2*k, k + 1)', { r: 'k' }),
-    blank(29, 'v. Fill in blank (e) (lettered (l) in the code).', 'max', { r: 'l' }),
+    mc(25, 'i. Fill in blank (h) (the exam’s (a) in this part).', ['b >= 3 * k', 'b > 3 * k', 'b', 'b == 3 * k', 'b > c', 'b // 3 < k', 'b // 3 == k', 'b >= 0'], 0),
+    mc(26, 'ii. Fill in blank (i) (the exam’s (b) in this part).', ['1 + sweetest_tower(b // 3 - k, c, k - 1)', 'sweetest_tower(b - 3 * k, c, k + 1)', '1 + sweetest_tower(b - 3 * k, c, k + 1)', 'sweetest_tower(b - 3 * k, c, k - 1)', '3 * sweetest_tower(b, c - 2 * k, k + 1)', '3 + sweetest_tower(b, c - 2 * k, k + 1)', 'sweetest_tower(b - 3 // k, c - 2 * k, k + 1)'], 2),
+    blank(27, 'iii. Fill in blank (j) (the exam’s (c) in this part).', 'c >= 2 * k', { r: 'j' }),
+    blank(28, 'iv. Fill in blank (k) (the exam’s (d) in this part).', '1 + sweetest_tower(b, c - 2*k, k + 1)', { r: 'k' }),
+    blank(29, 'v. Fill in blank (l) (the exam’s (e) in this part).', 'max', { r: 'l' }),
   ], { run: true }),
+  problem('6', 'All Treeils Lead to Rome (12.0 pts)', [{ n: '6a', t: ['TREES', 'TREE_RECURSION'] }, { n: '6b', t: ['TREES', 'TREE_RECURSION'] }, { n: '6c', t: ['DATA_ABSTRACTION', 'HIGHER_ORDER_FUNCTIONS', 'TREE_RECURSION'] }], [
+    text('Definition: A Treeil is a tree where exactly one of the child node(s) of each non-leaf node has a label equal to the label of the node. Alternatively, a treeil is a tree where every node has a singular path from the node to a leaf consisting entirely of nodes with the same label. Here is an example of a valid treeil (a picture on the exam):'),
+    py(`tree(1, [tree(1, [tree(1)]), tree(2), tree(4, [tree(4), tree(5)])])`, null, { norun: true }),
+    h('(a) (7.0 points) Treeil Trial'),
+    text('Implement is_treeil which takes in a tree t and determines whether t is a treeil.'),
+    py(`
+def is_treeil(t):
+    \"\"\"
+    Returns whether a tree is a treeil. A treeil is a tree where exactly one of
+    the branches of each non-leaf node has a label equal to the label of the node.
+    >>> t1 = tree(1)
+    >>> is_treeil(t1)
+    True
+    >>> t2 = tree(1, [tree(2), tree(3)])
+    >>> is_treeil(t2)
+    False
+    >>> t3 = tree(1, [tree(1, [tree(1), tree(3)]), tree(2)])
+    >>> is_treeil(t3)
+    True
+    >>> t4 = tree(1, [tree(1, [tree(1), tree(1)]), tree(2)])
+    >>> is_treeil(t4)
+    False
+    >>> t5 = tree(2, [tree(3, [tree(1)]), tree(2, [tree(2)])])
+    >>> is_treeil(t5)
+    False
+    \"\"\"
+    if ⟪a⟫:
+        return True
+    else:
+        match_one = ⟪b⟫([b for b in branches(t) if ⟪c⟫]) == 1
+        return ⟪d⟫ and ⟪e⟫([⟪f⟫ for b in branches(t)])`, { a: 'is_leaf(t)', b: 'len', c: 'label(t) == label(b)', d: 'match_one', e: 'all', f: 'is_treeil(b)' }),
+    sata(48, 'i. Fill in blank (a). Select all that apply.', ['True', 'False', 'is_leaf(t)', 'branches(t)', 'not branches(t)', 'label(t)', 'not label(t)', 'branches(t) == []'], [2, 4, 7]),
+    mc(49, 'ii. Fill in blank (b).', ['sum', 'max', 'min', 'len', 'any', 'all'], 3),
+    blank(50, 'iii. Fill in blank (c).', 'label(t) == label(b)', { r: 'c' }),
+    blank(51, 'iv. Fill in blank (d).', 'match_one', { r: 'd' }),
+    mc(52, 'v. Fill in blank (e).', ['sum', 'max', 'min', 'len', 'any', 'all'], 5),
+    blank(53, 'vi. Fill in blank (f).', 'is_treeil(b)', { r: 'f' }),
+    h('(b) (5.0 points) Treeil Trail'),
+    text('Implement max_treeil which takes in a tree t and determines the highest number of nodes in a treeil that is a subtree of t. You may assume is_treeil is implemented correctly from the previous question.', 'The exam shows this tree t, which is not a treeil, with its largest treeil subtree highlighted: the subtree rooted at the 4 under the root, with 4 nodes. Calling max_treeil on this tree t should give a result of 4.'),
+    py(`tree(1, [tree(2, [tree(1)]), tree(4, [tree(4, [tree(4)]), tree(5)])])`, null, { norun: true }),
+    py(`
+def max_treeil(t):
+    \"\"\"
+    Given a tree (that is not necessarily a treeil), returns
+    the highest number of nodes in a treeil in the tree.
+    >>> t1 = tree(1)
+    >>> max_treeil(t1)
+    1
+    >>> t2 = tree(1, [tree(2), tree(3)])
+    >>> max_treeil(t2)
+    1
+    >>> t3 = tree(1, [tree(1, [tree(1), tree(3)]), tree(2)])
+    >>> max_treeil(t3)
+    5
+    >>> t4 = tree(1, [tree(1, [tree(1), tree(1)]), tree(2)])
+    >>> max_treeil(t4)
+    1
+    >>> t5 = tree(2, [tree(3, [tree(1)]), tree(2, [tree(2)])])
+    >>> max_treeil(t5)
+    2
+    \"\"\"
+    if ⟪g⟫:
+        return 1
+    elif ⟪h⟫:
+        return 1 + ⟪i⟫
+    else:
+        return max([⟪j⟫ for b in branches(t)])`, { g: 'is_leaf(t)', h: 'is_treeil(t)', i: 'sum([max_treeil(b) for b in branches(t)])', j: 'max_treeil(b)' }),
+    mc(54, 'i. Fill in blank (g) (the exam’s (a) in this part).', ['is_treeil(t)', 'not is_treeil(t)', 'is_leaf(t)', 'is_treeil(t) or is_leaf(t)', 'not is_treeil(t) and is_leaf(t)'], 2),
+    blank(55, 'ii. Fill in blank (h) (the exam’s (b) in this part).', 'is_treeil(t)', { r: 'h' }),
+    mc(56, 'iii. Fill in blank (i) (the exam’s (c) in this part).', ['max([max_treeil(b) for b in branches(t)])', 'len([max_treeil(b) for b in branches(t)])', 'sum([max_treeil(b) for b in branches(t)])', 'sum([b for b in branches(t) if is_treeil(b)])', 'len([b for b in branches(t) if is_treeil(b)])'], 2),
+    blank(57, 'iv. Fill in blank (j) (the exam’s (d) in this part).', 'max_treeil(b)', { r: 'j' }),
+    h('(c) (0.0 points) Treeil Treeatment (A+ Question)'),
+    text('This A+ question is not worth any points. This can only affect your course grade if you have a high A and might receive an A+. Finish the rest of the exam first!', 'Implement make_treeil which takes in a non-negative integer n and returns a treeil of depth n. Each node of the treeil has exactly one more child than its parent node. The first branch of a node will have value equal to its parent. Subsequent branches will have a label of exactly one more than the previous branch. The root has a label of 0 and has exactly two children for a tree of depth 1. The doctest shows a treeil of depth 2.'),
+    py(`
+def make_treeil(n):
+    \"\"\"
+    Returns a treeil of depth n where each node has one more child than its parent.
+    The first branch of a node will have label equal to its parent with subsequent
+    branches having label of exactly one more than the previous branch.
+    >>> t2 = make_treeil(2)
+    >>> print_tree(t2)
+    0
+      0
+        0
+        1
+        2
+      1
+        1
+        2
+        3
+    \"\"\"
+    def treeil_tracker(k, parent):
+        if n == k:
+            return tree(parent)
+        return ⟪k⟫
+    return treeil_tracker(0, 0)`, { k: 'tree(parent, [treeil_tracker(k+1, i) for i in range(parent, parent+k+2)])' }),
+    blank(58, 'i. Fill in blank (k) (the exam’s (a) in this part).', 'tree(parent, [treeil_tracker(k+1, i) for i in range(parent, parent+k+2)])', { r: 'k' }),
+  ], { run: true, support: [TREE_ADT] }),
 ]);
-e.omitted = [{ n: '1', why: 'a what-would-Python-display question about iterators' }, { n: '2', why: 'an environment diagram with list mutation' }, { n: '6', why: 'a trees problem' }];
+
 export default e;

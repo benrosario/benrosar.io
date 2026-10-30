@@ -5,6 +5,7 @@
 // and assets/pyodide/<version>/ (Python; see pyodide-toolchain.mjs), sw.js (offline use), _headers (caching), plus src/static/.
 // The content is validated first; the build fails on any content error.
 // Usage: node practice/scripts/build.mjs [--out <dir>] [--allow-invalid]   (the flag is for work in progress only)
+import { TREE_ADT } from '../content/trees.mjs';
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
@@ -27,11 +28,30 @@ export async function loadBank() {
   }
   const index = json('content/collections/index.json');
   const collections = index.order.map(id => json(`content/collections/${id}.json`));
+  // A collection with picksFrom (the Final) also gets those collections' staff picks, each tip naming the exam it was
+  // recommended for. Derived here so the Final never drifts from the midterms' lists.
+  for (const C of collections) for (const sid of C.picksFrom || []) {
+    const S = collections.find(c => c.id === sid);
+    const forExam = t => t.includes(S.label) ? t : t.replace('Recommended by Prof. DeNero', `Recommended by Prof. DeNero for ${S.label}`).replace("CSM tutors' review pick", `CSM tutors' ${S.label} review pick`);
+    for (const se of S.exams) {
+      const ce = C.exams.find(x => x.exam === se.exam); if (!ce) continue;
+      for (const k in se.picks || {}) (ce.picks ||= {})[k] = [...new Set([...ce.picks[k] || [], ...se.picks[k]])];
+      for (const pid in se.tips || {}) {
+        const tips = se.tips[pid].filter(t => t.k === 'dn' || t.k === 'csm').map(t => ({ ...t, t: forExam(t.t) }));
+        if (tips.length) (ce.tips ||= {})[pid] = [...ce.tips[pid] || [], ...tips];
+      }
+    }
+  }
   const timed = {};
   for (const f of readdirSync(join(ROOT, 'content/timed')).filter(f => f.endsWith('.json'))) timed[f.replace(/\.json$/, '')] = json('content/timed/' + f);
   enrich(exams);
+  // Each past exam's instructors, from its semester ("61a-fa25-mt2" → fa25). Site-written sets have none.
+  const by = json('content/instructors.json').semesters;
+  for (const e of exams) if (!e.src?.site && !e.src?.adapted && by[e.id.split('-')[1]]) e.by = by[e.id.split('-')[1]];
   const bank = { exams, collections, timed, defaultCollection: index.defaultCollection, legacyOrder: json('content/order-legacy.json'),
-    prelude: readFileSync(join(ROOT, 'content/python-prelude.py'), 'utf8'), sqlPrelude: readFileSync(join(ROOT, 'content/sql-prelude.py'), 'utf8') };
+    prelude: readFileSync(join(ROOT, 'content/python-prelude.py'), 'utf8'), sqlPrelude: readFileSync(join(ROOT, 'content/sql-prelude.py'), 'utf8'),
+    // The course's tree functions (tree, label, branches, ...), added to playground code that calls them.
+    treeAdt: TREE_ADT.trim() };
   bank.version = hash(JSON.stringify(bank));
   return bank;
 }

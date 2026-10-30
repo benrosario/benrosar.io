@@ -27,13 +27,18 @@ test('the four study options exist in order, each with in-scope questions', () =
   for (const v of Object.values(views)) assert.ok(collectionCounts({}, v).n > 50, v.id);
 });
 
-test('Midterm 3 keeps the original curation exactly', () => {
+test('Midterm 3 follows the staff index on Ed (#1237)', () => {
   const v = views.midterm3;
-  assert.deepEqual(v.exams.map(e => e.id), bank.legacyOrder);
-  // Per-exam counted questions, as the sidebar showed them before (n of "0/n").
-  assert.deepEqual(v.exams.map(e => counts({}, e).n), [18, 104, 24, 26, 71, 30, 28, 59, 32, 26]);
+  // The original exams keep their order (saved progress from before collections maps onto it), then the summer midterms
+  // #1237 also recommends.
+  assert.deepEqual(v.exams.map(e => e.id), [...bank.legacyOrder, '61a-su24-midterm', '61a-su26-midterm', '61a-su25-midterm', '61a-su23-midterm']);
+  // Per-exam counted questions (n of "0/n"). #1237's Summer 2024 skip, 7(e), is the midterm's, not the final's.
+  assert.deepEqual(v.exams.map(e => counts({}, e).n), [18, 104, 24, 26, 72, 30, 28, 59, 32, 26, 43, 42, 40, 58]);
+  assert.equal(find('midterm3', '61a-su24-midterm|44').oos, true);
   assert.equal(find('midterm3', '61a-sp23-mt2|4').oos, true); // "Staff say to skip: 2"
-  assert.deepEqual(find('midterm3', '61a-fa25-mt2|30').tags, ['dn']);
+  // Prof. DeNero's picks are for Midterm 2 (#863); staff named none for Midterm 3.
+  assert.deepEqual(find('midterm3', '61a-fa25-mt2|30').tags, []);
+  assert.deepEqual(find('midterm2', '61a-fa25-mt2|30').tags, ['dn']);
   assert.ok(v.exams.every(e => !e.partial));
 });
 
@@ -55,8 +60,15 @@ test('out of scope is relative to the selected study option', () => {
 
 test('recommendations belong to their collection', () => {
   const tagged = cid => views[cid].exams.flatMap(ex => ex.problems.flatMap(P => P.qs.filter(x => x.tags.length))).length;
-  assert.equal(tagged('midterm3'), 61); // 47 DeNero and 16 CSM picks; two questions have both
-  for (const cid of ['midterm1', 'midterm2', 'final']) { assert.equal(tagged(cid), 0); assert.ok(views[cid].noPicks); }
+  assert.equal(tagged('midterm3'), 16); // CSM picks only: staff named no Midterm 3 DeNero picks (checked on Ed)
+  assert.equal(tagged('midterm2'), 47); // Prof. DeNero's Midterm 2 picks on exams this site has
+  assert.ok(views.midterm2.exams.every(ex => ex.problems.every(P => P.qs.every(x => !x.tags.length || !x.oos)))); // no pick is out of scope
+  assert.equal(tagged('midterm1'), 0); assert.ok(views.midterm1.noPicks);
+  // The Final's picks are the midterms' picks combined (each question once), and every one counts toward the Final.
+  const picked = cid => new Set(views[cid].exams.flatMap(ex => ex.problems.flatMap(P => P.qs.filter(x => x.tags.length).map(x => x.qid))));
+  assert.deepEqual([...picked('final')].sort(), [...new Set([...picked('midterm1'), ...picked('midterm2'), ...picked('midterm3')])].sort());
+  assert.ok(views.final.exams.every(ex => ex.problems.every(P => P.qs.every(x => !x.tags.length || !x.oos))));
+  assert.ok(views.final.exams.find(ex => ex.id === '61a-fa25-mt2').problems.find(P => P.p.n === '4').tips.some(t => /for Midterm 2/.test(t.t)));
 });
 
 test('a shared question counts toward every collection that includes it', () => {
@@ -112,7 +124,7 @@ test('sidebar sorting: date, answered, direction and ties', () => {
   assert.deepEqual(ids('suggested', false), v.exams.map(e => e.id));
   assert.deepEqual(ids('suggested', true), v.exams.map(e => e.id).reverse());
   // Newest first; within a term the order the exams were given (final after the midterms).
-  assert.deepEqual(ids('date', true).slice(0, 5), ['61a-fa26-mt1', '61a-sp26-mt2', '61a-fa25-final', '61a-fa25-mt2', '61a-fa25-mt1']);
+  assert.deepEqual(ids('date', true).slice(0, 5), ['61a-fa26-mt1', '61a-su26-final', '61a-su26-midterm', '61a-sp26-mt2', '61a-fa25-final']);
   // Oldest first is the reverse, except that the undated adapted set stays last.
   assert.deepEqual(ids('date', false).slice(0, -2), ids('date', true).slice(0, -2).reverse());
   assert.deepEqual(ids('date', false).slice(-2), ['61a-fa26-gleam-adapted','61a-fa26-extra-practice']);
@@ -127,7 +139,8 @@ test('sidebar sorting: date, answered, direction and ties', () => {
   assert.equal(ids('answered', false, S).includes('61a-sp23-mt2'), true);
   // Staff picks are only offered where a collection has them.
   assert.ok(sortOptions(views.midterm3).includes('picks'));
-  assert.ok(!sortOptions(views.final).includes('picks'));
+  assert.ok(sortOptions(views.final).includes('picks'));
+  assert.ok(!sortOptions(views.midterm1).includes('picks'));
   assert.equal(ids('nonsense', false).join(), ids('suggested', false).join());
   // Ties (equal answered counts) go to the newest exam.
   assert.equal(ids('answered', false)[0], '61a-fa26-mt1');

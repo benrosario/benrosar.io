@@ -16,7 +16,8 @@ import { questionParts } from '../src/js/model.js';
 export const text = (...ps) => ps.map(p => typeof p == 'string' ? { p } : p);
 export const h = t => ({ h: t });
 // py(code, fills, {norun: true}) leaves a block out of the program that run: true builds (e.g. an interpreter session);
-// {runCode} checks answers against a variant of the block, e.g. with an "implementation not shown" helper filled in.
+// {runCode} checks answers against a variant of the block, e.g. with an "implementation not shown" helper filled in;
+// {runFills} gives official answers for blanks that only the runCode variant has (e.g. a line to replace).
 export const py = (c, f, o = {}) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'py', ...(f ? { f } : {}), ...o });
 export const gl = (c, f, o = {}) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'gleam', ...(f ? { f } : {}), ...o });
 export const glTests = c => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'gleam', test: true });
@@ -54,7 +55,8 @@ function makeRun(p, pn, support, lang) {
       const alone = /^\s*⟪([a-z])⟫\s*$/.test(line);
       return line.replace(/⟪([a-z])⟫/g, (t, x) => {
         const id = ids[x] || (ids[x] = `B${pn}_${k++}`);
-        run.b[id] = alone; run.ch[id] = ci; if (g.f?.[x] != null) run.v[id] = g.f[x]; return '⟦' + id + '⟧';
+        const v = g.f?.[x] ?? g.runFills?.[x];
+        run.b[id] = alone; run.ch[id] = ci; if (v != null) run.v[id] = v; return '⟦' + id + '⟧';
       });
     }).join('\n'));
   });
@@ -77,7 +79,7 @@ export function exam(id, t, path, topicsLabel, problems) {
     if (out.run && !Object.keys(out.run.c).length) delete out.run;
     const parts = questionParts(out);
     for (const q of out.b) if (q.k && !q.part && parts[q.id].part) { q.part = parts[q.id].part; if (parts[q.id].sub) q.sub = parts[q.id].sub; }
-    for (const g of out.b.filter(b => b.s).flatMap(b => b.s)) { delete g.norun; delete g.runCode; }
+    for (const g of out.b.filter(b => b.s).flatMap(b => b.s)) { delete g.norun; delete g.runCode; delete g.runFills; }
     return out;
   });
   return { id, t, src: base ? { exam: base + '.pdf', sol: base + '_sol.pdf', topics: topicsLabel } : { adapted: true }, p };

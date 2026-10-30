@@ -3,14 +3,15 @@
 // practice problem built three ways (blanks fail, the solution passes).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { loadBank } from '../scripts/build.mjs';
 import { ensureGleam, nodeCompiler, gleamAssets } from '../scripts/gleam-toolchain.mjs';
-import { runMain, runTests, capture, withEchoDict } from '../src/js/gleam-core.js';
+import { runMain, runTests, capture, withEchoDict, describe } from '../src/js/gleam-core.js';
+import { instrument, rewrite, recorder } from '../src/js/gleam-step.js';
 import { collector } from '../src/js/output.js';
 import { createRunner } from '../src/js/runner.js';
 import { st } from '../src/js/state.js';
@@ -27,10 +28,21 @@ const dir = mkdtempSync(join(tmpdir(), 'playground-gleam-')), C = await nodeComp
 for (const [f, data] of Object.entries(await gleamAssets())) if (f.startsWith('build/')) { const p = join(dir, f.slice(6)); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, data); }
 const { inspect } = await import(pathToFileURL(join(dir, 'gleam/string.mjs')).href);
 let n = 0;
-async function gleam(source) {
+async function gleam(source, edit = js => js) {
   const c = C.compile(source); assert.ok(!c.error, c.error);
-  const f = join(dir, `m${n++}.mjs`); writeFileSync(f, withEchoDict(c.js)); return import(pathToFileURL(f).href);
+  const f = join(dir, `m${n++}.mjs`); writeFileSync(f, withEchoDict(edit(c.js))); return import(pathToFileURL(f).href);
 }
+// Step through Gleam source as the worker does: with probes, then the module's main (or fn) with a recorder.
+async function stepGleam(source, { max, fn } = {}) {
+  const i = instrument(source); assert.ok(i, 'instrumented');
+  const mod = await gleam(i.source, js => rewrite(js, i.lines));
+  let size = () => 0; const rec = recorder({ show: inspect, size: () => size(), describe: (f, e) => describe(f, e, inspect), max });
+  globalThis.__gleamStep = rec.hooks;
+  try { const r = fn ? fn(mod) : runMain(mod, inspect, null, col => { size = col.size; }); rec.end(); return { ...r, steps: rec.steps, cut: rec.cut, source: i.source }; }
+  finally { delete globalThis.__gleamStep; }
+}
+// A step as text: event:line, then each frame as name(vars)->return value.
+const show = s => `${s.ev}:${s.l} ${s.st.map(f => `${f.fn}(${f.vars.map(v => v.join('=')).join(',')})${f.ret ? '->' + f.ret : ''}${f.loop ? '[loop]' : ''}`).join(' ')}`.trim();
 test.after(() => rmSync(dir, { recursive: true, force: true }));
 const text = (out, s) => out.filter(c => c.s === s).map(c => c.t).join('');
 
@@ -71,6 +83,49 @@ test('live runs: newest wins, a stuck run is stopped, progress arrives, each run
   await U({ restart: true }); await U({}); assert.equal(made, 2, 'a result asking for a restart gets a fresh worker');
 });
 
+test('Gleam Step: probes keep every line where it was, and each statement, case arm, call and return is a step', async () => {
+  const src = 'import gleam/io\nimport gleam/int\n\npub fn main() {\n  let r = fact(2)\n  io.println(int.to_string(r))\n  r |> echo\n  sum(2, 0)\n}\n\nfn fact(n) {\n  case n {\n    0 -> 1\n    _ ->\n      n * fact(n - 1)\n  }\n}\n\nfn sum(n, acc) {\n  case n {\n    0 -> acc\n    _ -> sum(n - 1, acc + n)\n  }\n}\n';
+  const r = await stepGleam(src);
+  assert.deepEqual(r.source.split('\n').slice(0, 25).map(l => l.replace(/playground_step\(\d+\) |\{ playground_step\(\d+\) | \}$/g, '')), src.split('\n').slice(0, 25).map(l => l.replace(/ \}$/, '')), 'only additions within lines');
+  assert.deepEqual(r.steps.map(show), [
+    'call:4 main()', 'line:5 main()', 'call:11 main() fact(n=2)', 'line:12 main() fact(n=2)', 'line:15 main() fact(n=2)',
+    'call:11 main() fact(n=2) fact(n=1)', 'line:12 main() fact(n=2) fact(n=1)', 'line:15 main() fact(n=2) fact(n=1)',
+    'call:11 main() fact(n=2) fact(n=1) fact(n=0)', 'line:12 main() fact(n=2) fact(n=1) fact(n=0)', 'line:13 main() fact(n=2) fact(n=1) fact(n=0)',
+    'return:13 main() fact(n=2) fact(n=1) fact(n=0)->1', 'return:15 main() fact(n=2) fact(n=1)->1', 'return:15 main() fact(n=2)->2',
+    'line:6 main(r=2)', 'line:7 main(r=2)', 'line:8 main(r=2)',
+    'call:19 main(r=2) sum(n=2,acc=0)[loop]', 'line:20 main(r=2) sum(n=2,acc=0)[loop]', 'line:22 main(r=2) sum(n=2,acc=0)[loop]',
+    'line:20 main(r=2) sum(n=1,acc=2)[loop]', 'line:22 main(r=2) sum(n=1,acc=2)[loop]', 'line:20 main(r=2) sum(n=0,acc=3)[loop]', 'line:21 main(r=2) sum(n=0,acc=3)[loop]',
+    'return:21 main(r=2) sum(n=0,acc=3)->3[loop]', 'return:8 main(r=2)->3', 'end:8']);
+  assert.deepEqual(r.steps.filter(s => s.ev === 'line' && s.l >= 6 && s.l <= 8).map(s => s.o), [0, 2, 25], 'o counts what was printed by then');
+});
+
+test('Gleam Step: shadowing, use and anonymous functions, panics, and the step limit', async () => {
+  const u = await stepGleam('import gleam/result\nimport gleam/list\n\npub fn main() {\n  let x = 1\n  let x = x + 1\n  use y <- result.try(Ok(x))\n  let zs = list.map([1, 2], fn(z) {\n    z * y\n  })\n  let assert [a, ..] = zs\n  Ok(a)\n}\n');
+  assert.ok(u.ok);
+  assert.deepEqual(u.steps.map(show).filter(s => /^(line|return):(6|7|9|11)/.test(s)), ['line:6 main(x=1)', 'line:7 main(x=2)', 'line:9 main(x=2) fn(y=2) fn(z=1)', 'return:9 main(x=2) fn(y=2) fn(z=1)->2',
+    'line:9 main(x=2) fn(y=2) fn(z=2)', 'return:9 main(x=2) fn(y=2) fn(z=2)->4', 'line:11 main(x=2) fn(y=2,zs=[2, 4])', 'return:7 main(x=2)->Ok(2)'], 'a shadowed name shows its newest value; a closure\'s frame shows its own names');
+  const p = await stepGleam('pub fn main() {\n  f(1)\n}\n\nfn f(x) {\n  let y = x + 1\n  panic as "boom"\n}\n');
+  assert.equal(p.err, 'main: boom (src/solution.gleam, line 7)');
+  assert.deepEqual(p.steps.slice(-2).map(s => [show(s), s.exc]), [['exc:7 main() f(x=1,y=2)', 'f: boom'], ['end:7', undefined]]);
+  const l = await stepGleam('pub fn main() {\n  go(0)\n}\n\nfn go(n) {\n  go(n + 1)\n}\n', { max: 40 });
+  assert.deepEqual([l.cut, l.steps.length, show(l.steps.at(-1))], [true, 40, 'line:6 main() go(n=36)[loop]']);
+  // Code the probes can't follow isn't stepped, and the source has the same lines.
+  assert.equal(instrument('pub fn main() {\n  1\n'), null);
+});
+
+test('Gleam Step: every importable problem and the playground\'s example compile with probes and pass or fail their tests as before', async () => {
+  const sources = [...problems().filter(x => x.lang === 'gleam').flatMap(x => [codeFor(x, 'solution'), codeFor(x, 'blanks')]), readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/js/playground.js'), 'utf8').match(/gleam: `([\s\S]*?)`,\n/)[1]];
+  let stepped = 0;
+  for (const src of sources) {
+    if (C.compile(src).error) continue; // some blanks don't compile yet (Step then shows the compile error)
+    stepped++;
+    const plain = runTests(await gleam(src), inspect), traced = await stepGleam(src, { fn: m => runTests(m, inspect) });
+    assert.deepEqual([traced.ok, traced.n, traced.failed], [plain.ok, plain.n, plain.failed], src);
+    assert.ok(traced.steps.length > 1 || !plain.n, 'the tests\' functions are steps');
+  }
+  assert.ok(stepped >= 15, `${stepped} stepped`);
+});
+
 function python(script, input) {
   const r = spawnSync('python3', ['-I', '-c', script], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 64 << 20 });
   assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout);
@@ -87,6 +142,29 @@ test('Python programs: stdin like a terminal, stderr, tracebacks of the program\
   assert.match(r.noLink.err, /NameError: name 'Link' is not defined/);
 });
 
+test('Python Step: each line, call and return with the frames, exceptions where raised, output so far, and a step limit', () => {
+  const cases = { calls: ['def sq(x):\n    return x * x\n\nprint(sq(3))\ny = sq(4)\n', '', 2000], input: ['n = input("n? ")\nprint(n)\n', '5\n', 2000],
+    fact: ['def fact(n):\n    if n == 0:\n        return 1\n    return n * fact(n - 1)\n\nfact(2)\n', '', 2000],
+    caught: ['import math\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    z = math.pi\n', '', 2000], error: ['def f():\n    return 1 / 0\nf()\n', '', 2000],
+    loop: ['i = 0\nwhile True:\n    i += 1\n', '', 50], repr: ['class X:\n    def __repr__(self):\n        print("side effect")\n        return "X!" * 200\n\nx = X()\n', '', 2000] };
+  const r = python(`import json, runpy, sys\ntrace = runpy.run_path(${JSON.stringify(RUN_PY)})['trace_program']\nout = {}\nfor k, (src, stdin, cap) in json.load(sys.stdin).items():\n    o = []\n    out[k] = {**json.loads(trace(src, stdin, lambda s, t: o.append(t), cap)), 'out': ''.join(o)}\nprint(json.dumps(out))`, cases);
+  const evs = k => r[k].steps.map(s => `${s.ev}:${s.l}`).join(' ');
+  assert.equal(evs('calls'), 'line:1 line:4 call:1 line:2 return:2 line:5 call:1 line:2 return:2 end:2');
+  const c = r.calls.steps;
+  assert.deepEqual(c[3].st.map(f => [f.fn, f.vars]), [['Global', [['sq', '<function sq>']]], ['sq', [['x', '3']]]]);
+  assert.equal(c[4].st[1].ret, '9'); assert.deepEqual([c[4].o, c[5].o], [0, 2], 'o counts what was printed by then');
+  assert.notEqual(c[3].st[1].id, c[7].st[1].id, 'each call is its own frame');
+  assert.deepEqual(c.at(-1).st[0].vars, [['sq', '<function sq>'], ['y', '16']]);
+  assert.deepEqual(r.input.steps.map(s => s.o), [0, 5, 7]); assert.equal(r.input.out, 'n? 5\n5\n');
+  assert.deepEqual(r.fact.steps.filter(s => s.ev === 'return').map(s => [s.st.length, s.st.at(-1).ret]), [[4, '1'], [3, '1'], [2, '2']]);
+  assert.deepEqual(r.caught.steps.filter(s => s.ev === 'exc').map(s => [s.l, s.exc]), [[3, 'ZeroDivisionError: division by zero']]);
+  assert.ok(r.caught.ok); assert.ok(!r.caught.steps.at(-1).st[0].vars.some(([k]) => k === 'math'), 'modules are left out');
+  assert.equal(evs('error'), 'line:1 line:3 call:1 line:2 exc:2 end:2', 'a frame left by an exception has no return value');
+  assert.match(r.error.err, /File "main\.py", line 2, in f[\s\S]*ZeroDivisionError/); assert.equal(r.error.ok, false);
+  assert.deepEqual([r.loop.ok, r.loop.cut, r.loop.steps.length, r.loop.err], [true, true, 50, '']);
+  const x = r.repr.steps.at(-1).st[0].vars.find(([k]) => k === 'x')[1];
+  assert.equal(x.length, 80, 'long values are cut short'); assert.equal(r.repr.out, '', 'what showing a value prints is not the program\'s output');
+});
 // Practice never runs this stub (its blanks are all in the first part), but Run doctests runs every doctest.
 const STUB_DOCTESTS = { '61a-fa23-mt2/5': 'only_long_paths is an unfinished stub in the exam template' };
 test('every importable problem: the solution passes, blanks fail, and it runs on its own', async () => {

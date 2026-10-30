@@ -44,7 +44,7 @@ export function codeFor(x, how) {
 }
 
 // Practice runs Python answers with the course's Link and Tree classes, the operator functions and re already
-// defined. Code that uses them gets them at the top, so it runs the same with Run as with Run doctests.
+// defined (and the tree functions, for problems that use them). Code that uses them gets them at the top, so it runs the same with Run as with Run doctests.
 function standalone(code) {
   const uses = name => new RegExp(`\\b${name}\\b`).test(code), defines = name => new RegExp(`^(class|def) ${name}\\b`, 'm').test(code);
   const blocks = st.bank.prelude.split(/\n(?=class |def )/).filter(b => /^(class|def) /.test(b));
@@ -55,6 +55,9 @@ function standalone(code) {
   if (ops.length) head.push(`from operator import ${ops.join(', ')}`);
   if (/\bre\.\w/.test(code) && !/^import re\b/m.test(code)) head.push('import re');
   if (need.length) head.push(`# ${need.length > 1 ? 'Definitions' : 'The definition'} CS 61A uses for ${need.join(' and ')}.`, ...need.map(n => named[n] + '\n'));
+  // Problems written against the tree functions (tree(...), label(t), branches(t)) get them too. Their is_tree differs
+  // from the Tree class's; code that mixes both styles has to sort that out itself.
+  if (st.bank.treeAdt && /(^|[^.\w])(tree|label|branches)\(/m.test(code) && !defines('tree')) head.push('# The tree functions CS 61A uses.', st.bank.treeAdt + '\n');
   return head.length ? head.join('\n') + '\n\n' + code : code;
 }
 

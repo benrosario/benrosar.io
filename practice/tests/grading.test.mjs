@@ -31,6 +31,24 @@ test('explicit restrictions reject working shortcuts but allow identifiers in st
   assert.match(restrictionError(q2,p2,'[first, ..t]'),/list_concat/);
   assert.equal(restrictionError(q2,p2,'list_concat(t, [first]) // if case'),'');
 });
+test('exam restrictions follow the PDF wording, including patterns, allowed tokens and characters',()=>{
+  const r=(id,qid,a)=>{const p=find(id);return restrictionError(p.b.find(q=>q.id===qid),p,a);};
+  // "You may not use and, or, or not." (a passing doctest is not enough)
+  assert.match(r('61a-su25-midterm/5',36,'label(b) >= label(t) or 1'),/and, or, or not/);
+  assert.equal(r('61a-su25-midterm/5',36,'label(t) <= label(b)'),'');
+  // "f may not be the operator of a call expression" / "must call compose"
+  assert.match(r('61a-fa24-mt1/5',22,'compose(f, f(x))'),/operator/);
+  assert.match(r('61a-fa24-mt1/5',22,'lambda x: x'),/compose/);
+  // "Your answer must be a call to shift."
+  assert.match(r('61a-fa24-mt1/5',26,'g'),/call to shift/);
+  assert.equal(r('61a-fa24-mt1/5',26,'shift(-1, g)'),'');
+  // "You may only write names, parentheses, and commas."
+  assert.match(r('61a-fa25-mt2/6',28,'f(x[0])'),/only write names/);
+  // "You may not write ... 3, 4, 5, 6, 7, 8, or 9" counts digits inside longer numbers
+  assert.match(r('61a-fa26-mt1/3',7,'n // 30'),/3, 4, 5/);
+  assert.match(r('61a-sp23-mt2/5',23,'yield from f(x)'),/yield from/);
+  assert.match(r('61a-sp25-final/9',37,'s[u] if x == t else s[x]'),/Do not write if/);
+});
 test('whole-solution checking refuses missing answers instead of filling in the key',async()=>{
   const p=find('61a-fa26-gleam-adapted/1');
   assert.ok(canCheckSolution(p));

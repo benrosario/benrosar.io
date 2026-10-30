@@ -41,7 +41,7 @@ aside a .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prob{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:18px}.prob h2{font-size:17px;margin:0 0 8px}
 pre{background:var(--code);border-radius:8px;padding:10px 12px;overflow-x:auto;font:13px/1.55 ui-monospace,Menlo,monospace;margin:10px 0;white-space:pre;tab-size:4}
 .txt p,.ql p{margin:8px 0;line-height:1.6;max-width:75ch}.txt h3{font-size:14px;margin:16px 0 4px;color:var(--mut);font-weight:600}.ql p{margin:0 0 4px}.ql pre{font-weight:400}
-.note{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px;line-height:1.55}.note .mut,.mut{color:var(--mut)}.ref{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.note{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px;line-height:1.55}.note>p{margin:0}.note .nh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:10px}.note .by{color:var(--mut);font-size:13px}.note .nsc{margin-top:1.55em}.note .mut,.mut{color:var(--mut)}.ref{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 .tips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.tip{font-size:12.5px;padding:3px 9px;border-radius:999px;border:1px solid}
 .tip.dn,.badge.dn{color:#8a5a00;background:#fff4d6;border-color:#f0d58a}.tip.csm,.badge.csm{color:#1d4fb8;background:#e8f0ff;border-color:#bcd0f7}.tip.oos,.badge.oos{color:#6b6b70;background:var(--code);border-color:var(--bd)}
 :root[data-theme=dark] .tip.dn,:root[data-theme=dark] .badge.dn{color:#f3c969;background:#3a2f12;border-color:#5c4a1c}:root[data-theme=dark] .tip.csm,:root[data-theme=dark] .badge.csm{color:#9cbcff;background:#1a2640;border-color:#2c3f66}:root[data-theme=dark] .tip.oos,:root[data-theme=dark] .badge.oos{color:#a0a0a8}
@@ -219,6 +219,19 @@ body.pgm #side,body.pgm .grip,body.pgm #rs,body.pgm #stat{display:none}body.pgm 
 .ed .edhl{overflow:hidden;pointer-events:none;color:var(--fg)}
 .ed .edta{z-index:1;resize:none;outline:none;color:transparent;caret-color:var(--fg)}.ed .edta::selection{background:color-mix(in srgb,var(--acc) 30%,transparent);color:transparent}
 .edln{position:absolute;top:0;bottom:0;left:0;width:var(--gw);overflow:hidden;border-right:1px solid var(--bd);background:var(--code);color:var(--mut);text-align:right;user-select:none}.edln>div{padding:10px 9px 10px 0;white-space:pre}
+/* Debug (playground.js): the editor marks the line about to run (.ednext) and the one that just ran (.edprev), each with an arrow between the line numbers and the code. */
+.edmk{position:absolute;inset:0;overflow:hidden;pointer-events:none}.edmk>div{position:absolute;top:0;left:0;right:0}.edmk>div[hidden]{display:none}
+.ednext{background:color-mix(in srgb,var(--acc) 16%,transparent)}.edprev{background:color-mix(in srgb,var(--mut) 12%,transparent)}
+.edmk>div::before{content:'';position:absolute;left:calc(var(--gw) + 2px);top:50%;width:0;height:0;margin-top:-5px;border:5px solid transparent;border-left:7px solid var(--acc)}.edprev::before{border-left-color:var(--mut)!important;opacity:.6}
+.pg.stepping .pgstat:has(.pgmsg:empty):has(.pgundo[hidden]){display:none}.ed.ro .edta{caret-color:transparent;cursor:default}.pg.stepping .pged{border-color:color-mix(in srgb,var(--acc) 55%,var(--bd))}
+.pgstep{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--bd)}.pgstep[hidden]{display:none}
+.pgstep button{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;font-size:14px}.pgstep button:disabled{cursor:default;opacity:.4}.pgstep svg{width:16px;height:16px}
+.pgstep input{flex:1;min-width:80px;accent-color:var(--acc)}.pgsn{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pgfr{flex:0 1 auto;max-height:55%;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-bottom:1px solid var(--bd)}.pgfr[hidden]{display:none}.pgfr:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.pgf{border:1px solid var(--bd);border-radius:8px;padding:6px 10px;background:var(--card)}.pgf.on{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}
+.pgf h3{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--mut)}.pgf.on h3{color:var(--fg)}.pgf p{margin:0;font-size:13px}.pgf p+table{margin-top:4px}.pgfr>p{margin:0;font-size:13.5px}
+.pgf table{border-collapse:collapse;font:13px/1.5 ui-monospace,Menlo,monospace}.pgf th{padding:0 14px 0 0;font-weight:500;text-align:right;vertical-align:top;white-space:nowrap}.pgf td{padding:0 4px;word-break:break-word}
+.pgf tr.chg td{background:color-mix(in srgb,var(--acc) 16%,transparent);border-radius:4px}.pgf tr.ret th{font-family:system-ui,sans-serif;color:var(--mut)}.pgf tr.ret td{color:var(--ok)}
 @media(max-width:760px){.pglg{display:none}#pgb{width:41px;padding:0;justify-content:center}#pgb span{display:none}.pg{height:auto;min-height:0}.pgmain{grid-template-columns:minmax(0,1fr);gap:12px}.pgcs{display:none}.pged{height:55vh}.pgout{min-height:260px}.pgsp{display:none}}
 /* Importing practice problems into the playground (picker.js, the problem panel, "Open in playground"). */
 .ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ph h2{margin-bottom:8px}
@@ -276,6 +289,7 @@ body.athome #m{max-width:1120px;width:100%;padding:44px 32px;zoom:var(--zm,1)}
 .home-study{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mut)}
 .home-study .ddb{min-height:44px;color:var(--fg)}
 .homecoverage{font-size:14px;margin:12px 0 18px}
+.homeadvice{font-size:14px;margin:-10px 0 18px}
 .homefilters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 12px}
 .homefilters #sortbar{display:flex;align-items:center;gap:10px;margin:0;flex-wrap:wrap}
 .homefilters .ddb,.homefilters .chip{min-height:44px}.homefilters #dd{width:auto}
@@ -342,7 +356,9 @@ body.ptm .pthome{padding:28px;max-width:760px;margin:0 auto 24px}
 @media(max-width:1100px) and (min-width:761px){header{column-gap:6px}header h1{font-size:16px}.activitynav #exb,.activitynav #pgb,.activitynav #ptb{padding:0 7px;font-size:13px}.activitynav svg{width:16px;height:16px}.viewtools{gap:4px}}
 @media(max-width:760px){header{position:sticky}.viewtools{order:11;margin-left:0;flex:1;justify-content:flex-end;border-top:1px solid var(--bd);padding-top:8px}.viewtools #hlb,.viewtools #zmb{width:38px;height:38px}.viewtools #tmb{height:38px}.activitynav{border-top:0}.zoom-control{position:static}.zoom-panel{right:12px;left:auto;top:calc(100% + 6px);max-width:calc(100vw - 24px)}body.ptm #m{padding:24px 16px}.ptchooser h2{font-size:26px}.ptcollections{gap:2px;padding:4px}.ptcollections button{font-size:12px;padding:8px 2px;min-height:44px}body.ptm .pthome{padding:20px}.ptsession{padding:16px;grid-template-columns:1fr}.ptsession>a{grid-column:1/-1}}
 .ptsource-details{margin:12px 0 20px;font-size:14px}.ptsource-details summary{cursor:pointer;color:var(--mut);padding:8px 0}.ptsource-details p{margin:8px 0 0;color:var(--mut)}
-@media(max-width:760px){.activitynav #exb svg{display:block;width:16px;height:16px}body.pglock .activitynav #ptb .navclock{display:inline}.ptopts{grid-template-columns:1fr}.pthome .ptopt{min-height:80px}}
+@media(max-width:760px){.activitynav svg{display:block;width:16px;height:16px;flex:none}body.pglock .activitynav #ptb .navclock{display:inline}.ptopts{grid-template-columns:1fr}.pthome .ptopt{min-height:80px}}
+/* Narrow phones: the three labels and their icons still fit on one row. */
+@media(max-width:360px){.activitynav #exb,.activitynav #pgb,.activitynav #ptb{padding:0 2px;gap:4px;font-size:12px}.activitynav svg{width:14px;height:14px}}
 
 /* Exam progress belongs with the primary navbar controls on desktop. */
 .examtools{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:41px;align-items:center;gap:2px 10px;flex:1 1 260px;max-width:none;min-width:290px;width:auto;padding:0;border:0;margin-left:auto}
@@ -358,7 +374,7 @@ body.ptm .pthome{padding:28px;max-width:760px;margin:0 auto 24px}
 .viewtools #th{margin:0;flex:none}
 @media(max-width:760px){.viewtools{flex:1 0 100%;justify-content:flex-end}.viewtools #th{width:38px;height:38px}}
 
-.homeresume[hidden],.homecoverage[hidden]{display:none}
+.homeresume[hidden],.homecoverage[hidden],.homeadvice[hidden]{display:none}
 
 /* Let sidebar pickers wrap and stack before their labels get clipped. */
 .sidetop>#sdd,.sidetop>#dd{flex:1 1 145px}
@@ -417,7 +433,7 @@ body.ptm .pthome{padding:28px;max-width:760px;margin:0 auto 24px}
 .sitesocials a.ig{background:linear-gradient(45deg,#fa7e1e,#d62976 35%,#962fbf 70%,#4f5bd5)}
 .sitesocials a.li{background:#0a66c2}
 .sitesocials a.ig:hover,.sitesocials a.li:hover{color:#fff;filter:brightness(1.1)}
-@media(max-width:760px){.sitesocials{column-gap:10px}}
+@media(max-width:760px){.sitesocials{column-gap:10px}.sitesocials a.ig span,.sitesocials a.li span{display:none}.sitesocials a.ig,.sitesocials a.li{width:44px;padding:0;justify-content:center}}
 
 body{display:flex;flex-direction:column;min-height:100dvh}body>header{flex:none}.wrap{flex:1}.sitefooter{margin:0 16px;padding:4px 0}
 

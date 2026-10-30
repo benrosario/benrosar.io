@@ -5,6 +5,10 @@
 // Gleam compiles and runs as you type, like playground.gleam.run; Python runs on Run (⌘↵), or as you type with
 // Auto-run. Both use the page's runtimes: the Python worker practice checks use, and a Gleam worker of the
 // playground's own that only keeps the newest run.
+// Debug: the program runs once, recording each line it runs (run.py's trace_program; gleam-step.js for Gleam's main), then the student
+// steps through the recording, forward and back: the editor marks the line about to run and the one that just ran, and the
+// output pane shows the frames and their names, and what had been printed by then. The editor is read-only meanwhile;
+// the Debug button becomes Stop debug, which goes back to editing.
 // During a timed practice exam the playground is locked: its button is hidden, and links to it open the attempt.
 import { st } from './state.js';
 import { $, esc, SV, confirmBtn, copyText, isMac, reduced, PLAYGROUND_ICONS } from './util.js';
@@ -55,12 +59,12 @@ pub fn pow_test() {
 }
 `,
 };
-const RUNKEY = isMac ? '⌘↵' : 'Ctrl+Enter';
+const RUNKEY = isMac ? '⌘↵' : 'Ctrl+Enter', DEBUGKEY = isMac ? '⌘⇧↵' : 'Ctrl+Shift+Enter';
 const scratch = lang => 'scratch-' + lang;
 export const locked = () => !!st.S._pt && !st.S._pt.done;
 
 const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam', { latestWins: true, runMs: RUN_MS });
-let P = null, ed = null, el = null, drawn = false, saveT, liveT, stopT, runId = 0, stopped = 0, resetting = false, compiled = {}, warming = null;
+let P = null, ed = null, el = null, drawn = false, saveT, liveT, stopT, runId = 0, stopped = 0, resetting = false, compiled = {}, warming = null, S = null;
 const file = () => P.files[P.cur];
 export const currentFile = () => P?.cur;
 
@@ -97,12 +101,14 @@ async function unpack(s) {
 const shareLink = async f => `${location.origin}${location.pathname}?exam=${st.cid}&view=play#${f.lang}=${await pack(f.code)}`;
 
 // ---- the view ----
-const ICON = { run: SV('<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>'), tests: SV('<path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/>'),
+const ICON = { run: SV('<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>'), check: SV('<path d="m5 12.5 4.5 4.5L19 7"/>'), tests: SV('<path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/>'),
   spin: SV('<path d="M21 12a9 9 0 1 1-6.2-8.56"/>'), stop: SV('<rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" stroke="none"/>'),
   import: SV('<path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/>'),
   share: SV('<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>'),
   close: SV('<path d="M6 6l12 12M18 6 6 18"/>'), chev: SV('<path d="m6 9 6 6 6-6"/>'), plus: PLAYGROUND_ICONS.new, recent: SV('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'),
-  trash: SV('<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2M10 11v6M14 11v6"/>') };
+  trash: SV('<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2M10 11v6M14 11v6"/>'),
+  debug: SV('<path d="M4 12h11M11 7l5 5-5 5M20 5v14"/>'), first: SV('<path d="m18 6-7 6 7 6M6 6v12"/>'), back: SV('<path d="m15 6-6 6 6 6"/>'),
+  fwd: SV('<path d="m9 6 6 6-6 6"/>'), last: SV('<path d="m6 6 7 6-7 6M18 6v12"/>') };
 function renderPG() {
   const m = $('#m'); m.innerHTML = `<section class="pg" aria-label="Playground">
 <div class="pgbar">
@@ -115,6 +121,7 @@ function renderPG() {
   <label class="pgauto" data-tip="Run your Python each time you stop typing"><input type="checkbox"> Auto-run</label>
   <span class="pglive mut">Runs as you type</span>
   <button type="button" class="p" data-act="run" data-tip="Run (${RUNKEY})">${ICON.run}<span>Run</span></button>
+  <button type="button" data-act="debug" data-tip="Debug: step through it line by line (${DEBUGKEY})">${ICON.debug}<span>Debug</span></button>
   <button type="button" data-act="tests">${ICON.tests}<span></span></button>
   <button type="button" data-act="stop" hidden>${ICON.stop}<span>Stop</span></button>
   <button type="button" data-act="share" data-tip="Copy a link that opens this code in the playground">${ICON.share}<span>Share</span></button>
@@ -131,7 +138,12 @@ function renderPG() {
   <div class="pgcs" role="separator" aria-orientation="vertical" aria-label="Resize the editor and output" tabindex="0" data-tip="Drag to resize · double-click to reset"><div class="pgx" data-tip="Drag to resize the problem, editor and output"></div></div>
   <div class="pgout">
     <div class="pgtabs" role="tablist" aria-label="Output"><button type="button" role="tab" data-t="out">Output</button><button type="button" role="tab" data-t="js"><span class="pglg">Compiled </span>JavaScript</button><button type="button" role="tab" data-t="erl"><span class="pglg">Compiled </span>Erlang</button></div>
+    <div class="pgstep" role="group" aria-label="Debug: step through the program" hidden>
+      <button type="button" data-s="first" aria-label="First step" data-tip="First step">${ICON.first}</button><button type="button" data-s="back" aria-label="Back a step" data-tip="Back (←)">${ICON.back}</button><button type="button" class="p" data-s="fwd" data-tip="Next step (→)"><span>Next</span>${ICON.fwd}</button><button type="button" data-s="last" aria-label="Last step" data-tip="Last step">${ICON.last}</button>
+      <input type="range" min="0" value="0" aria-label="Step"><span class="pgsn" aria-live="polite"></span>
+    </div>
     <div class="pgstat"><span class="pgmsg" role="status"></span><button type="button" class="pgundo" hidden>Undo</button></div>
+    <div class="pgfr" aria-label="Frames" role="region" tabindex="0" hidden></div>
     <pre class="pgo" role="tabpanel" tabindex="0"></pre>
     <details class="pgin"><summary>Input <span class="mut">(stdin, read by input())</span></summary><div class="pgis" role="separator" aria-orientation="horizontal" aria-label="Resize the input" tabindex="0" data-tip="Drag to resize · double-click to reset"></div><textarea spellcheck="false" aria-label="Input for input(), one line per call"></textarea></details>
   </div>
@@ -139,12 +151,14 @@ function renderPG() {
 <p class="pghint mut">Tab indents and Shift+Tab outdents; press Escape, then Tab or Shift+Tab, to leave the editor. ${isMac ? '⌘/' : 'Ctrl+/'} comments lines out.</p>
 </section>`;
   el = m.querySelector('.pg');
-  ed = createEditor(el.querySelector('.pged'), { lang: 'py', label: 'Code', onChange, onRun: () => run('main', true) });
+  ed = createEditor(el.querySelector('.pged'), { lang: 'py', label: 'Code', onChange, onRun: e => run(e?.shiftKey ? 'trace' : 'main', true) });
   el.querySelectorAll('.seg button').forEach(b => b.onclick = () => pick(b.dataset.l));
   el.querySelector('.pgauto input').onchange = e => { P.auto = e.target.checked; saveSoon(); if (P.auto) run('main'); };
   const act = a => el.querySelector(`[data-act=${a}]`);
   act('run').onclick = () => run('main', true);
   act('tests').onclick = () => run('tests', true);
+  act('debug').onclick = () => S ? (stepEnd(), ed.focus()) : run('trace', true);
+  wireStep();
   act('stop').onclick = stop;
   act('share').onclick = share;
   act('import').onclick = pickProblem;
@@ -155,7 +169,7 @@ function renderPG() {
   prob.querySelectorAll('[data-f]').forEach(b => b.onclick = () => confirmRefill(b.dataset.f, b));
   prob.querySelector('.pgpo').onclick = () => openInPractice(file().src);
   el.querySelector('.pgpc').onclick = () => { open(latest(file().lang, P.cur)); ed.focus(); };
-  confirmBtn(act('reset'), reset, () => file().code === file().orig);
+  confirmBtn(act('reset'), reset, () => { const same = file().code === file().orig; if (same) { iconFx(act('reset'), 'nope'); msg('Nothing to reset: this is already the original code.'); } return same; });
   el.querySelector('.pgundo').onclick = undoReset;
   el.querySelectorAll('.pgtabs button').forEach(b => b.onclick = () => tab(b.dataset.t));
   const stdin = el.querySelector('.pgin textarea');
@@ -201,6 +215,7 @@ function wireSizes() {
 function open(id) {
   const switched = drawn && id !== P.cur;
   if (ed && P.files[P.cur]) Object.assign(file(), ed.state());
+  stepEnd(false);
   P.cur = id; const f = file(); f.at = Date.now(); f.tab ||= 'out'; f.mode ||= 'main';
   ed.load(f.code, f.lang); ed.restore(f);
   el.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-checked', b.dataset.l === f.lang));
@@ -291,6 +306,7 @@ function newFile(lang) {
 }
 // Remove a file; removing the open one opens the most recently used file left (a new scratch file if there's none).
 function removeFile(id) {
+  if (!P.files[id]) return drawRecent(); // already removed (e.g. a second click)
   const lang = P.files[id].lang; delete P.files[id]; if (P.prev?.id === id) P.prev = null;
   if (id === P.cur) open(byRecent()[0] ?? latest(lang)); else save();
   drawRecent();
@@ -324,8 +340,9 @@ async function run(mode, user = false) {
   if (!el) return;
   clearTimeout(liveT);
   const f = file(), id = ++runId, lang = f.lang, t0 = performance.now();
-  mode = f.mode = mode || f.mode || 'main';
-  if (user) { ev('pg_run', { v: lang + (mode === 'tests' ? '-tests' : '') }); busy(el.querySelector(`[data-act=${mode === 'tests' ? 'tests' : 'run'}]`)); }
+  mode = mode || f.mode || 'main'; if (mode !== 'trace') f.mode = mode; // a step run doesn't change what live runs do
+  stepEnd(false);
+  if (user) { ev(mode === 'trace' ? 'pg_step' : 'pg_run', { v: lang + (mode === 'tests' ? '-tests' : '') }); busy(el.querySelector(`[data-act=${{ tests: 'tests', trace: 'debug' }[mode] || 'run'}]`)); }
   const loaded = lang === 'py' ? pyLoaded() : gl.loaded();
   msg(loaded ? 'Running…' : `Starting ${NAME[lang]}…`); rtPaint(lang, !loaded);
   clearTimeout(stopT); stopT = setTimeout(() => { if (id === runId) el.querySelector('[data-act=stop]').hidden = false; }, 500);
@@ -333,7 +350,7 @@ async function run(mode, user = false) {
   const progress = p => {
     if (id !== runId) return;
     if (p.compiled) { compiled = p.compiled; code(); }
-    if (p.out) { shown = p.out; out(outputHTML({ out: p.out })); msg('Running…'); }
+    if (p.out && mode !== 'trace') { shown = p.out; out(outputHTML({ out: p.out })); msg('Running…'); }
     rtPaint();
   };
   const r = lang === 'py'
@@ -345,11 +362,14 @@ async function run(mode, user = false) {
   const ms = Math.round(performance.now() - t0), result = { ...r, out: r.out || shown || [] };
   if ('js' in r) compiled = { js: r.js, erlang: r.erlang, erlangErr: r.erlangErr };
   if (r.compile) compiled = { compileErr: true };
+  if (mode === 'trace' && r.steps?.length && stopped !== id) return stepStart(result);
   out(outputHTML(result, mode)); code();
+  if (user && mode === 'tests' && stopped !== id && !r.unavailable) iconFx(el.querySelector('[data-act=tests]'), r.ok ? 'pass' : 'fail');
   const tests = lang === 'py' ? 'doctests' : 'tests', took = ms < 1000 ? ms + ' ms' : (ms / 1000).toFixed(1) + ' s';
   if (stopped === id) msg('Stopped.');
   else if (r.unavailable) msg(r.err, 'no');
   else if (r.compile) msg('Doesn’t compile', 'no');
+  else if (r.nostep) msg('Can’t debug this code', 'no');
   else if (/^Timed out/.test(r.err || '')) msg(`Stopped after ${RUN_MS / 1000} seconds`, 'no');
   else if (mode === 'tests') msg(r.ok ? `${tests[0].toUpperCase() + tests.slice(1)} passed` : r.n ? `${r.failed} of ${r.n} ${tests} failed` : `No ${tests} found`, r.ok ? 'ok' : 'no');
   // The time only when the runtime was already running: otherwise it's mostly starting up.
@@ -357,7 +377,7 @@ async function run(mode, user = false) {
 }
 // The Run or Run tests button pressed (b) gives a small press and spins until the run ends; busy(null) stops it.
 function busy(b) {
-  el.querySelectorAll('[data-act=run],[data-act=tests]').forEach(x => {
+  el.querySelectorAll('[data-act=run],[data-act=tests],[data-act=debug]').forEach(x => {
     const on = x === b; if (x.classList.contains('busy') === on) return;
     x.classList.toggle('busy', on); x.querySelector('svg').outerHTML = on ? ICON.spin : ICON[x.dataset.act];
   });
@@ -392,21 +412,115 @@ function rtPaint(lang, start) {
   e.className = 'pgrt' + (loaded ? ' on' : '');
 }
 
+// ---- debugging ----
+// S: the recording being stepped through ({steps, out, ok, err, cut}, from run.py's trace_program), the step shown (i),
+// and each function frame's number (f1, f2, … in the order they were first called, as in an environment diagram).
+function stepStart(r) {
+  const num = new Map(); for (const s of r.steps) for (const f of s.st) if (f.id && !num.has(f.id)) num.set(f.id, num.size + 1);
+  S = { ...r, i: 0, num }; ed.readOnly(true); el.classList.add('stepping');
+  if (file().lang === 'gleam') { tab('out', false); el.querySelector('.pgtabs').hidden = true; }
+  el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = false;
+  const range = el.querySelector('.pgstep input'); range.max = r.steps.length - 1;
+  debugButton(true); stepTo(0); (r.steps.length > 1 ? el.querySelector('[data-s=fwd]') : debugButton()).focus();
+}
+// The toolbar's Debug button, which reads Stop debug while debugging.
+function debugButton(on) {
+  const b = el.querySelector('[data-act=debug]'); if (on == null) return b;
+  b.querySelector('span').textContent = on ? 'Stop debug' : 'Debug'; b.classList.toggle('on', on);
+  b.querySelector('svg').outerHTML = on ? ICON.stop : ICON.debug; iconFx(b, on ? 'stop' : 'in');
+  b.dataset.tip = on ? 'Stop debugging and edit your code (Escape)' : `Debug: step through it line by line (${DEBUGKEY})`;
+  return b;
+}
+// Leave debug mode, showing everything the program printed (show: false when something else is about to fill the output,
+// such as another file opening, possibly because the one being debugged was removed).
+function stepEnd(show = true) {
+  if (!S || !el) return;
+  const r = S; S = null; ed.readOnly(false); ed.mark(); el.classList.remove('stepping'); debugButton(false);
+  el.querySelector('.pgtabs').hidden = file()?.lang !== 'gleam';
+  el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = true;
+  if (show) { out(outputHTML(r, 'main')); msg(r.cut ? '' : r.ok ? 'Finished' : 'Stopped with an error', r.ok ? '' : 'no'); }
+}
+// The first n characters of what the program printed.
+function upTo(chunks, n) { const r = []; for (const c of chunks) { if (n <= 0) break; r.push({ ...c, t: c.t.slice(0, n) }); n -= c.t.length; } return r; }
+function stepTo(i) {
+  if (!S) return;
+  const n = S.steps.length; i = S.i = Math.max(0, Math.min(n - 1, i));
+  const s = S.steps[i], before = S.steps[i - 1], end = s.ev === 'end', top = s.st.at(-1);
+  ed.mark(end ? 0 : s.l, before?.l);
+  // Frames, outermost first; names whose value just changed are marked, and the frame running now.
+  const was = new Map(before?.st.map(f => [f.id, new Map(f.vars)]));
+  el.querySelector('.pgfr').innerHTML = s.st.map(f => { const old = was.get(f.id);
+    return `<section class="pgf${f === top && !end ? ' on' : ''}"><h3>${f.id ? `f${S.num.get(f.id)}: ${esc(f.fn)}` : 'Global frame'}</h3>`
+      + (f.loop ? '<p class="mut">It calls itself last, so Gleam runs it as a loop: one frame, its names updated each time round.</p>' : '')
+      + (f.vars.length || 'ret' in f ? `<table>${f.vars.map(([k, v]) => `<tr${old && old.get(k) !== v ? ' class="chg"' : ''}><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}`
+        + ('ret' in f ? `<tr class="ret"><th>Return value</th><td>${esc(f.ret)}</td></tr>` : '') + '</table>' : '<p class="mut">No names yet</p>')
+      + '</section>'; }).join('') || `<p class="mut">${S.ok ? 'main has finished.' : 'main stopped with an error.'}</p>`;
+  // Keep the running frame in sight (the panel scrolls; the page doesn't).
+  const fr = el.querySelector('.pgfr'), on = fr.querySelector('.pgf.on');
+  if (on) { const t = on.offsetTop - fr.offsetTop, b = t + on.offsetHeight + 10; if (b > fr.scrollTop + fr.clientHeight) fr.scrollTop = b - fr.clientHeight; else if (t < fr.scrollTop) fr.scrollTop = t - 10; }
+  out(outputHTML({ out: upTo(S.out, s.o), err: end ? S.err : '' }, 'main'));
+  const fn = top?.fn;
+  if (s.ev === 'call') msg(fn === 'fn' ? 'Calling an anonymous function' : `Calling ${fn}`);
+  else if (s.ev === 'return') msg(`${fn === 'fn' ? 'The anonymous function' : fn} returns ${top.ret}`);
+  else if (s.ev === 'exc') msg(s.exc, 'no');
+  else if (end) msg(S.ok ? 'Finished' : 'Stopped with an error', S.ok ? 'ok' : 'no');
+  else msg(i === n - 1 && S.cut ? `Stopped recording after ${n.toLocaleString()} steps. An infinite loop?` : '', 'no');
+  el.querySelector('.pgsn').textContent = `Step ${(i + 1).toLocaleString()} of ${n.toLocaleString()}`;
+  el.querySelector('.pgstep input').value = i;
+  const q = s => el.querySelector(`[data-s=${s}]`);
+  q('first').disabled = q('back').disabled = i === 0; q('fwd').disabled = q('last').disabled = i === n - 1;
+  if (document.activeElement?.disabled || !document.activeElement || document.activeElement === document.body) (n === 1 ? debugButton() : q(i === n - 1 ? 'back' : 'fwd')).focus();
+}
+function wireStep() {
+  const bar = el.querySelector('.pgstep'), go = { first: () => 0, back: () => S.i - 1, fwd: () => S.i + 1, last: () => S.steps.length - 1 };
+  bar.querySelectorAll('[data-s]').forEach(b => b.onclick = () => stepTo(go[b.dataset.s]()));
+  bar.querySelector('input').oninput = e => stepTo(+e.target.value);
+  // ← and → step (the slider has its own arrow keys), Escape stops debugging; typing in the read-only editor says how.
+  el.querySelector('.pgmain').addEventListener('keydown', e => {
+    if (!S || e.target.matches('input, .pgin textarea') || e.altKey) return;
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key === 'Enter') { e.preventDefault(); run(e.shiftKey ? 'trace' : 'main', true); }
+    else if (!mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); stepTo(S.i + (e.key === 'ArrowRight' ? 1 : -1)); }
+    else if (e.key === 'Escape') { e.preventDefault(); stepEnd(); ed.focus(); }
+    else if (e.target === ed.textarea && !mod && (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter')) msg('Press Stop debug (or Escape) to change your code.');
+  });
+}
+
 // ---- reset and share ----
 function reset() {
-  const f = file(); P.prev = { id: P.cur, code: f.code };
+  const f = file(); P.prev = { id: P.cur, code: f.code }; stepEnd(); iconFx(el.querySelector('[data-act=reset]'), 'trash');
   resetting = true; ed.replace(f.orig); resetting = false;
   el.querySelector('.pgundo').hidden = false; save();
 }
 function undoReset() {
   if (P.prev?.id !== P.cur) return;
-  resetting = true; ed.replace(P.prev.code); resetting = false;
+  stepEnd(); resetting = true; ed.replace(P.prev.code); resetting = false;
   P.prev = null; el.querySelector('.pgundo').hidden = true; save();
 }
 async function share() {
   const b = el.querySelector('[data-act=share] span'), f = file();
   const ok = await copyText(await shareLink(f)); ev('pg_share', { v: f.lang });
-  b.textContent = ok ? 'Link copied' : 'Couldn’t copy'; setTimeout(() => { b.textContent = 'Share'; }, 2000);
+  b.textContent = ok ? 'Link copied' : 'Couldn’t copy';
+  // A copied link shows a check mark for as long as the label says so.
+  const btn = b.parentElement; clearTimeout(btn._t);
+  if (ok) { btn.querySelector('svg').outerHTML = ICON.check; iconFx(btn, 'pop'); } else iconFx(btn, 'fail');
+  btn._t = setTimeout(() => { b.textContent = 'Share'; if (ok) { btn.querySelector('svg').outerHTML = ICON.share; iconFx(btn, 'in'); } }, 2000);
+}
+// A short animation of a toolbar button's icon (none with reduced motion): pass and pop bounce, fail shakes,
+// stop and in arrive, trash tips the bin, and nope jiggles it red (Reset with nothing to reset).
+function iconFx(btn, kind) {
+  const ic = btn?.querySelector('svg'); if (!ic?.animate || reduced()) return;
+  const red = getComputedStyle(el).getPropertyValue('--no').trim() || '#d33', c = getComputedStyle(ic).color;
+  const FX = {
+    pass: [[{ transform: 'scale(1)' }, { transform: 'scale(1.4)', offset: .35 }, { transform: 'scale(1)' }], 420],
+    pop: [[{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.3)', opacity: 1, offset: .6 }, { transform: 'scale(1)' }], 360],
+    fail: [[0, -3, 3, -2, 1, 0].map(x => ({ transform: `translateX(${x}px)` })), 380],
+    stop: [[{ transform: 'scale(.3) rotate(-90deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], 300],
+    in: [[{ transform: 'translateX(-6px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 260],
+    trash: [[0, -18, 10, -4, 0].map(r => ({ transform: `rotate(${r}deg)`, transformOrigin: '50% 85%' })), 460],
+    nope: [[0, -14, 12, -9, 6, 0].map((r, i, a) => ({ transform: `rotate(${r}deg)`, color: i && i < a.length - 1 ? red : c })), 560],
+  }[kind];
+  if (FX) ic.animate(FX[0], { duration: FX[1], easing: 'cubic-bezier(.2,.8,.2,1)' });
 }
 
 // ---- practice problems ----
@@ -491,7 +605,7 @@ function confirmRefill(fill, trigger) {
 // Start the file again from the problem, as an edit that Undo (or ⌘Z) takes back.
 function refill(fill) {
   const f = file(), x = findAnyProblem(f.src.p); if (!x || f.combined) return;
-  P.prev = { id: P.cur, code: f.code };
+  P.prev = { id: P.cur, code: f.code }; stepEnd();
   f.orig = importCode(x, fill, f.lang); f.src.fill = fill;
   resetting = true; ed.replace(f.orig); resetting = false;
   el.querySelector('.pgundo').hidden = false; save();
@@ -530,7 +644,7 @@ export function showPG(id) {
 // Close the view (the caller draws the next one). Runs still going are ignored; the workers stay ready.
 export function leavePG() {
   if (!st.pgView) return;
-  save(); clearTimeout(liveT); runId++;
+  save(); clearTimeout(liveT); runId++; S = null;
   st.pgView = false; el = ed = null; document.body.classList.remove('pgm'); pgb.setAttribute('aria-pressed', 'false');
 }
 

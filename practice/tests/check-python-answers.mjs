@@ -11,6 +11,9 @@ const TEXT_ONLY = {
   '61a-sp23-mt2/5 q26': ['yes + s for s in f(n, k) if not s or s[0] != no'],
   '61a-su23-midterm/3 q9': ['pow(10, i) * n % 10'],
   '61a-su23-midterm/3 q13': ['return digit_widget(4)(digit_widget(8)(n))'],
+  '61a-su26-midterm/3 q11': ['n > 0'],
+  '61a-su26-midterm/6 q35': ['return tree(label(t), new_branches), changed'],
+  '61a-su26-final/3 q19': ['lambda showtime: showtime.remaining_capacity'],
 };
 
 export async function pythonJobs(filter = '') {

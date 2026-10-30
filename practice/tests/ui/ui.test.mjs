@@ -94,7 +94,7 @@ test('switching to Final from the exam sidebar opens questions even when Final w
 test('the sidebar, notes, progress and scope labels follow the selected collection', async () => {
   await open(null, '?exam=midterm2');
   const exams = await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent)');
-  assert.equal(exams[0], 'Summer 2025 Midterm');
+  assert.equal(exams[0], 'Fall 2025 Midterm 2'); // exams with Prof. DeNero's picks come first, newest first
   assert.ok(!exams.includes('Fall 2026 Midterm 1'));
   // A partially included exam: says how much is shown, and out-of-scope parts are labeled for Midterm 2.
   const i = exams.indexOf('Spring 2024 Midterm 2'); await clickExam(i);
@@ -106,13 +106,14 @@ test('the sidebar, notes, progress and scope labels follow the selected collecti
   const fi = await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent).indexOf("Spring 2024 Midterm 2")');
   await clickExam(fi);
   assert.equal(await q('document.querySelector("#q-' + fi + '-19 .badge.oos")'), null);
-  // Recommended filter: Midterm 3 has staff picks; others explain there are none.
+  // Recommended filter: the final shows the midterms' staff picks.
   await q('(()=>{const s=document.querySelector("#flt");s.value="rec";s.onchange()})()');
-  assert.match(await q('[...document.querySelectorAll("#nav .fhint")].at(-1).textContent'), /haven’t published final exam question picks/);
+  assert.match(await q('[...document.querySelectorAll("#nav .fhint")].at(-1).textContent'), /Showing recommended questions/);
+  assert.ok(await q('document.querySelectorAll("#nav details").length') > 0);
   await pick('midterm3');
   assert.equal(await q('document.querySelector("#flt").value'), 'all', 'filters are per collection');
   await q('(()=>{const s=document.querySelector("#flt");s.value="rec";s.onchange()})()');
-  assert.ok(await q('document.querySelectorAll("#nav details").length') > 5);
+  assert.equal(await q('document.querySelectorAll("#nav details").length'), 4); // the exams with CSM picks
   // Midterm 3 notes are the original curation.
   await q('(()=>{const s=document.querySelector("#flt");s.value="all";s.onchange()})()');
   await clickExam(0);
@@ -282,9 +283,13 @@ test('Browse exams changes collections in place and preserves the surrounding pa
   await pick('final');
   assert.ok(await q(`Object.entries(homeBefore).every(([k,n])=>n===document.querySelector({page:'.home',paths:'.homepaths',browser:'#home-exams',study:'#study',footer:'.sitefooter'}[k]))`));
   assert.equal(await q('document.querySelector(".homeprogress").open'), true);
-  assert.ok(Math.abs((await q('document.querySelector("#home-exams").getBoundingClientRect().top'))-top)<2);
+  // Let any switch animations settle before measuring (under load the check could land mid-transition).
+  await q('Promise.all(document.getAnimations().filter(a=>a.effect?.getComputedTiming().endTime!==Infinity).map(a=>a.finished.catch(()=>{})))');
+  const after = await q('[document.querySelector("#home-exams").getBoundingClientRect().top, scrollY, document.documentElement.scrollHeight, innerHeight]');
+  assert.ok(Math.abs(after[0]-top)<2, `Browse exams moved from ${top} to ${after[0]} (scrollY, scrollHeight, innerHeight: ${after.slice(1)})`);
   assert.match(await q('document.querySelector(".homecounts").textContent'), /across Final/);
   assert.match(await q('document.querySelector(".homecoverage").textContent'), /Final/);
+  assert.match(await q('document.querySelector(".homeadvice").textContent'), /final practice problems/);
   assert.ok(await q('document.querySelectorAll(".homeexam").length')>0);
   assert.equal(await param(), 'final');
   await q('history.back()'); await page.waitFor('document.querySelector("#study").value==="midterm2"');

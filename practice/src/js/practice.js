@@ -158,7 +158,11 @@ export function render() {
   const key = st.cid + ':' + ex.id; if (key !== evEx) { evEx = key; ev('exam_open', { x: ex.id }); }
   const nt = document.createElement('div'); nt.className = 'note';
   const staff = st.view.scope.basis == 'staff';
-  nt.innerHTML = `<b>${esc(ex.t)}.</b> ${esc(ex.note)} ${ex.skip.length ? 'Staff say to skip: ' + ex.skip.map(x => '<span class="ref">' + esc(x) + '</span>').join(', ') + '.' : staff ? 'Nothing is flagged to skip.' : ''}${ex.partial ? ` Showing the ${ex.problems.length} of ${ex.total} problems that cover ${esc(ref())} material.` : ''}${ex.e.omitted?.length ? ` ${omittedText(ex.e.omitted)}` : ''} <span class="mut">${staff ? 'Out-of-scope questions don’t count toward your progress.' : `Questions marked out of scope cover topics that aren’t on ${esc(ref())}, so they don’t count toward your progress.`}</span>`;
+  // Every exam's blurb has the same shape: title and who wrote it; this collection's note, skips and coverage; then,
+  // after a blank line, how out-of-scope questions count.
+  const who = ex.e.src?.site || ex.e.src?.adapted ? 'Written by this site, not the course staff' : ex.e.by ? `Instructor${ex.e.by.length > 1 ? 's' : ''}: ${list(ex.e.by)}` : '';
+  const body = [esc(ex.note), ex.skip.length ? 'Staff say to skip: ' + ex.skip.map(x => '<span class="ref">' + esc(x) + '</span>').join(', ') + '.' : staff ? 'Nothing is flagged to skip.' : '', ex.partial ? `Showing the ${ex.problems.length} of ${ex.total} problems that cover ${esc(ref())} material.` : '', ex.e.omitted?.length ? omittedText(ex.e.omitted) : ''].filter(Boolean).join(' ');
+  nt.innerHTML = `<p class="nh"><b>${esc(ex.t)}</b>${who ? `<span class="by">${esc(who)}</span>` : ''}</p>${body ? `<p>${body}</p>` : ''}<p class="mut nsc">${staff ? 'Out-of-scope questions don’t count toward your progress.' : `Questions marked out of scope cover topics that aren’t on ${esc(ref())}, so they don’t count toward your progress.`}</p>`;
   m.append(nt);
   ex.problems.forEach((P, j) => {
     const selected = P.qs.filter(x => matchesTopic(cs().topic,P.p,x.q) && (!cs().topic || !x.oos) && (flt.value !== 'missed' || missedQuestion(st.S,x.qid)));
@@ -246,6 +250,7 @@ function renderHome() {
 <div class="homeresume" hidden></div>
 <section id="home-exams" aria-labelledby="home-exams-title" tabindex="-1"><div class="home-section-head"><h3 id="home-exams-title">Browse exams</h3><div class="home-study"><label for="study">Studying for</label></div></div>
 <p class="mut homecoverage" hidden></p>
+<p class="mut homeadvice" hidden></p>
 <div class="homefilters"></div><p class="homecounts"></p><div class="homeexamlist"></div></section>
 <details class="homeprogress"><summary>Progress across all study options</summary><ol class="cprogs">${rows}</ol></details>
 <p class="homeoff"><span class="offl" hidden></span></p></section>`;
@@ -264,6 +269,9 @@ export function refreshHomeCollection() {
   cs().ex = ''; st.save(); record();
   const coverage = home.querySelector('.homecoverage');
   coverage.textContent = st.view.coverage?.text || ''; coverage.hidden = !coverage.textContent;
+  // Course staff's practice advice for this exam (which past exams to prioritize, picks not on this site).
+  const advice = home.querySelector('.homeadvice');
+  advice.textContent = st.view.advice || ''; advice.hidden = !advice.textContent;
   const last = st.view.exams.findIndex(ex => ex.id === cs().last), X = st.S._pt, live = X && !X.done;
   const resume = home.querySelector('.homeresume'); resume.hidden = last < 0 && !live;
   resume.innerHTML = resume.hidden ? '' : `<span>Continue where you left off</span><div class="homebtns">${last >= 0 ? `<button type="button" data-act="last">Continue ${esc(st.view.exams[last].t)}</button>` : ''}${live ? `<button type="button" data-act="resume">Resume ${esc(st.views[X.c]?.label || '')} practice exam</button>` : ''}</div>`;

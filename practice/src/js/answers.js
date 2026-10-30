@@ -20,9 +20,16 @@ export function matchesAnswer(answer, expected, lang, runnable = false) {
 }
 export function restrictionError(q, p, answer) {
   const ts = tokens(answer, p.run?.lang === 'gleam' ? 'gleam' : q.sql ? 'sql' : 'py');
+  // Patterns test the answer's tokens joined by single spaces, e.g. "f ( x )"; `allow` lists every token permitted
+  // ('NAME' stands for any identifier); `forbidChars` lists characters that may not appear anywhere.
+  const flat = ts.join(' ');
   for (const rule of [...p.rules || [], ...q.rules || []]) {
     if (rule.forbid?.some(word => ts.includes(word))) return rule.message;
     if (rule.require && !rule.require.every(word => ts.includes(word))) return rule.message;
+    if (rule.forbidPattern && new RegExp(rule.forbidPattern).test(flat)) return rule.message;
+    if (rule.requirePattern && !new RegExp(rule.requirePattern).test(flat)) return rule.message;
+    if (rule.allow && !ts.every(t => rule.allow.includes(t) || rule.allow.includes('NAME') && /^[A-Za-z_]\w*$/.test(t))) return rule.message;
+    if (rule.forbidChars && [...rule.forbidChars].some(c => String(answer).includes(c))) return rule.message;
     if (rule.treeEquality) {
       const flat = ts.filter(t => t !== '(' && t !== ')').join(' ');
       if (/\bt[01] (?:==|!=) t[01]\b/.test(flat)) return rule.message;

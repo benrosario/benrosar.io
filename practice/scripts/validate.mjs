@@ -1,6 +1,7 @@
 // Content checks run by every build (and by the tests): references, ids, answer formats, scope and coverage.
 // Returns a list of error strings; an empty list means the bundle is valid.
 import { resolveCollection, timedPool, timedLengths, questionTopics, FORMAT_TAGS, QID } from '../src/js/model.js';
+import { restrictionError } from '../src/js/answers.js';
 
 const LANGS = new Set(['py', 'scm', 'sql', 'gleam']), KINDS = new Set(['mc', 'sata', 'blank']);
 export const KNOWN_TOPICS = new Set(['VARS_AND_FUNCTIONS', 'CONTROL', 'HIGHER_ORDER_FUNCTIONS', 'ENVIRONMENT_DIAGRAMS', 'LAMBDAS', 'RECURSION', 'TREE_RECURSION',
@@ -39,7 +40,8 @@ export function checkProblem(p, where, E) {
     if (b.hints && !(Array.isArray(b.hints) && b.hints.length >= 2 && b.hints.every(h => typeof h === 'string' && h.trim()))) E.push(`${w}: progressive hints need at least two nonempty strings`);
     if (b.code && !(Array.isArray(b.code) && b.code.every(id => id in (p.run?.b || {})))) E.push(`${w}: unknown whole-solution code blank`);
     if (b.sql && !(p.sql?.chunks?.[b.sql.chunk]?.f?.[b.sql.key] != null)) E.push(`${w}: unknown SQL query or blank`);
-    for (const rule of b.rules || []) if (!rule.message || !(rule.forbid?.length || rule.require?.length || rule.treeEquality)) E.push(`${w}: invalid problem restriction`);
+    for (const rule of b.k == 'blank' ? [...p.rules || [], ...b.rules || []] : []) if (!rule.message || !(rule.forbid?.length || rule.require?.length || rule.treeEquality || rule.forbidPattern || rule.requirePattern || rule.allow?.length || rule.forbidChars)) E.push(`${w}: invalid problem restriction`);
+    if (b.k == 'blank') for (const a of b.a || []) { const why = restrictionError(b, p, a); if (why) E.push(`${w}: the accepted answer ${JSON.stringify(a)} breaks its own restriction (${why})`); }
     if (b.r) {
       if (!p.run) E.push(`${w}: runs code but the problem has no run section`);
       else for (const id of b.r) {
@@ -64,6 +66,7 @@ export function validate(bank) {
     if(e.src?.site && !e.p.every(p=>p.authored)) E.push(`${e.id}: site-authored problems must be labeled`);
     if (e.src?.adapted) { if (!e.p.every(p => p.adapted)) E.push(`${e.id}: every problem in an adapted set must say what it was adapted from`); }
     else if (!e.src?.site && (!e.src?.exam || !e.src?.sol)) E.push(`${e.id}: missing source links`);
+    if (!e.src?.site && !e.src?.adapted && !e.by?.length) E.push(`${e.id}: no instructors (add its semester to content/instructors.json)`);
     const qids = new Set();
     for (const p of e.p) {
       if (p.id !== `${e.id}/${p.n}`) E.push(`${e.id}: problem id ${p.id} should be ${e.id}/${p.n}`);

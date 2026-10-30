@@ -9,7 +9,7 @@
  "scope": {
   "basis": "staff",
   "skipText": "Out of scope for Midterm 3 (staff say skip)",
-  "note": "Exams, skips and picks are the course staff’s Midterm 3 practice recommendations, kept as this site has always shown them."
+  "note": "Exams and skips follow the staff’s Midterm 3 index (Ed #1237): whole past Midterm 2 exams, skipping parts that mutate linked lists or trees, use repr, or use orders of growth. Staff named no Midterm 3 question picks; the CSM picks are kept from this site’s earlier data, but their source couldn’t be found on Ed."
  },
  "timed": {
   "pool": "modified",
@@ -46,15 +46,6 @@
     20
    ],
    "picks": {
-    "dn": [
-     10,
-     11,
-     13,
-     14,
-     15,
-     21,
-     22
-    ],
     "csm": [
      21,
      22
@@ -69,14 +60,6 @@
     ],
     "61a-sp23-mt2/3": [
      {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 3(a), except 3(a)(iii)"
-     },
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 3(b)"
-     },
-     {
       "k": "oos",
       "t": "Out of scope for Midterm 3 (staff say skip): part 3(a)(iii)"
      }
@@ -89,19 +72,15 @@
     ],
     "61a-sp23-mt2/5": [
      {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 5(a)"
-     },
-     {
       "k": "csm",
-      "t": "CSM tutors' review pick: part 5(a)"
+      "t": "CSM tutors' review pick (source not confirmed on Ed): part 5(a)"
      }
     ]
    }
   },
   {
    "exam": "61a-su23-final",
-   "note": "Course staff recommend this full exam as Midterm 3 practice.",
+   "note": "Listed by this site, not by staff: the staff’s Midterm 3 index recommends the summer midterms instead, which aren’t all on this site.",
    "skip": [],
    "oos": [],
    "picks": {
@@ -117,7 +96,7 @@
     "61a-su23-final/7": [
      {
       "k": "csm",
-      "t": "CSM tutors' review pick: part 7(a)"
+      "t": "CSM tutors' review pick (source not confirmed on Ed): part 7(a)"
      }
     ]
    }
@@ -134,13 +113,6 @@
     26
    ],
    "picks": {
-    "dn": [
-     13,
-     14,
-     15,
-     24,
-     25
-    ],
     "csm": [
      16,
      17,
@@ -157,19 +129,11 @@
     ],
     "61a-fa23-mt2/4": [
      {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 4(a)"
-     },
-     {
       "k": "csm",
-      "t": "CSM tutors' review pick: part 4(b)"
+      "t": "CSM tutors' review pick (source not confirmed on Ed): part 4(b)"
      }
     ],
     "61a-fa23-mt2/6": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 6(a–b)"
-     },
      {
       "k": "oos",
       "t": "Out of scope for Midterm 3 (staff say skip): part 6(c)"
@@ -192,17 +156,6 @@
     4,
     30
    ],
-   "picks": {
-    "dn": [
-     12,
-     13,
-     14,
-     15,
-     16,
-     17,
-     18
-    ]
-   },
    "tips": {
     "61a-sp24-mt2/1": [
      {
@@ -220,10 +173,6 @@
     ],
     "61a-sp24-mt2/4": [
      {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 4(a–b)"
-     },
-     {
       "k": "oos",
       "t": "Out of scope for Midterm 3 (staff say skip): part 4(e)(v)"
      }
@@ -232,21 +181,9 @@
   },
   {
    "exam": "61a-su24-final",
-   "note": "Course staff recommend this full exam as Midterm 3 practice.",
-   "skip": [
-    "7(e)"
-   ],
-   "oos": [
-    60
-   ],
-   "tips": {
-    "61a-su24-final/7": [
-     {
-      "k": "oos",
-      "t": "Out of scope for Midterm 3 (staff say skip): part 7(e)"
-     }
-    ]
-   }
+   "note": "Listed by this site, not by staff: the staff’s Midterm 3 index recommends the summer midterms instead, which aren’t all on this site.",
+   "skip": [],
+   "oos": []
   },
   {
    "exam": "61a-fa24-mt2",
@@ -264,26 +201,13 @@
      9,
      10,
      11
-    ],
-    "dn": [
-     12,
-     13,
-     14,
-     15,
-     24,
-     25,
-     26,
-     27,
-     28,
-     29,
-     30
     ]
    },
    "tips": {
     "61a-fa24-mt2/2": [
      {
       "k": "csm",
-      "t": "CSM tutors' review pick: this whole problem, except 2(c)"
+      "t": "CSM tutors' review pick (source not confirmed on Ed): this whole problem, except 2(c)"
      },
      {
       "k": "oos",
@@ -293,19 +217,7 @@
     "61a-fa24-mt2/3": [
      {
       "k": "csm",
-      "t": "CSM tutors' review pick: this whole problem"
-     }
-    ],
-    "61a-fa24-mt2/4": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 4(a)"
-     }
-    ],
-    "61a-fa24-mt2/5": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: this whole problem"
+      "t": "CSM tutors' review pick (source not confirmed on Ed): this whole problem"
      }
     ]
    }
@@ -319,35 +231,18 @@
    "oos": [
     7
    ],
-   "picks": {
-    "dn": [
-     22,
-     23,
-     24,
-     25,
-     26,
-     27,
-     28
-    ]
-   },
    "tips": {
     "61a-sp25-mt2/2": [
      {
       "k": "oos",
       "t": "Out of scope for Midterm 3 (staff say skip): part 2(c)"
      }
-    ],
-    "61a-sp25-mt2/5": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 5(a–c)"
-     }
     ]
    }
   },
   {
    "exam": "61a-su25-final",
-   "note": "Course staff recommend this full exam as Midterm 3 practice.",
+   "note": "Listed by this site, not by staff: the staff’s Midterm 3 index recommends the summer midterms instead, which aren’t all on this site.",
    "skip": [],
    "oos": [
     14
@@ -356,7 +251,7 @@
     "61a-su25-final/3": [
      {
       "k": "oos",
-      "t": "Out of scope for Midterm 3: orders of growth"
+      "t": "Out of scope for Midterm 3: part 3(g) uses orders of growth, which staff say is out of scope"
      }
     ]
    }
@@ -370,37 +265,11 @@
    "oos": [
     3
    ],
-   "picks": {
-    "dn": [
-     9,
-     30,
-     31,
-     32,
-     33,
-     34,
-     16,
-     17,
-     18,
-     19
-    ]
-   },
    "tips": {
     "61a-fa25-mt2/1": [
      {
       "k": "oos",
       "t": "Out of scope for Midterm 3 (staff say skip): part 1(c)"
-     }
-    ],
-    "61a-fa25-mt2/4": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 4(a–b)"
-     }
-    ],
-    "61a-fa25-mt2/6": [
-     {
-      "k": "dn",
-      "t": "Recommended by Prof. DeNero: part 6(a–b)"
      }
     ]
    }
@@ -443,6 +312,42 @@
      }
     ]
    }
+  },
+  {
+   "exam": "61a-su24-midterm",
+   "note": "Course staff recommend this full exam as Midterm 3 practice (Ed #1237).",
+   "skip": [
+    "7(e)"
+   ],
+   "oos": [
+    44
+   ],
+   "tips": {
+    "61a-su24-midterm/7": [
+     {
+      "k": "oos",
+      "t": "Out of scope for Midterm 3 (staff say skip): part 7(e)"
+     }
+    ]
+   }
+  },
+  {
+   "exam": "61a-su26-midterm",
+   "note": "Course staff recommend this full exam as Midterm 3 practice (Ed #1237). Staff say everything looks in scope.",
+   "skip": [],
+   "oos": []
+  },
+  {
+   "exam": "61a-su25-midterm",
+   "note": "Course staff recommend this full exam as Midterm 3 practice (Ed #1237). Staff say everything looks in scope.",
+   "skip": [],
+   "oos": []
+  },
+  {
+   "exam": "61a-su23-midterm",
+   "note": "Course staff recommend this full exam as Midterm 3 practice (Ed #1237). Staff say everything looks in scope.",
+   "skip": [],
+   "oos": []
   }
  ]
 }

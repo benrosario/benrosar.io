@@ -96,6 +96,64 @@ test('Python: stdin, tracebacks of the program\'s own lines, doctests, and Stop'
   assert.deepEqual(page.logs, []);
 });
 
+test('Python Debug: forward and back through the lines, the frames, return values, output so far, and back to editing', { skip: NOPY, timeout: 120000 }, async () => {
+  await fresh('?exam=final&view=play&f=scratch-py'); await inPlayground();
+  await type('def sq(x):\n    return x * x\n\nprint(sq(3))\ny = sq(4)\n');
+  await page.key('Enter', 'Enter', 13, CMD | 8); // ⌘⇧↵ / Ctrl+Shift+Enter
+  await until('!document.querySelector(".pgstep").hidden', 90000);
+  const at = () => q(`(()=>{const m=[...document.querySelectorAll(".edmk>div")].map(d=>d.hidden);return {n:document.querySelector(".pgsn").textContent,next:!m[1],prev:!m[0],
+    frames:[...document.querySelectorAll(".pgf h3")].map(h=>h.textContent),on:document.querySelector(".pgf.on")?.textContent,out:document.querySelector(".pgo").textContent,msg:document.querySelector(".pgmsg").textContent}})()`);
+  assert.equal(await q('document.querySelector(".edta").readOnly'), true);
+  assert.deepEqual(await at(), { n: 'Step 1 of 10', next: true, prev: false, frames: ['Global frame'], on: 'Global frameNo names yet', out: 'No output.', msg: '' });
+  for (let i = 0; i < 3; i++) await page.key('ArrowRight', 'ArrowRight', 39);
+  let s = await at(); assert.deepEqual([s.n, s.frames, s.on, s.prev], ['Step 4 of 10', ['Global frame', 'f1: sq'], 'f1: sqx3', true]);
+  await page.key('ArrowRight', 'ArrowRight', 39); s = await at();
+  assert.deepEqual([s.msg, s.on], ['sq returns 9', 'f1: sqx3Return value9']);
+  await page.key('ArrowRight', 'ArrowRight', 39); assert.equal((await at()).out, '9\n', 'the output printed by then');
+  await click('[data-s=back]'); assert.equal((await at()).out, 'No output.');
+  await click('[data-s=last]'); s = await at();
+  assert.deepEqual([s.n, s.next, s.frames, s.msg, s.out], ['Step 10 of 10', false, ['Global frame'], 'Finished', '9\n']);
+  assert.equal(await q('document.querySelector("[data-s=fwd]").disabled'), true);
+  // Typing doesn't change the code while debugging; Escape stops debugging.
+  await q('document.querySelector(".edta").focus()'); await page.key('a', 'KeyA', 65);
+  assert.match(await msg(), /Press Stop debug/); assert.equal(await code(), 'def sq(x):\n    return x * x\n\nprint(sq(3))\ny = sq(4)\n');
+  await page.key('Escape', 'Escape', 27);
+  assert.deepEqual(await q('[document.querySelector(".pgstep").hidden, document.querySelector(".pgfr").hidden, document.querySelector(".edta").readOnly, [...document.querySelectorAll(".edmk>div")].every(d => d.hidden)]'), [true, true, false, true]);
+  assert.equal(await out(), '9\n');
+  assert.deepEqual(page.logs, []);
+});
+
+test('Gleam Debug: frames for each call with their return values, the output tabs hidden meanwhile, and back to running as you type', async () => {
+  await fresh('?exam=final&view=play&f=scratch-gleam'); await inPlayground(); await msgIs('/Finished/', 60000);
+  await click('[data-act=debug]'); await until('!document.querySelector(".pgstep").hidden', 60000);
+  // Debug becomes Stop debug, and the line arrow sits clear of the line numbers.
+  assert.equal(await q('document.querySelector("[data-act=debug]").textContent'), 'Stop debug');
+  assert.ok(await q(`parseFloat(getComputedStyle(document.querySelector(".ednext"), "::before").left) >= document.querySelector(".edln").offsetWidth`));
+  const at = () => q(`({n:document.querySelector(".pgsn").textContent,msg:document.querySelector(".pgmsg").textContent,tabs:document.querySelector(".pgtabs").hidden,
+    frames:[...document.querySelectorAll(".pgf h3")].map(h=>h.textContent),on:document.querySelector(".pgf.on")?.innerText.replace(/\\s+/g," "),out:document.querySelector(".pgo").textContent})`);
+  assert.deepEqual(await at(), { n: 'Step 1 of 48', msg: 'Calling main', tabs: true, frames: ['f1: main'], on: 'f1: main No names yet', out: 'No output.' });
+  for (let i = 0; i < 5; i++) await click('[data-s=fwd]'); // main, its line, pow, the case line, the recursive line, pow again
+  assert.deepEqual((await at()).frames, ['f1: main', 'f2: pow', 'f3: pow']);
+  await click('[data-s=last]'); let s = await at();
+  assert.deepEqual([s.msg, s.frames, s.out], ['Finished', [], '2 to the 10 is 1024\n']);
+  await click('[data-s=back]'); await click('[data-s=back]'); s = await at();
+  assert.deepEqual([s.msg, s.on], ['pow returns 1024', 'f2: pow base 2 exp 10 Return value 1024']);
+  await click('[data-act=debug]'); assert.equal(await q('document.querySelector(".pgtabs").hidden'), false);
+  assert.equal(await q('document.querySelector("[data-act=debug]").textContent'), 'Debug');
+  await type('import gleam/io\npub fn main() {\n  io.println("again")\n}\n'); await until('document.querySelector(".pgo").textContent === "again\\n"');
+  assert.deepEqual(page.logs, []);
+});
+
+test('removing the playground being debugged ends debugging and opens another one', async () => {
+  await fresh('?exam=final&view=play&f=scratch-gleam'); await inPlayground(); await msgIs('/Finished/', 60000);
+  await click('[data-act=debug]'); await until('!document.querySelector(".pgstep").hidden', 60000);
+  await click('[data-act=recent]');
+  // Remove asks to confirm: the second click removes it.
+  for (let i = 0; i < 2; i++) await q('document.querySelector(".pgrx[data-id=scratch-gleam]")?.click()');
+  assert.deepEqual(await q('[document.querySelector(".pgstep").hidden, document.querySelector(".edta").readOnly, document.querySelector("[data-act=debug]").textContent]'), [true, false, 'Debug']);
+  assert.deepEqual(page.logs, []);
+});
+
 test('the editor indents, outdents, comments and keeps Tab for leaving it', async () => {
   await fresh('?exam=final&view=play&f=scratch-gleam'); await inPlayground();
   const keys = async (...ks) => { for (const k of ks) await page.key(...k); };

@@ -6,6 +6,7 @@
   "text": "Fall 2026 Midterm 2 (computer-based, week of 10/5, one-hour slot, 20 points; retakes 10/19–10/20 and 11/5–11/6) covers content through Lecture 14: Linked Lists.",
   "url": "https://cs61a.org/fa26/"
  },
+ "advice": "Prof. DeNero’s suggested practice (Ed): start with the PrairieLearn practice exam, then his past-exam picks, marked ★ here. You don’t need to do all of them. His picks from exams not on this site: Fall 2022 Q5(a); Fall 2021 Q2(b) and Q4(b)–(c); Fall 2020 Q2(b); Fall 2019 Q4 and Q6; Fall 2018 Q2 and Q4(a)–(b); Fall 2017 Q3(a)–(c) and Q4(a), (c); Fall 2015 Q3(e) (challenge); Fall 2014 Q3(a)–(b).",
  "scope": {
   "basis": "topics",
   "topics": [
@@ -23,7 +24,6 @@
   ],
   "note": "Problems are included when every topic the course staff tagged them with is covered by Midterm 2 (through linked lists; trees, mutation and classes come later). That classification is this site’s, not a staff recommendation. Midterm 1 topics are fair game too; switch to Midterm 1 for those exams."
  },
- "noPicks": "Course staff haven’t published Midterm 2 question picks, so nothing is marked recommended. The staff practice midterm is on PrairieLearn.",
  "timed": {
   "pool": "source",
   "lengths": [
@@ -76,24 +76,8 @@
  },
  "exams": [
   {
-   "exam": "61a-su25-midterm",
-   "note": "A summer midterm that covered recursion, tree recursion and sequences.",
-   "drop": [
-    10,
-    13
-   ],
-   "dropWhy": {
-    "10": "Uses list mutation (insert or extend), which is taught after Midterm 2",
-    "13": "Uses dictionary assignment, which is taught after Midterm 2"
-   }
-  },
-  {
-   "exam": "61a-su23-midterm",
-   "note": "A summer midterm that covered recursion and tree recursion."
-  },
-  {
    "exam": "61a-fa25-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "note": "Prof. DeNero recommends 4(a)–(b) and 6(a)–(b) for Midterm 2 (marked ★).",
    "drop": [
     20,
     21,
@@ -107,19 +91,103 @@
     "22": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
     "23": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
     "29": "Uses generators (yield), which are taught after Midterm 2"
+   },
+   "picks": {
+    "dn": [
+     9,
+     30,
+     31,
+     32,
+     33,
+     34,
+     16,
+     17,
+     18,
+     19
+    ]
+   },
+   "tips": {
+    "61a-fa25-mt2/4": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 4(a): filtering with a list comprehension"
+     },
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 4(b): removing a value from a linked list"
+     }
+    ],
+    "61a-fa25-mt2/6": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: parts 6(a)–(b): dictionary lookups and string loops"
+     }
+    ]
    }
   },
   {
    "exam": "61a-sp25-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+   "note": "Prof. DeNero recommends 5(a)–(c) for Midterm 2 (marked ★).",
+   "picks": {
+    "dn": [
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28
+    ]
+   },
+   "tips": {
+    "61a-sp25-mt2/5": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 5(a): alternating * and + in a linked list"
+     },
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: parts 5(b)–(c): counting and searching + and * expressions (recursion)"
+     }
+    ]
+   }
   },
   {
    "exam": "61a-fa24-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+   "note": "Prof. DeNero recommends 4(a) and 5 for Midterm 2 (marked ★).",
+   "picks": {
+    "dn": [
+     12,
+     13,
+     14,
+     15,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30
+    ]
+   },
+   "tips": {
+    "61a-fa24-mt2/4": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 4(a): tree recursion over divisors"
+     }
+    ],
+    "61a-fa24-mt2/5": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: this whole problem: longest linked sublist under a sum limit"
+     }
+    ]
+   }
   },
   {
    "exam": "61a-sp24-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "note": "Prof. DeNero recommends 4(a)–(b) for Midterm 2 (marked ★).",
    "drop": [
     5,
     6,
@@ -137,11 +205,30 @@
     "20": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
     "21": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
     "22": "Uses list mutation (append, pop or remove), which is taught after Midterm 2"
+   },
+   "picks": {
+    "dn": [
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ]
+   },
+   "tips": {
+    "61a-sp24-mt2/4": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: parts 4(a)–(b): consecutive integers in lists"
+     }
+    ]
    }
   },
   {
    "exam": "61a-fa23-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
+   "note": "Prof. DeNero recommends 4(a) and 6(a)–(b) for Midterm 2 (marked ★).",
    "drop": [
     5,
     6
@@ -149,15 +236,92 @@
    "dropWhy": {
     "5": "Uses list mutation (append, pop or remove), which is taught after Midterm 2",
     "6": "Uses list mutation (append, pop or remove), which is taught after Midterm 2"
+   },
+   "picks": {
+    "dn": [
+     13,
+     14,
+     15,
+     24,
+     25
+    ]
+   },
+   "tips": {
+    "61a-fa23-mt2/4": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 4(a): sums of perfect squares (recursion)"
+     }
+    ],
+    "61a-fa23-mt2/6": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: parts 6(a)–(b): finding one value after another in a linked list"
+     }
+    ]
    }
   },
   {
    "exam": "61a-sp23-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+   "note": "Prof. DeNero recommends 3(a)–(b) and 5(a) for Midterm 2 (marked ★).",
+   "picks": {
+    "dn": [
+     10,
+     11,
+     13,
+     14,
+     15,
+     21,
+     22
+    ]
+   },
+   "tips": {
+    "61a-sp23-mt2/3": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 3(a): prefix sums with slicing. This site leaves out 3(a)(iii), which uses orders of growth; staff said that’s out of scope for Midterm 2."
+     },
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 3(b): prefix sums that are multiples of 10 (linked lists)"
+     }
+    ],
+    "61a-sp23-mt2/5": [
+     {
+      "k": "dn",
+      "t": "Recommended by Prof. DeNero for Midterm 2: part 5(a): counting parking arrangements (recursion)"
+     }
+    ]
+   }
+  },
+  {
+   "exam": "61a-su25-midterm",
+   "drop": [
+    10,
+    13
+   ],
+   "dropWhy": {
+    "10": "Uses list mutation (insert or extend), which is taught after Midterm 2",
+    "13": "Uses dictionary assignment, which is taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-su23-midterm",
+   "drop": [
+    58
+   ],
+   "dropWhy": {
+    "58": "Builds a tree, and trees are taught after Midterm 2"
+   }
+  },
+  {
+   "exam": "61a-su26-midterm"
+  },
+  {
+   "exam": "61a-su24-midterm"
   },
   {
    "exam": "61a-sp26-mt2",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
    "drop": [
     8,
     9,
@@ -175,7 +339,6 @@
   },
   {
    "exam": "61a-su25-final",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
    "drop": [
     25,
     26,
@@ -200,12 +363,13 @@
    }
   },
   {
-   "exam": "61a-su24-final",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown."
+   "exam": "61a-su26-final"
+  },
+  {
+   "exam": "61a-su24-final"
   },
   {
    "exam": "61a-su23-final",
-   "note": "From a later exam: only the problems that cover Midterm 2 material are shown.",
    "drop": [
     1,
     15,

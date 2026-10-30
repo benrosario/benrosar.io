@@ -1,8 +1,68 @@
-// Summer 2025 Midterm (the summer term's only midterm), problems 2-4, transcribed from the official exam and solutions.
-// The staff topic index lists this exam as "su25-mt2". Problems 1 and 5 aren't imported (see `omitted`).
+// Summer 2025 Midterm (the summer term's only midterm), transcribed from the official exam and solutions.
+// The staff topic index lists this exam as "su25-mt2". Problem 6 (Just for Fun, 0 points) isn't included.
+// Problems 1 and 5 were added later, so their question ids (28 on) come after problems 2-4's.
 import { exam, problem, text, py, blank, mc, sata, h } from '../author.mjs';
+import { TREE_ADT } from '../trees.mjs';
+
+const IS_ANCESTOR = `
+def is_ancestor(t, d):
+    \"\"\"
+    Return True if t is an ancestor with respect to a depth d, False otherwise.
+    >>> t1 = tree(2, [tree(1)])
+    >>> print_tree(t1)
+    2
+        1
+    >>> is_ancestor(t1, 0)
+    True
+    >>> is_ancestor(t1, 1)         # 2 -> 1: strictly decreasing
+    True
+    >>> t2 = tree(4, [t1, tree(3, [tree(5), tree(3)])])
+    >>> print_tree(t2)
+    4
+        2
+            1
+        3
+            5
+            3
+    >>> is_ancestor(t2, 0)
+    True     # 4
+    >>> is_ancestor(t2, 1)    # 4 -> 2 and 4 -> 3 are both strictly decreasing
+    True
+    >>> is_ancestor(t2, 2)    # 4 -> 3 -> 5 and 4 -> 3 -> 3 are not strictly decreasing
+    False
+    \"\"\"
+    if ⟪e⟫:
+        return True
+    for b in branches(t):
+        if ⟪f⟫ ⟪g⟫ ⟪h⟫:
+            return ⟪i⟫
+    return ⟪j⟫`;
 
 const e = exam('61a-su25-midterm', 'Summer 2025 Midterm', 'su25/mt1/61a-su25-midterm', 'su25-mt2', [
+  problem('1', 'What Would Python Display? (5.0 pts)', [{ n: '1', t: ['LISTS', 'MUTABILITY', 'WWPD'] }], [
+    py(`
+a = [[13], 8]
+b = a + [[2]]
+b[1] -= 2
+a[1] -= b[1]
+
+print(a)
+
+a[0] += [7]
+b[b[2][0]] += [a.pop(1)]
+
+print(b)
+
+c = b[-1]
+c.append(a[0])
+c.append(b[0].extend([c[0]]))
+
+print(c)`, null, { ln: true }),
+    text('Assume the expressions are evaluated in order in the same interactive session, and so evaluating an earlier expression may affect the result of a later one. Hint: Draw it out!'),
+    blank(28, '(a) What is displayed by the call to print in line 6?', '[[13], 2]'),
+    mc(29, '(b) What is displayed by the call to print in line 11?', ['[[13], 2, [2]]', '[[13, 7], 6, [2, 2]]', '[[13], 6, [2]]', '[[13, 7], 2, [2]]', '[[13, 7], 6, [4]]', '[[13, 7], 6, [2, [2]]]', '[[13], 6, [2, 2]]'], 1),
+    mc(30, '(c) What is displayed by the call to print in line 17?', ['[2, 2, [13, 7], None]', '[2, 2, [13], [2, 2]]', '[2, 2, [13, 2], [13]]', '[2, 2, [13], 2]', '[2, 2, [13, 7, 2], None]', '[2, 2, [13, 7, 2], [None]]'], 4),
+  ]),
   problem('2', 'Surf’s Up! (10.0 pts)', [{ n: '2', t: ['ENVIRONMENT_DIAGRAMS', 'HIGHER_ORDER_FUNCTIONS', 'LAMBDAS'] }], [
     text('Answer the questions about the code below. Use scratch paper to draw the diagram to help you answer the questions; drawn diagrams are not graded.'),
     py(`
@@ -189,6 +249,50 @@ def valid_subseq(n):
     mc(26, 'vii. Fill in blank (k).', ['n', 'num', 'rest', 'num // 10'], 1),
     blank(27, 'viii. Fill in blank (l).', 'rest // 10', { r: 'l' }),
   ], { run: true }),
+  problem('5', 'Family Trees (15.0 pts)', [{ n: '5a', t: ['TREES'] }, { n: '5b', t: ['TREES'] }], [
+    h('(a) (7.0 points)'),
+    text('Implement descendants, which takes in a tree t and depth d, and returns a list of labels for all children at least depth d away from the root.'),
+    py(`
+def descendants(t, d):
+    \"\"\"Return a list of all labels of descendants at least d levels away from the root node.
+    >>> t1 = tree(1, [tree(2, [tree(3), tree(4)]), tree(5, [tree(6), tree(7)])])
+    >>> print(t1)
+    1
+        2
+            3
+            4
+        5
+            6
+            7
+    >>> descendants(t1, 1)
+    [2, 3, 4, 5, 6, 7]
+    >>> descendants(t1, 2)
+    [3, 4, 6, 7]
+    >>> descendants(t1, 3)
+    []
+    \"\"\"
+    lst = []
+    if ⟪a⟫:
+        ⟪b⟫
+    for b in branches(t):
+        lst = ⟪c⟫
+    return ⟪d⟫`, { a: 'd <= 0', b: 'lst.extend([label(t)])', c: 'lst + descendants(b, d-1)', d: 'lst' }),
+    mc(31, 'i. Fill in blank (a).', ['d == 0', 'd >= 0', 'd < 0', 'd <= 0'], 3),
+    sata(32, 'ii. Fill in blank (b). Select all that apply.', ['lst + label(t)', 'lst.append(t)', 'lst += [t]', 'lst.extend([label(t)])'], [3]),
+    blank(33, 'iii. Fill in blank (c).', 'lst + descendants(b, d-1)', { r: 'c' }),
+    blank(34, 'iv. Fill in blank (d).', 'lst', { r: 'd' }),
+    h('(b) (8.0 points)'),
+    text('Definition. A tree is an ancestor if all paths from the root node to a depth d have strictly decreasing labels.', 'Implement is_ancestor, which takes in a tree t and a depth d and returns True if the tree is an ancestor, False otherwise.'),
+    py(IS_ANCESTOR, { e: 'd == 0', f: 'label(b) >= label(t)', g: 'or', h: 'not is_ancestor(b, d-1)', i: 'False', j: 'True' }, {
+      // The exam's "True     # 4" isn't valid doctest output; checking uses plain "True".
+      runCode: IS_ANCESTOR.replace(/^\n/, '').replace('True     # 4', 'True') }),
+    mc(35, 'i. Fill in blank (e).', ['d == 0', 'd < 0', 'd == 1', 'd >= 0'], 0),
+    blank(36, 'ii. Fill in blank (f). You may not use and, or, or not.', 'label(b) >= label(t)', { r: 'f' }),
+    mc(37, 'iii. Fill in blank (g).', ['and', 'or', 'not', '=='], 1),
+    blank(38, 'iv. Fill in blank (h).', 'not is_ancestor(b, d-1)', { r: 'h' }),
+    mc(39, 'v. Fill in blank (i).', ['not b', 'True', 'is_ancestor(b, d-1)', 'False'], 3),
+    blank(40, 'vi. Fill in blank (j).', 'True', { r: 'j' }),
+  ], { run: true, support: [TREE_ADT] }),
 ]);
-e.omitted = [{ n: '1', why: 'a what-would-Python-display question about list mutation' }, { n: '5', why: 'a trees problem' }];
+
 export default e;

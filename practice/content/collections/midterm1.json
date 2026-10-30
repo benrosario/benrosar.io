@@ -6,6 +6,7 @@
   "text": "Fall 2026 Midterm 1 (Mon 9/14, 8–9pm, 20 points, paper) covered lectures 1–6 and textbook sections 1.1–1.6, not including the Newton’s Method example.",
   "url": "https://cs61a.org/fa26/"
  },
+ "advice": "Course staff advice (Ed): work through at least 3–4 past Midterm 1 exams, favoring recent ones from Prof. DeNero’s semesters (Fall 2025, Spring 2025 and Fall 2024 here). The summer exams weren’t written by him, and TAs warn many of their questions are out of scope. Prof. Ousterhout’s review lecture covered most of Fall 2022 Midterm 1 (not on this site); practice with the Midterm 1 study guide beside you.",
  "scope": {
   "basis": "topics",
   "topics": [
@@ -17,7 +18,7 @@
   ],
   "note": "Problems are included when every topic the course staff tagged them with is on Midterm 1. That classification is this site’s, not a staff recommendation."
  },
- "noPicks": "Course staff haven’t published Midterm 1 question picks, so nothing is marked recommended. The Fall 2026 Midterm 1 itself is the closest practice.",
+ "noPicks": "Course staff haven’t named specific Midterm 1 questions, so nothing is marked recommended. They suggest 3–4 recent past exams, starting with Prof. DeNero’s semesters.",
  "timed": {
   "pool": "source",
   "lengths": [
@@ -61,23 +62,23 @@
  "exams": [
   {
    "exam": "61a-fa26-mt1",
-   "note": "This semester’s Midterm 1 itself (Mon 9/14/2026)."
+   "note": "This semester’s Midterm 1 (Mon 9/14/2026)."
   },
   {
    "exam": "61a-fa25-mt1",
-   "note": "A past Midterm 1 from the same instructors."
+   "note": "TAs say to prioritize recent exams from Prof. DeNero’s semesters, like this one."
   },
   {
    "exam": "61a-sp25-mt1",
-   "note": "A past Midterm 1."
+   "note": "TAs say to prioritize recent exams from Prof. DeNero’s semesters, like this one."
   },
   {
    "exam": "61a-fa24-mt1",
-   "note": "A past Midterm 1."
+   "note": "TAs say to prioritize recent exams from Prof. DeNero’s semesters, like this one."
   },
   {
    "exam": "61a-su25-midterm",
-   "note": "From a summer midterm: only the problems that cover Midterm 1 material are shown.",
+   "note": "TAs say summer exams may be less representative: Prof. DeNero didn’t write them, and many of their questions are out of scope.",
    "drop": [
     6,
     7,
@@ -97,19 +98,16 @@
   },
   {
    "exam": "61a-su23-midterm",
-   "note": "From a summer midterm: only the problems that cover Midterm 1 material are shown."
+   "note": "TAs say summer exams may be less representative: Prof. DeNero didn’t write them, and many of their questions are out of scope."
   },
   {
-   "exam": "61a-su24-final",
-   "note": "From a final exam: only the problems that cover Midterm 1 material are shown."
+   "exam": "61a-su24-final"
   },
   {
-   "exam": "61a-fa24-mt2",
-   "note": "From a later midterm: only the problems that cover Midterm 1 material are shown."
+   "exam": "61a-fa24-mt2"
   },
   {
-   "exam": "61a-sp26-mt2",
-   "note": "From a later midterm: only the problems that cover Midterm 1 material are shown."
+   "exam": "61a-sp26-mt2"
   }
  ]
 }

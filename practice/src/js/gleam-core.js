@@ -19,7 +19,7 @@ export function runTests(mod, inspect = String) {
   for (const k of names) { try { mod[k](); } catch (e) { fails.push(describe(k, e, inspect)); } }
   return { ok: names.length > 0 && !fails.length, n: names.length, failed: fails.length, err: fails.join('\n\n') };
 }
-function describe(k, e, inspect) {
+export function describe(k, e, inspect) {
   const name = k.replace(/_test$/, ''), show = v => { try { return inspect(v); } catch (_) { return String(v); } };
   if (e?.gleam_error === 'assert') {
     let s = `${name}: ${e.message || 'Assertion failed.'}`;
@@ -31,11 +31,11 @@ function describe(k, e, inspect) {
   return `${name}: ${e?.name || 'Error'}: ${e?.message || e}`;
 }
 
-// Run a compiled module's `main`. Returns {ok, out, err}; emit is as for capture.
-export function runMain(mod, inspect = String, emit) {
+// Run a compiled module's `main`. Returns {ok, out, err}; emit and track are as for capture.
+export function runMain(mod, inspect = String, emit, track) {
   if (typeof mod.main != 'function') return { ok: false, out: [], err: 'There’s no `pub fn main()` to run. Add one, or run the tests.' };
   let err = '';
-  const out = capture(() => { try { mod.main(); } catch (e) { err = describe('main', e, inspect) + where(e); } }, emit);
+  const out = capture(() => { try { mod.main(); } catch (e) { err = describe('main', e, inspect) + where(e); } }, emit, track);
   return { ok: !err, out, err };
 }
 const where = e => e?.gleam_error && e.line ? ` (src/${e.module}.gleam, line ${e.line})` : '';
@@ -44,8 +44,9 @@ const ANSI = /\x1b\[[0-9;]*m/g;
 // Run fn and collect what it prints (see output.js). The standard library's io.print and `echo` write through
 // `process.stdout` / `process.stderr` when they exist, so a stand-in `process` gives a browser the same output as a
 // terminal: no forced newlines, and echo / println_error on stderr.
-export function capture(fn, emit) {
-  const { out, write } = collector(emit), C = console, P = globalThis.process;
+// track(collector), if given, gets the collector before fn runs (stepping reads its size).
+export function capture(fn, emit, track) {
+  const col = collector(emit), { out, write } = col, C = console, P = globalThis.process; track?.(col);
   const saved = { log: C.log, info: C.info, debug: C.debug, error: C.error, warn: C.warn }, writes = P && { out: P.stdout?.write, err: P.stderr?.write };
   const put = s => t => { write(s, String(t).replace(ANSI, '')); return true; };
   const line = s => (...a) => put(s)(a.map(String).join(' ') + '\n');

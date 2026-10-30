@@ -1,0 +1,21 @@
+{
+ "note": "Instructors for each semester's exams, by surname as the course's past-exam archive lists them. Fall 2026 is from the EECS course page.",
+ "sources": [
+  "https://website.cs61a.org/resources/",
+  "https://www2.eecs.berkeley.edu/Courses/CS61A/"
+ ],
+ "semesters": {
+  "sp23": ["DeNero", "Farid"],
+  "su23": ["Schwartz", "Haq"],
+  "fa23": ["DeNero", "Rao"],
+  "sp24": ["DeNero"],
+  "su24": ["Qi"],
+  "fa24": ["DeNero"],
+  "sp25": ["DeNero"],
+  "su25": ["Qi"],
+  "fa25": ["DeNero"],
+  "sp26": ["Garcia", "Sabin"],
+  "su26": ["Dang"],
+  "fa26": ["DeNero", "Ousterhout"]
+ }
+}
