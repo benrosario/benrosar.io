@@ -1,6 +1,6 @@
 // A small code editor for the playground: a textarea over a highlighted copy of its text (highlight.js), with line
 // numbers. The textarea does the typing, selection and scrolling; the copy behind it scrolls with it.
-// Keys: Tab and Shift+Tab indent and outdent (after Escape, Tab moves focus on instead), Enter keeps the line's indent
+// Keys: Tab and Shift+Tab indent and outdent (after Escape, they move focus on or back instead), Enter keeps the line's indent
 // (one more after `:` or an opening bracket), Backspace in leading spaces removes one indent, a closing bracket on an
 // empty line outdents it, ⌘/ or Ctrl+/ comments lines in or out, ⌘↵ or Ctrl+Enter runs.
 // Edits made by these keys go through insertText, so the browser's own undo and redo still work.
@@ -54,6 +54,7 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
     const v = ta.value, s = ta.selectionStart, end = ta.selectionEnd, mod = e.metaKey || e.ctrlKey;
     const lineStart = v.lastIndexOf('\n', s - 1) + 1, before = v.slice(lineStart, s);
     if (e.key === 'Escape') { escaped = true; return; }
+    if (['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return; // pressing Shift for Shift+Tab keeps the Escape
     const wasEscaped = escaped; escaped = false;
     if (e.key === 'Enter' && mod) { e.preventDefault(); onRun?.(); return; }
     if (e.key === '/' && mod) { e.preventDefault(); comment(); return; }

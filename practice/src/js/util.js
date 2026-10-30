@@ -23,17 +23,25 @@ export const fmtMin = (n, short) => { const h = Math.floor(n / 60), m = n % 60;
   if (short) return [h ? h + ' h' : '', m ? m + ' min' : ''].filter(Boolean).join(' ');
   return [h ? h + (h > 1 ? ' hours' : ' hour') : '', m ? m + ' minutes' : ''].filter(Boolean).join(' '); };
 export const fmtClock = n => fmtT(n * 6e4);
-export const AI_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>';
+export const AI_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>';
+// Icons for a question's Check, Hint, Show answer and Reset buttons (swapLabel keeps them when the label changes).
+const icon = d => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+export const ICON = {
+  check: icon('M20 6 9 17l-5-5'),
+  hint: icon('M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4'),
+  answer: icon('M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8'),
+  reset: icon('M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2M10 11v6M14 11v6'),
+};
 
 // Measure the current on-screen width first (mid-animation included), then apply the change, then animate.
 // Sizes are read from computed style (CSS px), not getBoundingClientRect, so they stay right when the question area is zoomed.
 export function swapLabel(btn, text, change) {
-  const cssW = () => parseFloat(getComputedStyle(btn).width), w0 = cssW(); btn.getAnimations().forEach(a => a.cancel());
-  change && change(); btn.innerHTML = `<span class="lbl">${esc(text)}</span>`;
+  const cssW = () => parseFloat(getComputedStyle(btn).width), w0 = cssW(), ic = btn.querySelector(':scope>svg'); btn.getAnimations().forEach(a => a.cancel());
+  change && change(); btn.innerHTML = `<span class="lbl">${esc(text)}</span>`; if (ic) btn.prepend(ic);
   if (reduced() || !btn.animate) return;
   const w1 = cssW();
   if (Math.abs(w1 - w0) > .5) btn.animate([{ width: w0 + 'px' }, { width: w1 + 'px' }], { duration: 300, easing: 'cubic-bezier(.25,.8,.25,1)' });
-  btn.firstChild.animate([{ opacity: .35 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+  btn.lastChild.animate([{ opacity: .35 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
 }
 // Open or close a block by animating its height (plus padding, margin and borders) so content below moves smoothly.
 export function slide(el, open) {
@@ -74,6 +82,7 @@ export async function copyText(t) {
 }
 // Wire an "Ask AI why" button: copy the prompt, then show "Copied" for a moment.
 export function wireAI(btn, prompt) {
-  btn.onclick = async () => { const t = prompt(); if (!t) return; const ok = await copyText(t); const lb = btn.querySelector('span');
-    lb.textContent = ok ? 'Copied! Paste into an AI chat' : 'Couldn’t copy'; btn.classList.toggle('copied', ok); setTimeout(() => { lb.textContent = 'Ask AI why'; btn.classList.remove('copied'); }, 2500); };
+  let back; btn.onclick = async () => { const t = prompt(); if (!t) return; const ok = await copyText(t); clearTimeout(back);
+    swapLabel(btn, ok ? 'Copied! Paste into an AI chat' : 'Couldn’t copy', () => btn.classList.toggle('copied', ok));
+    back = setTimeout(() => swapLabel(btn, 'Ask AI why', () => btn.classList.remove('copied')), 2500); };
 }

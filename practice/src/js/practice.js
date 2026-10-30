@@ -1,6 +1,6 @@
 // The practice view: sidebar of source exams in the selected collection, the selected exam's problems, and progress.
 import { st, cs } from './state.js';
-import { $, esc, SV, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, wireAI } from './util.js';
+import { $, esc, SV, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, ICON, wireAI } from './util.js';
 import { segHTML, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, GV, howChecked, runs, loadingText, canCheckSolution, gradeSolution, solutionQuestions, warmFor } from './grading.js';
 import { aiPrompt } from './ai.js';
@@ -244,7 +244,7 @@ function card(x, P, ex) {
   let h = `<div class="qh"><div class="tag">${KIND[q.k]}${badges.join('')}</div><span class="fb" role="status" aria-live="polite"></span></div><div class="ql">${segHTML(q.l)}</div>`;
   if (q.k == 'blank') h += `<textarea rows="${q.r ? q.r.length : 1}" spellcheck="false" placeholder="Your answer…" aria-label="Your answer"></textarea>`;
   else q.o.forEach((o, i) => h += `<label class="o"><input type="${q.k == 'mc' ? 'radio' : 'checkbox'}" name="${esc(id)}" value="${i}"><span>${esc(o)}</span></label>`);
-  h += `<div class="row"><button class="p ck" data-tip="${esc(howChecked(q, p))}">Check</button><button class="hint" type="button" aria-expanded="false">Hint</button><button class="sh">Show answer</button><button class="ai" hidden data-tip="Copies a prompt about your mistake. Paste it into ChatGPT, Claude, or any AI chat.">${AI_ICON}<span>Ask AI why</span></button><button class="rst" data-tip="${esc('Clear your answer to this question' + (also.length ? `. It also counts toward ${list(also)}, so it clears there too.` : ''))}">Reset</button></div><div class="hints" hidden aria-live="polite"></div><div class="out" hidden></div><div class="ans" hidden></div>`;
+  h += `<div class="row"><button class="p ck ib" data-tip="${esc(howChecked(q, p))}">${ICON.check}Check</button><button class="hint ib" type="button" aria-expanded="false">${ICON.hint}Hint</button><button class="sh ib">${ICON.answer}Show answer</button><button class="ai" hidden data-tip="Copies a prompt about your mistake. Paste it into ChatGPT, Claude, or any AI chat.">${AI_ICON}<span>Ask AI why</span></button><button class="rst ib" data-tip="${esc('Clear your answer to this question' + (also.length ? `. It also counts toward ${list(also)}, so it clears there too.` : ''))}">${ICON.reset}Reset</button></div><div class="hints" hidden aria-live="polite"></div><div class="out" hidden></div><div class="ans" hidden></div>`;
   c.innerHTML = h; wireFills(c);
   const ta = c.querySelector('textarea'), grow = () => { if (!ta) return; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 2 + 'px'; }, ins = [...c.querySelectorAll('input')], fb = c.querySelector('.fb'), an = c.querySelector('.ans'), out = c.querySelector('.out');
   const showKey = () => { an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); slide(an, true); };
