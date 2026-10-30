@@ -5,19 +5,20 @@
 // Each attempt records its collection (c), content version (cv), pool, problem ids, question keys and a small
 // snapshot of each question so it stays reviewable if the question bank changes later. History: S._pth (newest first, 20).
 import { st, cs } from './state.js';
-import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, scrollToEl, AI_ICON, wireAI } from './util.js';
+import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, scrollToEl, AI_ICON, wireAI, animatePracticeCollection } from './util.js';
 import { segHTML, segText, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, howChecked, loadingText, runs } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { timedPool, timedLengths, pickTimed } from './model.js';
 import { ev } from './events.js';
 import { render, syncHome } from './practice.js';
+import { select } from './selector.js';
 import { record } from './nav.js';
 import { leavePG, locked } from './playground.js';
 import { explanationHTML } from './learning.js';
 
 const m = $('#m'), nav = $('#nav'), ptb = $('#ptb'), pgb = $('#pgb');
-const PTICON = SV('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>'), BACKICON = SV('<path d="M19 12H5M12 19l-7-7 7-7"/>');
+const PTICON = SV('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>');
 let ptBusy = false, PROB = null, MOD = {};
 const lookup = () => { if (!PROB) { PROB = {}; for (const e of st.bank.exams) for (const p of e.p) PROB[p.id] = { p, e }; for (const k in st.bank.timed) MOD[k] = Object.fromEntries(st.bank.timed[k].map(p => [p.id, p])); } };
 const label = c => st.views[c]?.label || c;
@@ -71,6 +72,7 @@ export function renderPT() {
   if (st.ptHist != null && !ptX()) st.ptHist = null;
   record();
   const X = ptX(); m.innerHTML = ''; nav.innerHTML = ''; FILLS.length = 0; if (!X) return ptHome();
+  ptChooser();
   const rev = !!X.done, all = ptQs(X), nt = document.createElement('div'); nt.className = 'note';
   const other = X.c !== st.cid ? `<b>This is your ${esc(label(X.c))} practice exam.</b> You’re studying for ${esc(st.view.label)}; switching didn’t pause or restart it. ` : '';
   const changed = all.some(x => x.gone) ? ' Some questions have changed since this attempt, so they show only the saved question text and answer key.' : '';
@@ -143,7 +145,7 @@ function ptSide() {
     : `<div class="ptclock" id="ptclock">${fmtT(Math.max(0, X.end - Date.now()))}</div><div class="ptsub mut" id="ptleft">left of ${fmtClock(X.min)}${X.c !== st.cid ? ' · ' + esc(label(X.c)) : ''}</div>`;
   X.ids.forEach((id, pi) => { h += `<a href="#pt-${pi}" data-pi="${pi}"><span class="nm">${pi + 1}. ${esc((prob(X, id)?.t || X.snap?.t?.[id] || id).replace(/\s*\([\d.]+ pts\)$/, ''))}</span><span class="ct" id="ptc-${pi}"></span></a>`; });
   h += `<div class="ptbtns">${endButtons(X, rev, true)}</div>`;
-  s.innerHTML = h; nav.append(s);
+  s.innerHTML = h; s.classList.add('ptsession'); m.querySelector('.ptchooser').after(s);
   s.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); scrollToEl(document.getElementById('pt-' + a.dataset.pi)); });
   ptCounts();
 }
@@ -168,20 +170,33 @@ function ptWire(root) {
   });
 }
 
+function ptChooser() {
+  const chooser = document.createElement('section'); chooser.className = 'ptchooser';
+  chooser.innerHTML = `<h2>Practice exam</h2><p class="mut">Choose what you’re studying for.</p><div class="ptcollections" role="group" aria-label="Practice exam collection">${st.bank.collections.map(c => `<button type="button" data-collection="${esc(c.id)}" aria-pressed="${c.id === st.cid}">${esc(label(c.id))}</button>`).join('')}</div>`;
+  chooser.querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.collection === st.cid) return;
+    const ids = st.bank.collections.map(c => c.id), direction = Math.sign(ids.indexOf(b.dataset.collection) - ids.indexOf(st.cid));
+    st.ptHist = null; select(b.dataset.collection);
+    animatePracticeCollection(direction);
+    m.querySelector(`[data-collection="${b.dataset.collection}"]`)?.focus({ preventScroll: true });
+  });
+  m.prepend(chooser);
+}
+
 function ptHome() {
   const V = st.view, T = V.timed, pool = timedPool(st.bank, V), Ls = timedLengths(V, pool), C = cs();
   const qper = pool.length ? questionsPer(V, pool) : 0, q = n => Math.max(1, Math.round(qper * n / 5) * 5);
   let sel = Ls.find(L => L.ok && L.min == C.ptlen) || Ls.find(L => L.ok);
   const H = (st.S._pth || []).filter(x => x.c == st.cid), others = (st.S._pth || []).length - H.length;
   m.innerHTML = `<section class="prob pthome"><h2>Timed practice exam · ${esc(V.label)}</h2>
-<p>${esc(T.intro)}</p>
-${Ls.length ? `<div class="ptopts" role="radiogroup" aria-label="Exam length">${Ls.map(L => `<button type="button" class="ptopt" role="radio" aria-checked="${L === sel}" data-min="${L.min}"${L.ok ? '' : ' disabled'}><b>${fmtMin(L.min)}</b><span>${L.ok ? `${L.count} problems · about ${q(L.count)} questions${L.note ? ' · ' + esc(L.note) : ''}` : `Needs ${L.count} problems; ${pool.length} available`}</span></button>`).join('')}</div>` : ''}
-<ul class="ptrules"><li>The clock starts when you press Start exam.</li><li>Nothing is checked until you submit. Then you get your score, accepted answers, available explanations and topic walkthroughs.</li><li>Python code runs against doctests; Gleam code is compiled and tested; SQL runs in SQLite on several datasets. Other blanks use text comparison. Individual code blanks use official answers for the other blanks, and stated restrictions still apply.</li><li>When time runs out, the exam submits itself.</li><li>Answers are saved in this browser, so reloading the page won't lose them.</li></ul>
+<details class="ptsource-details"><summary>About the questions</summary><p>${esc(T.intro)}</p></details>
+${Ls.length ? `<h3 class="ptlength-title">Exam length</h3><div class="ptopts" role="radiogroup" aria-label="Exam length">${Ls.map(L => `<button type="button" class="ptopt" role="radio" aria-checked="${L === sel}" data-min="${L.min}"${L.ok ? '' : ' disabled'}><b>${fmtMin(L.min)}</b><span>${L.ok ? `${L.count} problems · about ${q(L.count)} questions${L.note ? ' · ' + esc(L.note) : ''}` : `Needs ${L.count} problems; ${pool.length} available`}</span></button>`).join('')}</div>` : ''}
+<details class="ptrule-details"><summary>How this exam works</summary><ul class="ptrules"><li>The clock starts when you press Start exam.</li><li>Nothing is checked until you submit. Then you get your score, accepted answers, available explanations and topic walkthroughs.</li><li>Python code runs against doctests; Gleam code is compiled and tested; SQL runs in SQLite on several datasets. Other blanks use text comparison. Individual code blanks use official answers for the other blanks, and stated restrictions still apply.</li><li>When time runs out, the exam submits itself.</li><li>Answers are saved in this browser, so reloading the page won't lose them.</li></ul></details>
 ${sel ? '<button class="p" id="ptgo">Start exam</button>' : `<p class="mut">There aren’t enough ${esc(V.label)} problems for a timed exam yet.</p>`}
 ${H.length ? `<h3>Past ${esc(V.label)} attempts</h3><table class="pth"><thead><tr><th>Date</th><th>Length</th><th>Score</th><th>Time used</th></tr></thead><tbody>${H.map(x => `<tr><td>${x.ids ? `<a href="#" class="pthl" data-d="${x.d}">${esc(ptDate(x.d))}</a>` : esc(ptDate(x.d))}</td><td>${fmtClock(x.min)}</td><td>${x.ok}/${x.n-pendingCount(x)}${pendingCount(x) ? ' · pending' : ` (${Math.round(100*x.ok/x.n)}%)`}</td><td>${fmtT(x.used)}</td></tr>`).join('')}</tbody></table>` : ''}
-${others ? `<p class="mut">You have ${others} past attempt${others > 1 ? 's' : ''} for other exams. Switch “Studying for” to see ${others > 1 ? 'them' : 'it'}.</p>` : ''}
+${others ? `<p class="mut">You have ${others} past attempt${others > 1 ? 's' : ''} for other exams. Choose an exam above to see ${others > 1 ? 'them' : 'it'}.</p>` : ''}
 </section>`;
-  nav.innerHTML = '<div class="ptside"><div class="fhint">Pick a length, then press Start exam. Use the button at the top of the sidebar to go back to the practice questions.</div></div>';
+  nav.innerHTML = ''; ptChooser();
   const opts = [...m.querySelectorAll('.ptopt')];
   opts.forEach(o => o.onclick = () => { if (o.disabled) return; C.ptlen = +o.dataset.min; sel = Ls.find(L => L.min == C.ptlen); st.save(); opts.forEach(x => x.setAttribute('aria-checked', x === o)); });
   const go = $('#ptgo'); if (go) go.onclick = () => ptStart(sel);
@@ -235,9 +250,9 @@ export function ptTick() {
   const X = st.S._pt, live = !!X && !X.done && !X.grading, left = live ? Math.max(0, X.end - Date.now()) : 0;
   if (live && left <= 0) { ptSubmit(); return; }
   const c = $('#ptclock'); if (c && live) { c.textContent = fmtT(left); c.classList.toggle('low', left <= 5 * 6e4); }
-  const lbl = st.ptView ? 'Practice questions' : live ? 'Exam · ' + fmtT(left) : X && X.grading ? 'Grading exam…' : 'Practice exam', cls = !st.ptView && (live || X && X.grading) ? 'run' : '';
+  const lbl = live ? 'Practice exam · ' + fmtT(left) : X && X.grading ? 'Grading exam…' : 'Practice exam', cls = !st.ptView && (live || X && X.grading) ? 'run' : '';
   const tip = st.ptView ? 'Back to the past-exam practice questions' : live ? `Return to your ${label(X.c)} practice exam` : `Take a timed ${st.view.label} practice exam`;
-  if (ptb.dataset.l !== lbl || ptb.dataset.tip !== tip) { ptb.dataset.l = lbl; ptb.innerHTML = (st.ptView ? BACKICON : PTICON) + `<span>${esc(lbl)}</span>`; ptb.dataset.tip = tip; ptb.setAttribute('aria-label', lbl); }
+  if (ptb.dataset.l !== lbl || ptb.dataset.tip !== tip) { ptb.dataset.l = lbl; ptb.innerHTML = PTICON + `<span>${esc(live ? 'Practice exam' : lbl)}</span>${live ? `<span class="navclock"> · ${esc(fmtT(left))}</span>` : ''}`; ptb.dataset.tip = tip; ptb.setAttribute('aria-label', lbl); }
   ptb.className = cls;
   pgb.hidden = locked(); document.body.classList.toggle('pglock', locked()); // no playground during a practice exam (until it's graded)
 }

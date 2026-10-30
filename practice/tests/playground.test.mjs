@@ -14,7 +14,7 @@ import { runMain, runTests, capture, withEchoDict } from '../src/js/gleam-core.j
 import { collector } from '../src/js/output.js';
 import { createRunner } from '../src/js/runner.js';
 import { st } from '../src/js/state.js';
-import { problems, codeFor, canSolve, hasAnswers } from '../src/js/problems.js';
+import { problems, codeFor, canSolve, hasAnswers, findAnyProblem, importCode } from '../src/js/problems.js';
 import { solutionQuestions } from '../src/js/grading.js';
 import { runGleamJobs } from './check-gleam-answers.mjs';
 
@@ -104,14 +104,41 @@ test('every importable problem: the solution passes, blanks fail, and it runs on
   assert.ok(py.some(f => /^# The definition CS 61A uses for Tree\.\nclass Tree:/m.test(f.solution)));
 });
 
-test('My answers fills in drafts first, then checked answers; the solution unlocks once every code question is checked', () => {
+test('My answers fills in drafts first, then checked answers; solutions are available without checked answers', () => {
   const x = problems().find(x => x.p.id === '61a-fa26-extra-practice/3'), qs = solutionQuestions(x.p), key = q => `${x.e.id}|${q.id}`;
   assert.equal(qs.length, 2);
-  st.S = {}; assert.equal(hasAnswers(x), false); assert.equal(canSolve(x), false); assert.equal(codeFor(x, 'mine'), codeFor(x, 'blanks'));
+  st.S = {}; assert.equal(hasAnswers(x), false); assert.equal(canSolve(x), true); assert.equal(codeFor(x, 'mine'), codeFor(x, 'blanks'));
   st.S = { [key(qs[0])]: { v: '0', ok: true }, _dr: { [key(qs[1])]: 'value' } };
-  assert.match(codeFor(x, 'mine'), /Empty -> 0\n\s+Data\(value\) -> value/); assert.equal(canSolve(x), false, 'a draft isn’t a check');
-  st.S[key(qs[1])] = { v: 'wrong', ok: false }; assert.equal(canSolve(x), true, 'checked, even wrong, unlocks it');
+  assert.match(codeFor(x, 'mine'), /Empty -> 0\n\s+Data\(value\) -> value/); assert.equal(canSolve(x), true, 'solutions do not require checked answers');
+  st.S[key(qs[1])] = { v: 'wrong', ok: false }; assert.equal(canSolve(x), true, 'solution availability is independent of checks');
   assert.match(codeFor(x, 'mine'), /Data\(value\) -> value/, 'the draft wins over the checked answer');
   assert.match(codeFor(x, 'blanks'), /Empty -> todo\n\s+Data\(value\) -> todo/);
   st.S = {};
+});
+
+test('displayed Python code stays executable while instructions and expected answers are comments', () => {
+  st.S = {};
+  const x = findAnyProblem('61a-fa25-final/1'), code = importCode(x,'solution');
+  assert.match(code,/^def times\(/m); assert.match(code,/^times\(2, 3, 10\)/m);
+  assert.match(code,/^# Assume the following code has been executed\./m);
+  const r = spawnSync('python3',['-I','-c',code],{encoding:'utf8'});
+  assert.equal(r.status,0,r.stderr); assert.equal(r.stdout,'300\n-2\n4\n2\n');
+  const transcript = importCode(findAnyProblem('61a-fa26-mt1/1'),'solution');
+  assert.doesNotMatch(transcript,/^>>>/m); assert.match(transcript,/^# None = 0$/m);
+  const t = spawnSync('python3',['-I','-c',transcript],{encoding:'utf8'});
+  assert.equal(t.status,0,t.stderr); assert.equal(t.stdout,'1\nNone = 0\nso\nNone + None = zero?\n');
+});
+
+test('displayed Gleam templates import as code, with solution, blanks and drafts preserved', async () => {
+  const x = {lang:'gleam',e:{id:'test',t:'Example'},p:{t:'Gleam example',b:[{s:[{p:'Return the answer.'},{c:'pub fn answer() { ⟪a⟫ }',lang:'gleam',f:{a:'42'}}]},{id:1,k:'blank',l:[{p:'Fill in blank (a).'}],a:['42']}]}};
+  st.S = {};
+  const code = importCode(x,'solution'); assert.match(code,/^pub fn answer\(\) \{ 42 \}/m);
+  assert.equal((await gleam(code)).answer(),42); assert.match(importCode(x,'blanks'),/\{ todo \}/);
+  st.S = {_dr:{'test|1':'8'}}; assert.equal((await gleam(importCode(x,'mine'))).answer(),8); st.S={};
+});
+
+test('displayed Python imports have valid syntax, including tracebacks and omitted implementations', () => {
+  const files = bank.exams.flatMap(e=>e.p.filter(p=>!p.run).map(p=>findAnyProblem(p.id))).filter(x=>x.lang==='py'&&x.hasCode).map(x=>({id:x.p.id,code:importCode(x,'solution')}));
+  const errors = python(`import ast,json,sys\nbad=[]\nfor x in json.load(sys.stdin):\n try: ast.parse(x['code'])\n except SyntaxError as e: bad.append(x['id']+': '+str(e))\nprint(json.dumps(bad))`,files);
+  assert.deepEqual(errors,[]);
 });

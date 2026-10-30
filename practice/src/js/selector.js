@@ -3,7 +3,7 @@
 // It is a dropdown beside the filter, in the same style (native picker on touch devices).
 import { st, cs } from './state.js';
 import { $, esc } from './util.js';
-import { render } from './practice.js';
+import { render, refreshHomeCollection } from './practice.js';
 import { renderPT, ptTick } from './timed.js';
 import { ddSync, dropdown } from './chrome.js';
 import { ev } from './events.js';
@@ -28,14 +28,23 @@ export function select(cid, { initial = false } = {}) {
   if (!initial && !st.ptView) cs().y = scrollY;
   // A finished attempt from the collection being left is done with (it's in that collection's history).
   if (!initial && st.S._pt?.done && st.S._pt.c === st.cid) { st.S._pt = null; st.ptHist = null; }
-  // Switching from the home page stays on the home page; otherwise each collection reopens its own exam (ex '' is home).
+  // Stay on Home only when switching from Home (or restoring it on load).
+  // A collection last visited on Home must still open questions when chosen from the exam workspace.
   const home = !initial && st.cur < 0;
+  const browser = home && !st.ptView && !st.pgView ? $('#home-exams') : null;
+  const browserTop = browser?.getBoundingClientRect().top;
   st.cid = cid; st.S._c = cid; st.view = st.views[cid];
   const C = cs();
-  st.cur = home || C.ex === '' ? -1 : Math.max(0, st.view.exams.findIndex(ex => ex.id === C.ex));
+  st.cur = home || (initial && C.ex === '') ? -1 : Math.max(0, st.view.exams.findIndex(ex => ex.id === (C.ex || C.last)));
   if (!C.open) C.open = st.cur < 0 ? {} : { [st.view.exams[st.cur].id]: 1 };
   $('#flt').value = C.f || 'all'; if (!$('#flt').value) $('#flt').value = 'all'; ddSync();
   st.save(); draw(); if (!initial) drawSort();
+  if (!initial && browser) {
+    refreshHomeCollection();
+    const dy = browser.getBoundingClientRect().top - browserTop;
+    if (dy) scrollBy({ top: dy, behavior: 'instant' });
+    cs().y = scrollY; st.save(); ptTick(); ev('study_select', { v: cid }); return;
+  }
   if (!initial) { if (st.ptView) renderPT(); else render(); scrollTo(0, st.ptView ? 0 : C.y || 0); ptTick(); ev('study_select', { v: cid }); }
 }
 export function initSelector() {

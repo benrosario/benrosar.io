@@ -67,6 +67,30 @@ test('deep links, reloads and Back/Forward follow the selected study option', as
   await open(null, '?exam=nonsense'); assert.equal(await selected(), 'final');
 });
 
+test('switching to Final from the exam sidebar opens questions even when Final was last on Home', async () => {
+  await open(null, '?exam=final&view=home');
+  await pick('midterm2');
+  await q('document.querySelector(".homeexam").click()'); await page.waitFor('document.querySelector("#m .note b")');
+  assert.equal((await saved())._cs.final.ex, '');
+  await pick('final');
+  assert.equal(await selected(), 'final');
+  assert.ok(await q('document.querySelectorAll("#m .qw").length') > 0);
+  assert.equal(await q('document.body.classList.contains("athome")'), false);
+  await clickExam(1); const last = await examTitle();
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector(".homepaths")');
+  await pick('midterm2'); await q('document.querySelector(".homeexam").click()');
+  await page.waitFor('document.querySelector("#m .note b")'); await pick('final');
+  assert.equal(await examTitle(), last, 'Final reopens its most recent source exam');
+  await page.viewport(1440,900);
+  assert.ok(await q('Math.abs(document.querySelector("#rs").getBoundingClientRect().top-document.querySelector("#exb").getBoundingClientRect().top)<2'), 'Reset exam sits on the primary navbar row');
+  assert.ok(await q('document.querySelector("header .bar").getBoundingClientRect().width>0'));
+  await page.viewport(360,800,true);
+  assert.equal(await q('document.documentElement.scrollWidth>innerWidth'), false);
+  assert.ok(await q('document.querySelector("#rs").getBoundingClientRect().width>0'));
+  await page.viewport(1280,900);
+  assert.deepEqual(page.logs, []);
+});
+
 test('the sidebar, notes, progress and scope labels follow the selected collection', async () => {
   await open(null, '?exam=midterm2');
   const exams = await q('[...document.querySelectorAll("#nav details summary .nm")].map(e=>e.textContent)');
@@ -155,8 +179,8 @@ test('saved data from before study collections migrates and keeps Midterm 3', as
   assert.match(await examTitle(), /Fall 2023 Midterm 2/, 'the exam selected before is still selected');
   assert.equal(await q('document.querySelector("#flt").value'), 'no');
   assert.equal(await q('document.documentElement.dataset.theme'), 'dark');
-  assert.match(await q('document.querySelector("#stat").textContent'), /0\/24 correct · 1 answered/);
-  assert.match(await q('document.querySelector("#ptb").textContent'), /^Exam · \d+:\d\d/, 'the active attempt keeps running');
+  assert.match(await q('document.querySelector("#stat").textContent'), /^0\/24 correct$/);
+  assert.match(await q('document.querySelector("#ptb").textContent'), /^Practice exam · \d+:\d\d/, 'the active attempt keeps running');
   const S = await saved();
   assert.equal(S._sv, 3); assert.equal(S._pt.c, 'midterm3'); assert.equal(S._pt.ans['0|1'], 'sum(s[k:])');
   assert.equal(S['61a-sp23-mt2|1'].ok, true);
@@ -178,23 +202,27 @@ test('the header title goes home, closing the exam without ending a running prac
   await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
   assert.equal(await q('document.querySelectorAll("#nav details.cur").length'), 0, 'no exam is selected');
   assert.equal(await q('getComputedStyle(document.querySelector("#rs")).display'), 'none');
-  assert.match(await q('document.querySelector("#ptb").textContent'), /^Exam · /);
+  assert.match(await q('document.querySelector("#ptb").textContent'), /^Practice exam · /);
   assert.equal((await saved())._cs.midterm1.ex, '');
   // Home survives a reload and switching collections; it offers the exam that was open and the running attempt.
   await page.reload(); await ready(); await pick('final'); await pick('midterm1');
   assert.ok(await q('!!document.querySelector("#m .home")'));
-  assert.deepEqual(await q('[...document.querySelectorAll(".homebtns button")].map(b=>b.textContent)'), ['Continue ' + exam.replace(/\.$/, ''), 'Return to your Midterm 1 practice exam']);
-  await q('document.querySelector(".homebtns [data-act=pt]").click()'); await page.waitFor('document.querySelector("#ptclock")');
+  assert.deepEqual(await q('[...document.querySelectorAll(".homebtns button")].map(b=>b.textContent)'), ['Continue ' + exam.replace(/\.$/, ''), 'Resume Midterm 1 practice exam']);
+  await q('document.querySelector(".homebtns [data-act=resume]").click()'); await page.waitFor('document.querySelector("#ptclock")');
   await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
   await q('document.querySelector(".homebtns [data-act=last]").click()'); await sleep(50);
   assert.equal(await examTitle(), exam);
   assert.equal(await q('document.querySelectorAll("#nav details.cur").length'), 1);
-  // The home page's styles stay out of the header: its progress bar still stretches (wider, with Reset exam hidden).
+  // Home hides question tools; the exam workspace retains its progress bar.
   const barW = () => q('document.querySelector("header .bar").getBoundingClientRect().width');
   const examBar = await barW();
   await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#m .home")');
   assert.equal(await q('getComputedStyle(document.querySelector("header .bar")).flexGrow'), '1');
-  assert.ok(await barW() >= examBar, 'header progress bar fills the width on the home page');
+  assert.equal(await barW(), 0, 'home hides question progress');
+  assert.ok(examBar > 0);
+  assert.equal(await q('getComputedStyle(document.querySelector("#side")).display'), 'none');
+  assert.equal(await q('document.querySelectorAll(".homepaths > button").length'), 3);
+  assert.ok(await q('document.querySelectorAll(".homeexam").length') > 0);
   // Jumping from home to a late problem scrolls there quickly, not over several seconds.
   await q('[...document.querySelectorAll("#nav details[open] .lst a")].at(-1).click()'); await sleep(600);
   const y = await q('scrollY');
@@ -229,7 +257,55 @@ test('the header title goes home, closing the exam without ending a running prac
   assert.deepEqual(page.logs, []);
 });
 
-test('the home page lists progress for every study option, most correct first', async () => {
+test('Browse exams changes collections in place and preserves the surrounding page', async () => {
+  await open(null, '?exam=midterm2&view=home');
+  await q('Promise.all(document.querySelector("#m").getAnimations().map(a=>a.finished.catch(()=>{})))');
+  await q(`window.homeBefore = {page:document.querySelector('.home'),paths:document.querySelector('.homepaths'),browser:document.querySelector('#home-exams'),study:document.querySelector('#study'),footer:document.querySelector('.homefooter')};document.querySelector('.homeprogress').open=true;document.querySelector('#home-exams').scrollIntoView({block:'start',behavior:'instant'})`);
+  const top = await q('document.querySelector("#home-exams").getBoundingClientRect().top');
+  await pick('final');
+  assert.ok(await q(`Object.entries(homeBefore).every(([k,n])=>n===document.querySelector({page:'.home',paths:'.homepaths',browser:'#home-exams',study:'#study',footer:'.homefooter'}[k]))`));
+  assert.equal(await q('document.querySelector(".homeprogress").open'), true);
+  assert.ok(Math.abs((await q('document.querySelector("#home-exams").getBoundingClientRect().top'))-top)<2);
+  assert.match(await q('document.querySelector(".homecounts").textContent'), /across Final/);
+  assert.match(await q('document.querySelector(".homecoverage").textContent'), /Final/);
+  assert.ok(await q('document.querySelectorAll(".homeexam").length')>0);
+  assert.equal(await param(), 'final');
+  await q('history.back()'); await page.waitFor('document.querySelector("#study").value==="midterm2"');
+  await page.reload(); await ready(); assert.equal(await selected(), 'midterm2');
+  assert.deepEqual(page.logs, []);
+});
+
+test('the Home Exams action opens the newest final by default and resumes the last exam thereafter', async () => {
+  await open(null, '?exam=midterm2&view=home');
+  await q('document.querySelector(".homepaths [data-act=exams]").click()');
+  await page.waitFor('document.querySelector("#m .note b")');
+  assert.equal(await selected(), 'final'); assert.match(await examTitle(), /^Fall 2025 Final/);
+  await pick('midterm1'); const last = await examTitle();
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector(".homepaths")');
+  await pick('midterm2');
+  await q('document.querySelector(".homepaths [data-act=exams]").click()');
+  await page.waitFor('document.querySelector("#m .note b")');
+  assert.equal(await selected(), 'midterm1'); assert.equal(await examTitle(), last);
+  assert.deepEqual(page.logs, []);
+});
+
+test('navbar progress expands with the available desktop width', async () => {
+  await open(null, '?exam=final');
+  await page.viewport(1440,900);
+  const width = await q('document.querySelector("header .bar").getBoundingClientRect().width');
+  assert.ok(await q('document.querySelector("header .bar").getBoundingClientRect().height>=14'));
+  assert.ok(await q('parseFloat(getComputedStyle(document.querySelector("#stat")).fontSize)>=14'));
+  assert.match(await q('document.querySelector("#stat").textContent'), /^\d+\/\d+ correct$/);
+  assert.ok(await q('document.querySelector("#stat").getBoundingClientRect().right<document.querySelector("header .bar").getBoundingClientRect().left'));
+  assert.ok(await q('parseFloat(getComputedStyle(document.querySelector("#rs")).fontWeight)>=700'));
+  await page.viewport(1920,900);
+  const expanded = await q('document.querySelector("header .bar").getBoundingClientRect().width');
+  assert.ok(expanded-width>400, 'progress uses the extra navbar width');
+  assert.ok(await q('Math.abs(document.querySelector("#rs").getBoundingClientRect().top-document.querySelector("#exb").getBoundingClientRect().top)<2'));
+  await page.viewport(1280,900);
+});
+
+test('the home page lists progress in stable collection order', async () => {
   // Every question of this semester's Midterm 1 answered correctly: Midterm 1 leads, the final (whole course) gains a little.
   await open(null, '?exam=midterm2');
   await q(`(async()=>{const b=await fetch(document.querySelector("script[data-content]").dataset.content).then(r=>r.json());
@@ -237,16 +313,99 @@ test('the home page lists progress for every study option, most correct first', 
     for(const p of e.p)for(const x of p.b)if(x.k)S[e.id+"|"+x.id]={v:"",ok:true};S._cs.midterm2.ex="";localStorage.setItem("${KEY}",JSON.stringify(S))})()`);
   // A link without an exam opens the saved view (a reload would reopen the exam the URL names).
   await page.goto(URL0 + '?exam=midterm2'); await page.waitFor('document.querySelector("#m .home .cprogs")');
-  const rows = await q('[...document.querySelectorAll(".cprogs button")].map(b=>({c:b.dataset.c,pct:+b.querySelector(".num").textContent.match(/(\\d+)%/)[1],cur:b.getAttribute("aria-current")}))');
+  const rows = await q('[...document.querySelectorAll(".cprogs button")].map(b=>({c:b.dataset.c,correct:+b.querySelector(".num").textContent.split("/")[0],cur:b.getAttribute("aria-current")}))');
   assert.deepEqual(rows.map(r => r.c).sort(), ['final', 'midterm1', 'midterm2', 'midterm3']);
-  assert.equal(rows[0].c, 'midterm1'); assert.ok(rows[0].pct > 0);
-  assert.ok(rows.every((r, i) => !i || rows[i - 1].pct >= r.pct), 'sorted by share correct, highest first');
+  assert.equal(rows[0].c, 'midterm1'); assert.ok(rows[0].correct > 0);
+  assert.deepEqual(rows.map(r => r.c), ['midterm1', 'midterm2', 'midterm3', 'final']);
   assert.equal(rows.find(r => r.cur)?.c, 'midterm2');
   // Choosing a row switches what you're studying for and stays on the home page.
   await q('document.querySelector(".cprogs [data-c=final]").click()'); await sleep(50);
   assert.equal(await selected(), 'final');
   assert.ok(await q('!!document.querySelector("#m .home .cprogs [data-c=final][aria-current]")'));
   assert.deepEqual(page.logs, []);
+});
+
+test('activity navigation resumes the last exam and provides compact tools in every activity', async () => {
+  await open(null, '?exam=midterm2&view=home');
+  await q('document.querySelector(".homeexam").click()'); await page.waitFor('document.querySelector("#m .note b")');
+  const first = await examTitle();
+  assert.equal(await q('!!document.querySelector("#exb svg")'), true);
+  await clickExam(2); const recent = await examTitle();
+  await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector(".homepaths")');
+  await pick('final');
+  await q('document.querySelector("#exb").click()'); await page.waitFor('document.querySelector("#m .note b")');
+  assert.equal(await selected(), 'midterm2'); assert.equal(await examTitle(), recent);
+  await page.reload(); await ready(); assert.equal(await examTitle(), recent);
+  for (const activity of ['exb','pgb','ptb']) {
+    if (activity !== 'exb') await q(`document.querySelector('#${activity}').click()`);
+    if (activity === 'pgb') await page.waitFor('document.body.classList.contains("pgm")');
+    if (activity === 'ptb') await page.waitFor('document.querySelector(".ptchooser")');
+    assert.ok(await q('["zmb","tmb","hlb"].every(id=>document.getElementById(id).getBoundingClientRect().width>0)'));
+    await q('document.querySelector("#zmb").click()');
+    assert.equal(await q('document.querySelector("#zmp").hidden'), false);
+    await page.key('Escape','Escape',27);
+    assert.equal(await q('document.querySelector("#zmp").hidden'), true);
+    assert.equal(await q('document.activeElement.id'), 'zmb');
+  }
+  assert.equal(await q('getComputedStyle(document.querySelector("#side")).display'), 'none');
+  for (const cid of ['midterm1','midterm2','midterm3','final']) {
+    await q(`document.querySelector('[data-collection="${cid}"]').click()`);
+    assert.equal(await selected(), cid);
+    assert.ok(await q(`!!document.querySelector('[data-collection="${cid}"][aria-pressed=true]')`));
+    assert.match(await q('document.querySelector(".pthome h2").textContent'), new RegExp(cid === 'final' ? 'Final' : 'Midterm ' + cid.at(-1)));
+  }
+  await page.viewport(360,800,true);
+  assert.equal(await q('document.documentElement.scrollWidth > innerWidth'), false);
+  assert.ok(await q('[...document.querySelectorAll(".ptcollections button")].every(b=>b.getBoundingClientRect().height>=44)'));
+  await page.viewport(1280,900);
+  assert.deepEqual(page.logs, []);
+});
+
+test('sidebar menus remain readable across sidebar widths and long filter labels', async () => {
+  await open(null, '?exam=final'); await page.viewport(1280,900);
+  for (const width of [200,240,280,324,400,620]) {
+    await q(`document.documentElement.style.setProperty('--sw','${width}px')`);
+    for (const value of ['all','missed','todo']) {
+      await q(`(()=>{const s=document.querySelector('#flt');s.value='${value}';s.onchange()})()`);
+      for (const id of ['sdd','dd']) {
+        assert.ok(await q(`(()=>{const b=document.querySelector('#${id} .ddb'),s=b.querySelector('span'),r=b.getBoundingClientRect();return s.scrollWidth<=s.clientWidth+1&&r.width>0})()`), `label fits at ${width}px`);
+        await q(`document.querySelector('#${id} .ddb').click()`);
+        assert.ok(await q(`(()=>{const menu=document.querySelector('#${id} .ddm'),r=menu.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&menu.scrollWidth<=menu.clientWidth+1})()`), `menu fits at ${width}px`);
+        assert.ok(await q(`(()=>{const menu=document.querySelector('#${id} .ddm'),r=menu.getBoundingClientRect(),el=document.elementFromPoint(r.right-10,r.top+24);return menu.contains(el)})()`), `menu is not clipped at ${width}px`);
+        await q(`document.querySelector('#${id} .ddb').click()`);
+      }
+    }
+  }
+  await q('document.documentElement.style.removeProperty("--sw")');
+  assert.deepEqual(page.logs, []);
+});
+
+test('practice collection switches animate their content and honor reduced motion', async () => {
+  await open(null, '?exam=midterm1&view=timed'); await page.waitFor('document.querySelector(".ptcollections")');
+  await q(`document.querySelector('[data-collection="midterm2"]').click()`);
+  assert.ok(await q('document.querySelector(".pthome").getAnimations().some(a=>a.playState==="running")'));
+  await page.send('Emulation.setEmulatedMedia', { features: [{ name:'prefers-reduced-motion',value:'reduce' }] });
+  try {
+    await q(`document.querySelector('[data-collection="final"]').click()`);
+    assert.equal(await q('document.querySelector(".pthome").getAnimations().length'),0);
+  } finally { await page.send('Emulation.setEmulatedMedia', {features:[]}); }
+});
+
+test('view transitions respect reduced motion', async () => {
+  await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  try {
+    await open(null, '?exam=midterm1&view=home');
+    await q('document.querySelector("#exb").click()'); await page.waitFor('document.querySelector("#m .note b")');
+    await q('new Promise(r=>requestAnimationFrame(r))');
+    assert.equal(await q('document.querySelector("#m").getAnimations().length'), 0);
+    await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector(".homepaths")');
+    await q('document.querySelector("#ptb").click()'); await page.waitFor('document.querySelector(".ptcollections")');
+    await q(`document.querySelector('[data-collection="final"]').click()`);
+    await q('new Promise(r=>requestAnimationFrame(r))');
+    assert.equal(await q('document.querySelector("#m").getAnimations().length'), 0);
+  } finally {
+    await page.send('Emulation.setEmulatedMedia', { features: [] });
+  }
 });
 
 test('timed practice is per collection, survives switching, submits itself and stays reviewable', async () => {
@@ -264,7 +423,7 @@ test('timed practice is per collection, survives switching, submits itself and s
   await pick('final');
   assert.match(await q('document.querySelector("#m .note").textContent'), /This is your Midterm 1 practice exam/);
   await q('document.querySelector("#ptb").click()'); await sleep(50);
-  assert.match(await q('document.querySelector("#ptb").textContent'), /^Exam · /);
+  assert.match(await q('document.querySelector("#ptb").textContent'), /^Practice exam · /);
   S = await saved(); assert.equal(S._pt.c, 'midterm1'); assert.ok(S._pt.ans[first] != null);
   // Time runs out while studying for the final: the exam submits itself.
   await q(`(()=>{const S=JSON.parse(localStorage.getItem("${KEY}"));S._pt.end=Date.now()-1000;localStorage.setItem("${KEY}",JSON.stringify(S))})()`);

@@ -86,3 +86,23 @@ export function wireAI(btn, prompt) {
     swapLabel(btn, ok ? 'Copied! Paste into an AI chat' : 'Couldn’t copy', () => btn.classList.toggle('copied', ok));
     back = setTimeout(() => swapLabel(btn, 'Ask AI why', () => btn.classList.remove('copied')), 2500); };
 }
+
+// Animate the content only when its destination changes; grading redraws stay still.
+let viewKey = '', viewFrame = 0, viewAnimation;
+export function animateView(key) {
+  if (key === viewKey) return;
+  viewKey = key; cancelAnimationFrame(viewFrame); viewAnimation?.cancel();
+  if (reduced()) return;
+  viewFrame = requestAnimationFrame(() => {
+    const content = $('#m');
+    viewAnimation = content?.animate([{ opacity: .3, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  });
+}
+
+// Collection changes slide their content while the central choice stays visually anchored.
+export function animatePracticeCollection(direction) {
+  cancelAnimationFrame(viewFrame); viewAnimation?.cancel();
+  if (reduced()) return;
+  const content = $('#m .pthome') || $('#m .ptsession');
+  content?.animate([{ opacity: .15, transform: `translateX(${direction * 28}px)` }, { opacity: 1, transform: 'translateX(0)' }], { duration: 360, easing: 'cubic-bezier(.2,.8,.2,1)' });
+}

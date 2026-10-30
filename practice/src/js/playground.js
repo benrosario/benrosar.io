@@ -18,7 +18,7 @@ import { syncHome, render } from './practice.js';
 import { ev } from './events.js';
 import { openPicker } from './picker.js';
 import { mountOffline } from './offline.js';
-import { findProblem, codeFor, canSolve } from './problems.js';
+import { findProblem, codeFor, findAnyProblem, importCode } from './problems.js';
 import { segHTML } from './highlight.js';
 import { goTo } from './practice.js';
 import { select } from './selector.js';
@@ -123,7 +123,7 @@ function renderPG() {
 <p class="pgsave note" role="alert" hidden></p>
 <div class="pgpw" hidden><section class="pgprob" aria-label="Problem">
   <div class="pgph"><button type="button" class="pgptg" aria-expanded="true" aria-controls="pgpb">${ICON.chev}<span><span class="pgpt"></span> <span class="pgpx mut"></span></span></button>
-    <div class="pgpa"><span class="mut">Start again with</span><div class="seg" role="group" aria-label="Start again with"><button type="button" data-f="blanks">Blanks</button><button type="button" data-f="mine">My answers</button><button type="button" data-f="solution">Solution</button></div><span class="pgpd" aria-hidden="true"></span><button type="button" class="pgpo">Open in practice</button></div>
+    <div class="pgpa"><span class="mut">Replace code with</span><div class="seg" role="group" aria-label="Replace code with"><button type="button" data-f="blanks">Blanks</button><button type="button" data-f="mine">My answers</button><button type="button" data-f="solution">Solution</button></div><span class="pgpd" aria-hidden="true"></span><button type="button" class="pgpo">Open in practice</button></div>
     <button type="button" class="pgpc" aria-label="Close problem" data-tip="Close this problem. Your code for it is kept: open it again from Recent.">${ICON.close}</button></div>
   <div class="pgpb" id="pgpb"></div><div class="pgrs" role="separator" aria-orientation="horizontal" aria-label="Resize the problem" tabindex="0" data-tip="Drag to resize · double-click to reset"></div></section></div>
 <div class="pgmain">
@@ -152,7 +152,7 @@ function renderPG() {
   mountOffline(el.querySelector('.offl'));
   const prob = el.querySelector('.pgprob'); drawn = false;
   prob.querySelector('.pgptg').onclick = () => fold(prob, prob.classList.contains('shut'));
-  prob.querySelectorAll('[data-f]').forEach(b => b.onclick = () => refill(b.dataset.f));
+  prob.querySelectorAll('[data-f]').forEach(b => b.onclick = () => confirmRefill(b.dataset.f, b));
   prob.querySelector('.pgpo').onclick = () => openInPractice(file().src);
   el.querySelector('.pgpc').onclick = () => { open(latest(file().lang, P.cur)); ed.focus(); };
   confirmBtn(act('reset'), reset, () => file().code === file().orig);
@@ -422,17 +422,19 @@ function pickProblem() {
 }
 // The problem's statement above the editor (its text and questions, without answers), for an imported file.
 function panel(f) {
-  const wrap = el.querySelector('.pgpw'), box = wrap.querySelector('.pgprob'), x = f.src && findProblem(f.src.p);
+  const wrap = el.querySelector('.pgpw'), box = wrap.querySelector('.pgprob'), x = f.src && findAnyProblem(f.src.p);
   if (!f.src) return showPanel(wrap, false);
   setOpen(box, f.panel !== false);
-  el.querySelector('.pgpt').textContent = f.title; el.querySelector('.pgpx').textContent = f.src.xt;
+  el.querySelector('.pgpt').textContent = x?.p.t || f.title; el.querySelector('.pgpx').textContent = f.src.xt;
   box.querySelector('.pgpa').hidden = !x;
   if (!x) box.querySelector('.pgpb').textContent = 'This problem is no longer on the site.';
   else {
     const segs = s => segHTML(s.map(g => g.f ? { ...g, f: undefined } : g));
     box.querySelector('.pgpb').innerHTML = x.p.b.map(b => b.s ? segs(b.s) : `<div class="pgq">${segs(b.l)}</div>`).join('');
-    const sol = box.querySelector('[data-f=solution]'); sol.disabled = !canSolve(x);
-    sol.dataset.tip = sol.disabled ? 'Unlocks once you’ve checked an answer to each of its questions in practice' : 'Fill the blanks with the official answers';
+    const sol = box.querySelector('[data-f=solution]'); sol.disabled = false;
+    sol.dataset.tip = 'Fill the blanks with the official answers';
+    box.querySelector('.pgpa .seg').hidden = !!f.combined;
+    box.querySelector('.pgpa>.mut').hidden = !!f.combined;
   }
   showPanel(wrap, true);
 }
@@ -463,11 +465,34 @@ function fold(d, open) {
   const a = d.anim = d.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: open ? 220 : 180, easing: open ? 'cubic-bezier(.2,.8,.2,1)' : 'ease-in' });
   a.onfinish = () => { if (d.anim !== a) return; d.style.overflow = ''; d.classList.toggle('shut', !open); };
 }
+let replaceDialog;
+function confirmRefill(fill, trigger) {
+  const f = file(), id = P.cur, x = f.src && findAnyProblem(f.src.p);
+  if (!x || f.combined || locked()) return;
+  const label = {solution:'solution', blanks:'blanks', mine:'my answers'}[fill];
+  const description = {solution:'the official solution', blanks:'the blank problem template', mine:'your current practice answers'}[fill];
+  if (!replaceDialog) {
+    replaceDialog = document.createElement('dialog'); replaceDialog.className = 'pgreplace';
+    replaceDialog.setAttribute('aria-labelledby','pgreplace-title'); replaceDialog.setAttribute('aria-describedby','pgreplace-description');
+    document.body.append(replaceDialog);
+  }
+  replaceDialog.innerHTML = `<form method="dialog"><h2 id="pgreplace-title">Replace playground code?</h2><p id="pgreplace-description">Are you sure? This will replace all code in “${esc(f.title)}” with ${description} for “${esc(x.p.t)}”.</p><div class="pgreplace-actions"><button type="submit" value="cancel" autofocus>Cancel</button><button type="submit" class="p" value="replace">Replace with ${label}</button></div></form>`;
+  replaceDialog.returnValue = '';
+  replaceDialog.onclose = () => { if (replaceDialog.returnValue !== 'replace' && trigger.isConnected) trigger.focus(); };
+  replaceDialog.querySelector('form').onsubmit = e => {
+    e.preventDefault();
+    const confirm = e.submitter?.value === 'replace';
+    replaceDialog.close(confirm ? 'replace' : 'cancel');
+    if (confirm && st.pgView && P.cur === id && file() === f && !locked()) { refill(fill); ed.focus(); }
+  };
+  replaceDialog.showModal(); replaceDialog.querySelector('[value=cancel]').focus();
+}
+
 // Start the file again from the problem, as an edit that Undo (or ⌘Z) takes back.
 function refill(fill) {
-  const f = file(), x = findProblem(f.src.p); if (!x || fill === 'solution' && !canSolve(x)) return;
+  const f = file(), x = findAnyProblem(f.src.p); if (!x || f.combined) return;
   P.prev = { id: P.cur, code: f.code };
-  f.orig = codeFor(x, fill); f.src.fill = fill;
+  f.orig = importCode(x, fill, f.lang); f.src.fill = fill;
   resetting = true; ed.replace(f.orig); resetting = false;
   el.querySelector('.pgundo').hidden = false; save();
 }
@@ -536,4 +561,34 @@ export async function initPlayground() {
   addEventListener('pagehide', save); addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
   onStatus(() => rtPaint());
   if (st.pgWant != null) showPG(st.pgWant || undefined);
+}
+
+// Destinations for Add to playground. Only matching languages can share executable code.
+export function playgroundDestinations(id) {
+  if (!P) load(); const x = findAnyProblem(id); if (!x) return [];
+  return byRecent().filter(id => !(x.p.run || x.hasCode) || P.files[id].lang === x.lang).map(id => ({id, title:P.files[id].title, lang:P.files[id].lang}));
+}
+export function addToPlayground(id, destination, fill = 'mine') {
+  if (locked()) return showPT(true);
+  if (!P) load(); const x = findAnyProblem(id); if (!x) return;
+  const target = destination && P.files[destination];
+  if (destination && (!target || (x.p.run || x.hasCode) && target.lang !== x.lang)) return;
+  const lang = target?.lang || x.lang, code = importCode(x, fill, lang);
+  const src = {p:x.p.id,x:x.e.id,xt:x.e.t,fill};
+  let next = destination;
+  if (target) {
+    P.prev = {id:destination,code:target.code};
+    const prefix = lang === 'gleam' ? '// ' : '# ';
+    let joined = target.code.trimEnd() + '\n\n' + prefix + x.e.t + ' · ' + x.p.t + '\n' + code;
+    if (lang === 'gleam') {
+      const imports = [...new Set(joined.match(/^import [^\n]+/gm) || [])];
+      joined = imports.join('\n') + '\n\n' + joined.replace(/^import [^\n]+\n?/gm, '');
+    }
+    Object.assign(target,{code:joined,orig:joined,src,combined:true,at:Date.now()});
+  } else {
+    next = 'mine-' + crypto.randomUUID();
+    P.files[next] = {lang,title:x.p.t,code,orig:code,src,stdin:'',tab:'out',mode:x.p.run?'tests':'main',panel:true,at:Date.now()};
+  }
+  save(); showPG(next); save(); ed.focus();
+  ev('pg_import',{x:x.e.id,q:x.p.id,v:fill});
 }

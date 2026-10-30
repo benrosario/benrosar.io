@@ -5,7 +5,7 @@
 // The footer chooses what fills the blanks; a problem already in the playground opens as it was left.
 import { st } from './state.js';
 import { esc, SV } from './util.js';
-import { problems, canSolve } from './problems.js';
+import { problems } from './problems.js';
 
 let dlg, input, list, note, prefs, cb, rows = [], active = 0;
 const opened = new Set(); // exams opened in the tree, for this page
@@ -75,9 +75,9 @@ function paint() {
   const hi = s => words.length ? esc(s).replace(new RegExp(`(${words.map(w => esc(w)).join('|')})`, 'gi'), '<mark>$1</mark>') : esc(s);
   list.innerHTML = rows.map((r, i) => {
     if (r.k === 'x') return `<li role="treeitem" id="pk${i}" data-i="${i}" aria-level="1" aria-expanded="${opened.has(r.id)}" class="pkx">${CHEV}<span class="nm">${esc(r.t)}</span><span class="ct">${r.n}</span></li>`;
-    const { p, e, lang, topics } = r.x, mine = cb.has(p.id), locked = prefs.fill === 'solution' && !mine && !canSolve(r.x);
+    const { p, e, lang, topics } = r.x, mine = cb.has(p.id);
     const tags = [`<span class="lt ${lang}">${NAME[lang]}</span>`, p.adapted ? '<span class="tg2">Adapted</span>' : p.authored ? '<span class="tg2">Site-written</span>' : '',
-      mine ? '<span class="tg2 have" data-tip="Opens as you left it in the playground">In playground</span>' : '', locked ? '<span class="tg2 lk" data-tip="Check an answer to each of its questions in practice first">Solution locked</span>' : ''].join('');
+      mine ? '<span class="tg2 have" data-tip="Opens as you left it in the playground">In playground</span>' : ''].join('');
     return `<li role="treeitem" id="pk${i}" data-i="${i}" aria-level="${r.lvl}" class="pkp${r.lvl === 1 ? ' flat' : ''}"><span class="nm">${hi(p.t)}</span>${r.lvl === 1 ? `<span class="ex">${hi(e.t)}</span>` : ''}<span class="tags">${tags}<span class="tp">${esc(topics.slice(0, 2).join(' · '))}</span></span></li>`;
   }).join('') || `<li class="pke" role="none">${input.value.trim() ? 'No problems match. Try fewer words, or another language.' : 'This study option has no problems in that language. Try every exam.'}</li>`;
   mark();
@@ -93,7 +93,6 @@ function toggle(r, open) { if (open) opened.add(r.id); else opened.delete(r.id);
 function act() {
   const r = rows[active]; if (!r) return;
   if (r.k === 'x') return toggle(r, !opened.has(r.id));
-  if (prefs.fill === 'solution' && !cb.has(r.x.p.id) && !canSolve(r.x)) { note.textContent = 'The solution unlocks once you’ve checked an answer to each of this problem’s questions in practice. Import it with Blanks or My answers instead.'; return; }
   dlg.close(); cb.pick(r.x, prefs.fill);
 }
 function key(e) {

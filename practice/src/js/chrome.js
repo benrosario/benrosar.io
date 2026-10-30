@@ -37,9 +37,19 @@ export function dropdown(dd, { opt = o => esc(o.text), label = o => o.text, head
   const opts = () => [...sel.options], items = () => [...ddm.querySelectorAll('li[role=option]')];
   function sync() {
     const o = sel.selectedOptions[0]; ddb.querySelector('span').textContent = o ? label(o) : '';
-    ddm.innerHTML = (head ? `<li class="ddh" role="presentation">${esc(head)}</li>` : '') + opts().map((o, i) => `<li role="option" id="${ddm.id}-${i}" data-v="${esc(o.value)}" aria-selected="${o.value == sel.value}"><span class="ck">✓</span>${opt(o)}</li>`).join('');
+    ddm.innerHTML = (head ? `<li class="ddh" role="presentation">${esc(head)}</li>` : '') + opts().map((o, i) => `<li role="option" id="${ddm.id}-${i}" data-v="${esc(o.value)}" aria-selected="${o.value == sel.value}"><span class="ck">✓</span><span class="dd-option">${opt(o)}</span></li>`).join('');
   }
-  function open() { sync(); ddi = Math.max(0, sel.selectedIndex); ddm.hidden = false; ddb.setAttribute('aria-expanded', 'true'); hi(); requestAnimationFrame(() => ddm.classList.add('in')); }
+  function place() {
+    if (ddm.hidden) return;
+    const r = ddb.getBoundingClientRect(), width = Math.min(Math.max(280, r.width), innerWidth - 24);
+    const below = innerHeight - r.bottom - 12, above = r.top - 12;
+    const height = Math.min(440, Math.max(120, below >= 180 || below >= above ? below : above));
+    Object.assign(ddm.style, { position: 'fixed', left: Math.max(12, Math.min(r.left, innerWidth - width - 12)) + 'px', right: 'auto', width: width + 'px', minWidth: '0', maxHeight: height + 'px', overflowY: 'auto', top: (below >= 180 || below >= above ? r.bottom + 6 : Math.max(12, r.top - Math.min(ddm.scrollHeight, height) - 6)) + 'px' });
+  }
+  new ResizeObserver(place).observe(ddb);
+  addEventListener('resize', place);
+  document.addEventListener('scroll', e => { if (!ddm.hidden && !ddm.contains(e.target)) place(); }, true);
+  function open() { sync(); ddi = Math.max(0, sel.selectedIndex); ddm.hidden = false; ddb.setAttribute('aria-expanded', 'true'); place(); hi(); requestAnimationFrame(() => ddm.classList.add('in')); }
   function close(focus) { ddm.classList.remove('in'); ddm.hidden = true; ddb.setAttribute('aria-expanded', 'false'); if (focus) ddb.focus(); }
   function hi() { items().forEach((li, i) => li.classList.toggle('hi', i == ddi)); ddb.setAttribute('aria-activedescendant', `${ddm.id}-${ddi}`); }
   function pick(v) { close(true); if (sel.value !== v) { sel.value = v; sel.onchange(); } else sync(); }
@@ -60,7 +70,7 @@ export function dropdown(dd, { opt = o => esc(o.text), label = o => o.text, head
 const filterMenu = dropdown($('#dd'));
 export const ddSync = () => filterMenu.sync();
 function initFilter() {
-  flt.onchange = () => { const wasReview = cs().f === 'missed'; cs().f = flt.value; if (flt.value === 'missed') { const i = firstMatch(); if (i >= 0) st.cur = i; } st.save(); const t0 = m.getBoundingClientRect().top; if (wasReview || flt.value === 'missed') render(); else sidebar(); ddSync(); const dy = m.getBoundingClientRect().top - t0; if (dy) scrollBy({ top: dy, behavior: 'instant' }); };
+  flt.onchange = () => { const wasReview = cs().f === 'missed'; cs().f = flt.value; if (flt.value === 'missed' && st.cur >= 0) { const i = firstMatch(); if (i >= 0) st.cur = i; } st.save(); const t0 = m.getBoundingClientRect().top; if (wasReview || flt.value === 'missed') render(); else sidebar(); ddSync(); const dy = m.getBoundingClientRect().top - t0; if (dy) scrollBy({ top: dy, behavior: 'instant' }); };
   ddSync();
 }
 
@@ -114,6 +124,16 @@ export function applyZoom(instant) {
   if (document.activeElement !== $('#zv')) $('#zv').value = Math.round(z * 100) + '%'; $('#zf').classList.toggle('on', fit); $('#zf').setAttribute('aria-pressed', fit); return z;
 }
 function initZoom() {
+  const button = $('#zmb'), panel = $('#zmp');
+  const close = (focus = false) => { panel.hidden = true; button.setAttribute('aria-expanded', 'false'); if (focus) button.focus(); };
+  button.onclick = () => {
+    const opening = panel.hidden; panel.hidden = !opening; button.setAttribute('aria-expanded', String(opening));
+    if (opening) $('#zv').focus();
+  };
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('.zoom-control')) close(); });
+  panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); } });
+  panel.addEventListener('focusout', () => setTimeout(() => { if (!panel.contains(document.activeElement) && document.activeElement !== button) close(); }, 0));
+
   const zoomBy = d => { const z = applyZoom(); st.S._zoom = Math.max(.5, Math.min(2, Math.round((z + d) * 10) / 10)); st.save(); applyZoom(); };
   $('#zo').onclick = () => zoomBy(-.1); $('#zi').onclick = () => zoomBy(.1);
   const zv = $('#zv');

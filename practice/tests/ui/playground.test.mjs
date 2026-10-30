@@ -132,7 +132,7 @@ test('a share link opens the code as a new file, leaving the scratch file alone'
 
 test('importing a problem: ⌘K, the tree and its keys, search, what fills the blanks, and the way back to practice', async () => {
   await fresh('?exam=final&x=61a-fa26-extra-practice'); await until('document.querySelector("#m .prob")');
-  assert.equal(await q('document.querySelectorAll(".pgopen").length'), 6, 'every runnable problem has Open in playground');
+  assert.equal(await q('document.querySelectorAll(".pgopen").length'), 6, 'every problem has Add to playground');
   await page.key('k', 'KeyK', 75, CMD); await until('document.querySelector("dialog.pick[open]") && document.body.classList.contains("pgm")');
   const active = () => q('document.querySelector(".pkl li.on").innerText.split("\\n")[0]');
   assert.equal(await active(), 'Extra Gleam and interpreter practice', 'the exam being studied is open and selected');
@@ -145,28 +145,76 @@ test('importing a problem: ⌘K, the tree and its keys, search, what fills the b
   assert.match(await code(), /Empty -> todo\n\s+Data\(value\) -> todo/, 'no answers yet: blanks');
   await msgIs('/1 of 1 tests failed/');
   assert.match(await q('document.querySelector(".pgprob").innerText'), /A Packet either contains an integer/);
-  assert.equal(await q('document.querySelector(".pgpa [data-f=solution]").disabled'), true);
-  // Search every exam; the solution stays locked until the questions are checked.
+  assert.equal(await q('document.querySelector(".pgpa [data-f=solution]").disabled'), false);
+  // Search every exam and import its solution without checking any questions first.
   await click('[data-act=import]'); await until('document.querySelector("dialog.pick[open]")');
   await q('(()=>{const i=document.querySelector(".pks");i.value="only_long_paths";i.dispatchEvent(new Event("input"))})()');
   assert.match(await active(), /Only Paths/);
   await click('.pkfoot [data-f=solution]'); await page.key('Enter', 'Enter', 13);
-  assert.match(await q('document.querySelector(".pkn").textContent'), /solution unlocks/); assert.ok(await q('document.querySelector("dialog.pick").open'));
-  await click('.pkfoot [data-f=mine]'); await page.key('Escape', 'Escape', 27); await until('!document.querySelector("dialog.pick[open]")');
-  // To practice and back: answers checked there fill the blanks and unlock the solution.
+  await until('!document.querySelector("dialog.pick[open]")');
+  assert.equal(await param('f'), '61a-fa23-mt2/5');
+  await q('history.back()'); await until('new URLSearchParams(location.search).get("f")=="61a-fa26-extra-practice/3"');
+  // To practice and back: checked answers fill My answers without changing the saved playground code.
   await click('.pgpo'); await until('!document.body.classList.contains("pgm") && document.querySelector("#m .prob")');
   assert.equal(await param('p'), '3');
   await q(`(async()=>{const s=[...document.querySelectorAll("#m .prob")].find(s=>/^3\\./.test(s.querySelector("h2").textContent));
     const qs=[...s.querySelectorAll(".q")].filter(c=>c.querySelector("textarea"));const a=["0","value"];
     for(const [k,c] of qs.entries()){c.querySelector("textarea").value=a[k];c.querySelector(".ck").click();}})()`);
   await until('[...document.querySelectorAll("#m .prob")].find(s=>/^3\\./.test(s.querySelector("h2").textContent)).querySelectorAll(".q.ok").length === 2');
-  await q('[...document.querySelectorAll("#m .prob")].find(s=>/^3\\./.test(s.querySelector("h2").textContent)).querySelector(".pgopen").click()');
+  await click('#pgb');
   await inPlayground(); assert.match(await code(), /todo/, 'the playground copy opens as it was left');
   assert.equal(await q('document.querySelector(".pgpa [data-f=solution]").disabled'), false);
-  await click('.pgpa [data-f=mine]'); await msgIs('/Tests passed/');
+  await click('.pgpa [data-f=mine]'); await until('document.querySelector(".pgreplace[open]")'); await click('.pgreplace [value=replace]'); await msgIs('/Tests passed/');
   assert.match(await code(), /Empty -> 0\n\s+Data\(value\) -> value/);
   await click('.pgundo'); assert.match(await code(), /Empty -> todo/);
   assert.deepEqual(page.logs, []);
+});
+
+test('Add to playground creates independent solutions and appends to an existing playground without erasing code', async () => {
+  await fresh('?exam=final&x=61a-fa26-extra-practice'); await until('document.querySelector(".pgopen")');
+  const button = '[...document.querySelectorAll("#m .prob")].find(s=>/^3\\./.test(s.querySelector("h2").textContent))';
+  await q(`${button}.querySelector('.pgopen').click()`);
+  await q(`(()=>{const menu=${button}.querySelector('.pgaddmenu');menu.querySelector('select').value='solution';menu.querySelector('[data-add=new]').click()})()`);
+  await inPlayground(); const id = await param('f'); assert.match(id,/^mine-/);
+  assert.match(await code(), /Empty -> 0\n\s+Data\(value\) -> value/);
+  await msgIs('/Tests passed/');
+  await type('// keep this draft\npub fn main() { 42 }'); await sleep(500);
+  await click('#home'); await until('document.querySelector(".homepaths")'); await click('#exb');
+  await until('document.querySelector(".pgopen")');
+  await q(`${button}.querySelector('.pgopen').click()`);
+  await q(`(()=>{const menu=${button}.querySelector('.pgaddmenu');menu.querySelector('select').value='solution';menu.querySelector('[data-add=existing]').click();menu.querySelector('.pgaddtargets select').value=${JSON.stringify(id)};menu.querySelector('[data-add=confirm]').click()})()`);
+  await inPlayground(); assert.equal(await param('f'),id);
+  assert.match(await code(),/keep this draft/); assert.match(await code(),/Empty -> 0/);
+  await page.reload(); await inPlayground(); assert.match(await code(),/keep this draft/); assert.match(await code(),/Empty -> 0/);
+  assert.deepEqual(page.logs,[]);
+});
+
+test('replacing playground code requires confirmation for every fill option', async () => {
+  await fresh('?exam=final&x=61a-fa26-extra-practice'); await until('document.querySelector(".pgopen")');
+  await click('.pgopen'); await click('[data-add=new]'); await inPlayground();
+  const draft = '# keep my current edits\nprint(42)\n'; await type(draft);
+  for (const fill of ['solution','blanks','mine']) {
+    await click(`.pgpa [data-f=${fill}]`); await until('document.querySelector(".pgreplace[open]")');
+    assert.equal(await code(),draft, 'opening confirmation leaves code untouched');
+    assert.match(await q('document.querySelector("#pgreplace-description").textContent'), /Are you sure.*replace all code/);
+    assert.equal(await q('document.activeElement.value'),'cancel');
+    await click('.pgreplace [value=cancel]'); assert.equal(await code(),draft);
+    await click(`.pgpa [data-f=${fill}]`); await page.key('Escape','Escape',27); assert.equal(await code(),draft);
+    await click(`.pgpa [data-f=${fill}]`); await click('.pgreplace [value=replace]');
+    await until('!document.querySelector(".pgreplace[open]")'); assert.notEqual(await code(),draft);
+    await click('.pgundo'); assert.equal(await code(),draft);
+  }
+  assert.deepEqual(page.logs,[]);
+});
+
+test('problems without grading templates import executable code and commented prompts', async () => {
+  await fresh('?exam=final&x=61a-fa25-final'); await until('document.querySelector(".pgopen")');
+  assert.equal(await q('document.querySelectorAll(".pgopen").length'),await q('document.querySelectorAll("#m section.prob").length'));
+  await click('.pgopen');
+  await q(`(()=>{const menu=document.querySelector('.pgaddmenu');menu.querySelector('select').value='solution';menu.querySelector('[data-add=new]').click()})()`);
+  await inPlayground(); assert.match(await code(), /^# /); assert.match(await code(), /^def times\(/m); assert.match(await code(), /^times\(2, 3, 10\)/m); assert.match(await code(), /Answer:/);
+  await page.reload(); await inPlayground(); assert.match(await code(), /Answer:/);
+  assert.deepEqual(page.logs,[]);
 });
 
 test('Back and Forward move between exams, problems, home, timed practice and the playground', async () => {

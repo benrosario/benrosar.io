@@ -1,6 +1,6 @@
 // The practice view: sidebar of source exams in the selected collection, the selected exam's problems, and progress.
 import { st, cs } from './state.js';
-import { $, esc, SV, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, ICON, wireAI } from './util.js';
+import { $, esc, SV, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, ICON, wireAI, animateView } from './util.js';
 import { segHTML, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, GV, howChecked, runs, loadingText, canCheckSolution, gradeSolution, solutionQuestions, warmFor } from './grading.js';
 import { aiPrompt } from './ai.js';
@@ -11,9 +11,12 @@ import { dropdown, ddSync } from './chrome.js';
 import { hintsFor, explanationHTML } from './learning.js';
 import { topicStats, matchesTopic, missedQuestion } from './study.js';
 import { select } from './selector.js';
+import { drawSort } from './sort.js';
 import { record, setProblem } from './nav.js';
-import { leavePG, openProblem } from './playground.js';
+import { leavePG, showPG } from './playground.js';
 import { mountOffline } from './offline.js';
+import { wireProblemAdd } from './problem-add.js';
+const iSafe = id => id.replace(/[^a-zA-Z0-9-]/g,'-');
 const PLAYICON = SV('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>');
 
 const m = $('#m'), nav = $('#nav'), flt = $('#flt');
@@ -47,7 +50,7 @@ export function firstMatch() {
   return st.view.exams.findIndex(ex=>ex.problems.some(P=>P.qs.some(x=>!x.oos && matchesTopic(topic,P.p,x.q) && (flt.value!=='missed' || missedQuestion(st.S,x.qid)))));
 }
 function chooseTopic(topic) {
-  cs().topic=topic; const i=firstMatch(); if(i>=0) st.cur=i;
+  cs().topic=topic; const i=firstMatch(); if(i>=0 && st.cur >= 0) st.cur=i;
   st.save(); render(); scrollTo(0,0);
 }
 // Topic: a chip beside Sort, below the sidebar's top line, whose menu lists each topic with its progress (touch devices get the native picker).
@@ -132,6 +135,7 @@ export function sidebar() {
   if (was.size) nav.querySelectorAll('details[data-x]').forEach(d => { const y = was.get(d.dataset.x); if (y == null) return; const dy = y - d.getBoundingClientRect().top;
     if (Math.abs(dy) > 1) d.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' }); });
   // A problem just finished: pop its check mark and give it a small burst, if it is in view in the sidebar.
+  if (st.cur < 0 && !st.pgView) drawHomeExams();
   finished.forEach(d => { const r = d.getBoundingClientRect(), b = $('#side').getBoundingClientRect(); if (!r.width || r.top < b.top || r.bottom > b.bottom || reduced()) return;
     d.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.35)', offset: .6 }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' }); confetti(d, true); });
 }
@@ -150,7 +154,7 @@ let evEx = null;
 export function render() {
   // The playground draws itself; a redraw while it's open (a collection switch) only updates the URL.
   syncHome(); if (st.ptView) return renderPT(); record(); if (st.pgView) return; if (st.cur < 0) return renderHome();
-  const ex = st.view.exams[st.cur]; cs().ex = ex.id; st.save(); m.innerHTML = ''; FILLS.length = 0;
+  const ex = st.view.exams[st.cur]; cs().ex = ex.id; cs().last = ex.id; st.S._lastExam = { c: st.cid, x: ex.id }; st.save(); m.innerHTML = ''; FILLS.length = 0;
   const key = st.cid + ':' + ex.id; if (key !== evEx) { evEx = key; ev('exam_open', { x: ex.id }); }
   const nt = document.createElement('div'); nt.className = 'note';
   const staff = st.view.scope.basis == 'staff';
@@ -161,10 +165,10 @@ export function render() {
     if (!selected.length) return;
     const p = P.p, d = document.createElement('section'); d.className = 'prob'; d.id = `p-${st.cur}-${j}`; d.style.scrollMarginTop = '64px';
     const tips = [...(p.adapted ? [{ k: 'adapted', t: `Adapted to Gleam by this site from ${p.adapted.from}; not written by course staff` }] : []), ...(P.tips || [])];
-    // Problems with code the site runs open in the playground (hidden during a practice exam: body.pglock).
-    const play = p.run ? `<button type="button" class="pgopen" data-tip="Run and edit this problem’s code in the playground, with your answers filled in">${PLAYICON}<span>Open in playground</span></button>` : '';
+    // Every problem can be added as runnable code or commented notes (hidden during a timed attempt).
+    const play = `<div class="pgadd"><button type="button" class="pgopen" aria-expanded="false" aria-controls="pgadd-${iSafe(p.id)}">${PLAYICON}<span>Add to playground</span></button><div class="pgaddmenu" id="pgadd-${iSafe(p.id)}" hidden></div></div>`;
     d.innerHTML = `<div class="ph"><h2>${esc(p.t)}</h2>${play}</div>` + (tips.length ? `<div class="tips">${tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
-    if (p.run) d.querySelector('.pgopen').onclick = () => { ev('pg_from_practice', { x: ex.id, q: p.id }); openProblem(p.id); };
+    wireProblemAdd(d.querySelector('.pgadd'), p.id);
     if (p.authored) d.insertAdjacentHTML('beforeend','<p class="authored">Original practice written by this site; not a past exam or course-staff problem.</p>');
     let qi = 0;
     p.b.forEach(b => {
@@ -189,6 +193,23 @@ export function goHome() {
   C.back = { pt: st.ptView ? 1 : 0, h: st.ptHist, ex: ex?.id || '', y: scrollY };
   st.cur = -1; if (st.ptView) showPT(false); else { render(); scrollTo(0, 0); }
 }
+// Reopen the last source exam; new visitors start with the newest actual final exam.
+export function browseExams() {
+  const last = st.S._lastExam;
+  let target = last && st.views[last.c]?.exams.some(ex => ex.id === last.x) ? last : null;
+  if (!target && st.view.exams.some(ex => ex.id === cs().last)) target = { c: st.cid, x: cs().last };
+  if (!target) {
+    const finals = st.views.final;
+    const i = sortExams(finals, st.S, 'date', true).find(i => /-final$/.test(finals.exams[i].id) && SORTS.date.key(finals.exams[i]) != null);
+    target = { c: 'final', x: finals.exams[i ?? 0].id };
+  }
+  leavePG();
+  if (target.c !== st.cid) { select(target.c, { initial: true }); drawSort(); }
+  st.cur = st.view.exams.findIndex(ex => ex.id === target.x);
+  (cs().open ||= {})[target.x] = 1;
+  if (st.ptView) showPT(false); else render();
+  scrollTo(0,0);
+}
 // pt: return to the timed exam view (else the last exam). The scroll position comes back only for the view home was opened from.
 function goBack(pt = !!cs().back?.pt) {
   const C = cs(), b = C.back || {}, i = st.view.exams.findIndex(ex => ex.id === (pt ? b.ex : C.last));
@@ -198,29 +219,83 @@ function goBack(pt = !!cs().back?.pt) {
 }
 // The title's tooltip and pressed look say whether it leaves the current exam or goes back to it.
 export function syncHome() {
+  // Return the shared controls before replacing a view, preserving their listeners and state.
+  const top = $('#side .sidetop');
+  for (const id of ['sdd', 'dd', 'sortbar']) { const node = $('#' + id); if (node && !top.contains(node)) top.append(node); }
+  const socials = $('.socials'); if (socials && !$('#side').contains(socials)) $('#side').append(socials);
   const home = st.cur < 0 && !st.ptView && !st.pgView, C = cs(), back = home && (C.back?.pt || st.view.exams.some(ex => ex.id === C.last));
   document.body.classList.toggle('athome', home);
+  $('#exb').setAttribute('aria-current', !home && !st.ptView && !st.pgView ? 'page' : 'false');
+  $('#ptb').setAttribute('aria-pressed', String(st.ptView));
+  animateView(st.pgView ? 'play' : st.ptView ? `timed:${st.cid}:${st.ptHist || st.S._pt?.start || 'setup'}` : home ? `home:${st.cid}` : `exam:${st.cid}:${st.cur}`);
+  $('#zmp').hidden = true; $('#zmb').setAttribute('aria-expanded', 'false');
   $('#home').dataset.tip = !home ? 'Home: close the open exam' : back ? 'Back to where you were' : 'Home';
 }
 function renderHome() {
   cs().ex = ''; st.save(); m.innerHTML = ''; FILLS.length = 0; evEx = null;
-  const last = st.view.exams.findIndex(ex => ex.id === cs().last), X = st.S._pt, live = X && !X.done;
-  // Every study option's progress (the final is the whole course), most correct first; ties keep the menu's order.
-  const share = t => t.n ? t.ok / t.n : 0;
-  const all = st.bank.collections.map(c => ({ v: st.views[c.id], t: collectionCounts(st.S, st.views[c.id]) })).sort((a, b) => share(b.t) - share(a.t));
-  const rows = all.map(({ v, t }) => { const cur = v.id === st.cid, pct = Math.round(100 * share(t));
-    return `<li><button type="button" data-c="${esc(v.id)}"${cur ? ' aria-current="true"' : ''} data-tip="${esc(cur ? `You're studying for ${v.label}` : `Study for ${v.label}`)}"><span class="cn"><b>${esc(v.label)}</b><span class="sub">${esc(v.sub)}</span>${cur ? '<span class="now">Studying for</span>' : ''}</span><span class="num">${t.ok}/${t.n} correct · ${pct}%</span><span class="bar" role="img" aria-label="${pct}% correct"><i style="width:${100 * share(t)}%"></i></span><span class="cans">${t.a} answered</span></button></li>`; }).join('');
-  m.innerHTML = `<section class="prob home"><h2>Studying for ${esc(st.view.label)}</h2>
-${st.view.coverage?.text ? `<p class="mut">${esc(st.view.coverage.text)}</p>` : ''}
-<p>Pick an exam in the sidebar to work through its questions, or take a timed practice exam.</p>
-<div class="homebtns">${last >= 0 ? `<button class="p" data-act="last">Continue ${esc(st.view.exams[last].t)}</button>` : ''}<button${last < 0 ? ' class="p"' : ''} data-act="pt">${live ? `Return to your ${esc(st.views[X.c]?.label || '')} practice exam` : 'Take a timed practice exam'}</button></div>
-<h3>Your progress</h3><ol class="cprogs">${rows}</ol><p class="homeoff"><span class="offl" hidden></span></p></section>`;
+  const X = st.S._pt, live = X && !X.done;
+  const all = st.bank.collections.map(c => ({ v: st.views[c.id], t: collectionCounts(st.S, st.views[c.id]) }));
+  const rows = all.map(({ v, t }) => `<li><button type="button" data-c="${esc(v.id)}"${v.id === st.cid ? ' aria-current="true"' : ''}><span class="cn"><b>${esc(v.label)}</b><span class="sub">${esc(v.sub)}</span>${v.id === st.cid ? '<span class="now">Studying for</span>' : ''}</span><span class="num">${t.ok}/${t.n} correct</span></button></li>`).join('');
+  const arrow = SV('<path d="M5 12h14M13 6l6 6-6 6"/>');
+  m.innerHTML = `<section class="prob home">
+<div class="homeintro"><h2>How do you want to practice?</h2><p class="mut">Past exams, a place to experiment, or a timed challenge. Pick up wherever you are.</p></div>
+<div class="homepaths" aria-label="Ways to practice">
+<button type="button" data-act="exams"><span class="pathicon">${SV('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>')}</span><strong>Exams</strong><span>Work through past exam questions at your own pace.</span><span class="pathgo">Open exams ${arrow}</span></button>
+<button type="button" data-act="play"><span class="pathicon">${PLAYICON}</span><strong>Playground</strong><span>Experiment with Python and Gleam in your own workspace.</span><span class="pathgo">Open playground ${arrow}</span></button>
+<button type="button" data-act="pt"><span class="pathicon">${SV('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')}</span><strong>Practice exam</strong><span>Take a timed exam, then review your answers and results.</span><span class="pathgo">${live ? 'Resume practice exam' : 'Set up an exam'} ${arrow}</span></button>
+</div>
+<div class="homeresume" hidden></div>
+<section id="home-exams" aria-labelledby="home-exams-title" tabindex="-1"><div class="home-section-head"><h3 id="home-exams-title">Browse exams</h3><div class="home-study"><label for="study">Studying for</label></div></div>
+<p class="mut homecoverage" hidden></p>
+<div class="homefilters"></div><p class="homecounts"></p><div class="homeexamlist"></div></section>
+<details class="homeprogress"><summary>Progress across all study options</summary><ol class="cprogs">${rows}</ol></details>
+<p class="homeoff"><span class="offl" hidden></span></p><div class="homefooter"></div></section>`;
+  m.querySelector('.home-study').append($('#sdd'));
+  m.querySelector('.homefilters').append($('#dd'), $('#sortbar'));
+  m.querySelector('.homefooter').append($('.socials'));
   m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c));
   mountOffline(m.querySelector('.offl'));
-  const b = m.querySelector('[data-act=last]'); if (b) b.onclick = () => goBack(false);
-  m.querySelector('[data-act=pt]').onclick = () => cs().back?.pt ? goBack(true) : showPT(true);
+  m.querySelector('[data-act=exams]').onclick = browseExams;
+  m.querySelector('[data-act=play]').onclick = () => showPG();
+  m.querySelector('[data-act=pt]').onclick = () => { st.ptHist = null; showPT(true); };
+  refreshHomeCollection();
+}
+// Update the browser's collection without replacing the page, moving shared controls or replaying its entrance.
+export function refreshHomeCollection() {
+  const home = m.querySelector('.home'); if (!home) return;
+  cs().ex = ''; st.save(); record();
+  const coverage = home.querySelector('.homecoverage');
+  coverage.textContent = st.view.coverage?.text || ''; coverage.hidden = !coverage.textContent;
+  const last = st.view.exams.findIndex(ex => ex.id === cs().last), X = st.S._pt, live = X && !X.done;
+  const resume = home.querySelector('.homeresume'); resume.hidden = last < 0 && !live;
+  resume.innerHTML = resume.hidden ? '' : `<span>Continue where you left off</span><div class="homebtns">${last >= 0 ? `<button type="button" data-act="last">Continue ${esc(st.view.exams[last].t)}</button>` : ''}${live ? `<button type="button" data-act="resume">Resume ${esc(st.views[X.c]?.label || '')} practice exam</button>` : ''}</div>`;
+  const back = resume.querySelector('[data-act=last]'); if (back) back.onclick = () => goBack(false);
+  const timed = resume.querySelector('[data-act=resume]'); if (timed) timed.onclick = () => { st.ptHist = null; showPT(true); };
+  home.querySelectorAll('.cprogs button').forEach(b => {
+    const current = b.dataset.c === st.cid;
+    if (current) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    b.querySelector('.now')?.remove();
+    if (current) b.querySelector('.cn').insertAdjacentHTML('beforeend', '<span class="now">Studying for</span>');
+  });
+  $('#home').dataset.tip = cs().back?.pt || last >= 0 ? 'Back to where you were' : 'Home';
   stats();
 }
+
+function drawHomeExams() {
+  const list = m.querySelector('.homeexamlist'); if (!list) return;
+  const f = flt.value, topic = cs().topic, so = sortState();
+  const total = collectionCounts(st.S, st.view);
+  m.querySelector('.homecounts').textContent = `${total.ok}/${total.n} correct · ${total.a} answered across ${st.view.label}`;
+  const exams = sortExams(st.view, st.S, so.by, so.desc).map(i => {
+    const ex = st.view.exams[i], c = counts(st.S, ex);
+    const matching = ex.problems.reduce((n,P) => n + P.qs.filter(x => keep(f,x,st.S[x.qid]) && matchesTopic(topic,P.p,x.q) && (!topic || !x.oos)).length,0);
+    if ((f !== 'all' || topic) && !matching) return '';
+    return `<button type="button" class="homeexam" data-i="${i}"><span><strong>${esc(ex.t)}</strong><span class="mut">${c.n} in-scope questions${f !== 'all' || topic ? ` · ${matching} matching` : ''}</span></span><span class="examstatus">${c.a ? `${c.ok}/${c.n} correct` : 'Not started'}<span class="mut">${c.a ? 'Continue exam' : 'Open exam'}</span></span>${SV('<path d="M9 5l7 7-7 7"/>')}</button>`;
+  }).join('');
+  list.innerHTML = exams || '<p class="homeempty">No exams match these filters. Try another topic or choose All questions.</p>';
+  list.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { st.cur = Number(b.dataset.i); (cs().open ||= {})[st.view.exams[st.cur].id] = 1; render(); scrollTo(0,0); });
+}
+
 // "Problems 1 and 5 of the original exam aren’t on this site (…)."
 function omittedText(o) {
   const ns = o.map(x => x.n), why = [...new Set(o.map(x => x.why))];
@@ -313,5 +388,5 @@ function wireReset(ex) {
 
 export function stats() {
   if (st.ptView) return; sidebar(); const c = st.cur < 0 ? collectionCounts(st.S, st.view) : counts(st.S, st.view.exams[st.cur]);
-  $('#pb').style.width = (c.n ? 100 * c.ok / c.n : 0) + '%'; $('#stat').textContent = `${c.ok}/${c.n} correct · ${c.a} answered`;
+  $('#pb').style.width = (c.n ? 100 * c.ok / c.n : 0) + '%'; $('#stat').textContent = `${c.ok}/${c.n} correct`;
 }

@@ -1,10 +1,9 @@
 // Practice problems the playground can import: those with code the site runs (p.run), in Python or Gleam.
 // fileFor builds the playground file: the problem's code with its blanks filled in, then its tests (Python's doctests
 // are already in the code). Blanks can be left as blanks (____ in Python, todo in Gleam), filled with the student's
-// answers (unchecked drafts first, as practice shows them), or with the solution once every code question in the
-// problem has been checked. Template blanks no question asks about always get the official code, as in practice.
+// answers (unchecked drafts first, as practice shows them), or with the official solution at any time. Template blanks no question asks about always get the official code, as in practice.
 import { st } from './state.js';
-import { fill, gleamSource, answerParts, solutionQuestions } from './grading.js';
+import { fill, gleamSource, answerParts, solutionQuestions, keyText } from './grading.js';
 import { topicName, examDate, examKind, KINDS } from './model.js';
 import { segText } from './highlight.js';
 
@@ -28,8 +27,8 @@ export const findProblem = id => problems().find(x => x.p.id === id);
 
 const asked = p => new Set(solutionQuestions(p).flatMap(q => q.r || q.code || []));
 const answerOf = (e, q) => { const id = e.id + '|' + q.id, v = st.S._dr?.[id] ?? st.S[id]?.v; return v == null || v === '' || Array.isArray(v) && !v.length ? null : v; };
-// The solution is offered once every code question has been checked (right or wrong) in practice.
-export const canSolve = ({ p, e }) => { const qs = solutionQuestions(p); return qs.length > 0 && qs.every(q => st.S[e.id + '|' + q.id]); };
+// Solutions are available without recording practice answers.
+export const canSolve = () => true;
 export const hasAnswers = ({ p, e }) => solutionQuestions(p).some(q => answerOf(e, q) != null);
 
 // The file's code for fill 'blanks' | 'mine' | 'solution'.
@@ -57,4 +56,74 @@ function standalone(code) {
   if (/\bre\.\w/.test(code) && !/^import re\b/m.test(code)) head.push('import re');
   if (need.length) head.push(`# ${need.length > 1 ? 'Definitions' : 'The definition'} CS 61A uses for ${need.join(' and ')}.`, ...need.map(n => named[n] + '\n'));
   return head.length ? head.join('\n') + '\n\n' + code : code;
+}
+
+// A problem can have usable displayed code even without a grading template.
+export function findAnyProblem(id) {
+  const runnable = findProblem(id); if (runnable) return runnable;
+  for (const e of st.bank.exams) {
+    const p = e.p.find(p => p.id === id); if (!p) continue;
+    const code = p.b.flatMap(b => b.s || b.l || []).find(g => g.c != null && ['py','gleam'].includes(g.lang) && supportedSegment(g,g.lang));
+    return {p,e,lang:code?.lang || 'py',hasCode:!!code};
+  }
+}
+function displayedCode(g, x, how, lang) {
+  const values = {};
+  for (const [label, official] of Object.entries(g.f || {})) {
+    let value = how === 'solution' ? official : HOLE[lang];
+    if (how === 'mine') {
+      const matches = x.p.b.filter(q => q.k && (q.r?.includes(label) || q.code?.includes(label) || q.sql?.key === label || new RegExp(`blank\\s*\\(\\s*${label}\\s*\\)`, 'i').test(segText(q.l))));
+      if (matches.length === 1) {
+        const q = matches[0], answer = answerOf(x.e,q);
+        if (answer != null) value = q.k === 'mc' ? q.o[answer] : q.k === 'sata' ? answer.map(i=>q.o[i]).join('\n') : answer;
+      }
+    }
+    values[label] = String(value);
+  }
+  return g.c.split('\n').map(line => {
+    const alone = line.match(/^(\s*)⟪([a-z]?)⟫\s*$/);
+    if (alone) return (values[alone[2]] ?? HOLE[lang]).split('\n').map(v=>alone[1]+v).join('\n');
+    return line.replace(/⟪([a-z]?)⟫/g,(_,key)=>(values[key] ?? HOLE[lang]).split('\n').join(' '));
+  }).join('\n');
+}
+function supportedSegment(g, lang) {
+  if (g.lang !== lang || /^\s*(scm>|sql>|Traceback \(most recent call last\):)/.test(g.c)) return false;
+  // A few source blocks tagged as Python are Scheme examples or Scheme prose.
+  return lang !== 'py' || !(/#(?:t|f)\b/.test(g.c) || /^\s*\([\w?!-]+\s+'/.test(g.c));
+}
+// Keep omitted exam implementations explicit without leaving a syntactically empty function.
+function pythonStubs(code) {
+  const lines = code.split('\n'), out = [];
+  lines.forEach((line,i) => {
+    out.push(line);
+    const def = line.match(/^(\s*)(?:async )?def .+:\s*(?:#.*)?$/); if (!def) return;
+    const next = lines.slice(i+1).find(l=>l.trim() && !l.trimStart().startsWith('#'));
+    if (!next || next.match(/^\s*/)[0].length <= def[1].length) out.push(def[1]+'    pass  # Implementation omitted in the exam.');
+  });
+  return out.join('\n');
+}
+// Strip Python interpreter prompts while keeping the displayed output as comments.
+function pythonTranscript(code, comment) {
+  if (!/^\s*>>>/.test(code)) return code;
+  return code.split('\n').map(line => {
+    const prompt = line.match(/^\s*(>>>|\.\.\.)(?: |$)(.*)$/);
+    return prompt ? prompt[2] : comment(line);
+  }).join('\n');
+}
+export function importCode(x, how, lang = x.lang) {
+  if (x.p.run) return codeFor(x, how);
+  const prefix = lang === 'gleam' ? '// ' : '# ';
+  const comment = text => String(text).split('\n').map(line=>prefix+line).join('\n');
+  const parts = [comment(x.e.t),comment(x.p.t)];
+  for (const b of x.p.b) {
+    for (const g of b.s || b.l || []) {
+      if (g.c != null && supportedSegment(g,lang)) {
+        const code = displayedCode(g,x,how,lang);
+        parts.push(lang === 'py' ? pythonStubs(pythonTranscript(code,comment)) : code);
+      } else parts.push(comment(segText([g])));
+    }
+    if (b.k && how === 'solution') parts.push(comment('Answer: '+keyText(b)));
+  }
+  const code = parts.filter(Boolean).join('\n\n')+'\n';
+  return lang === 'py' ? standalone(code) : code;
 }

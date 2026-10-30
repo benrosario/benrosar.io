@@ -4,7 +4,7 @@ import { load, saver } from './store.js';
 import { resolveCollection } from './model.js';
 import { initEvents } from './events.js';
 import { initTheme, initChrome, applyZoom } from './chrome.js';
-import { render, initTopicControls, goHome } from './practice.js';
+import { render, initTopicControls, goHome, browseExams } from './practice.js';
 import { initTimed } from './timed.js';
 import { initSelector, select, fromURL } from './selector.js';
 import { $ } from './util.js';
@@ -37,6 +37,7 @@ async function boot() {
   initNav(); // the exam or view the URL names, if any
   initSelector(); initChrome(); initSort(); initTopicControls();
   $('#home').onclick = e => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); goHome(); };
+  $('#exb').onclick = browseExams;
   prefetchRuntimes(); // before the first render, which may ask to start a runtime once it's downloaded
   render(); applyZoom(true);
   initTimed();

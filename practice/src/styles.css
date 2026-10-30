@@ -258,3 +258,135 @@ body.pgm #side,body.pgm .grip,body.pgm #rs,body.pgm #stat{display:none}body.pgm 
 /* "Make available offline" / "Works offline" (offline.js), in the playground's toolbar and on the home page. */
 .offl[hidden]{display:none}.offl button{padding:3px 10px;font-size:13.5px}.offl button:disabled{cursor:progress;font-variant-numeric:tabular-nums}
 .offl.ready span{font-size:13.5px;color:var(--ok)}.offl.failed button{color:var(--no);border-color:var(--no)}.homeoff{margin:16px 0 0}.homeoff:has(.offl[hidden]){display:none}
+
+/* Home: three activities, with the exam browser in the page rather than a sidebar. */
+body.athome #side,body.athome #grip,body.athome header>.bar,body.athome #stat{display:none}
+
+body.athome #m{max-width:1120px;width:100%;padding:44px 32px;zoom:var(--zm,1)}
+.prob.home{padding:0;border:0;background:none;margin:0}
+.home .homeintro h2{font-size:32px;line-height:1.2;letter-spacing:-.025em;margin:0 0 12px;font-weight:650}
+.homeintro p{margin:0 0 28px;font-size:16px}
+.homepaths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.homepaths>button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:24px;min-width:0;border-radius:14px;background:var(--card);gap:12px}
+.homepaths>button:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 4%,var(--card))}
+.homepaths strong{font-size:21px;font-weight:650}
+.homepaths>button>span:not(.pathicon):not(.pathgo){color:var(--mut);line-height:1.55}
+.homepaths .pathicon{color:var(--acc);display:flex;margin-bottom:4px}.pathicon svg{width:26px;height:26px}
+.homepaths .pathgo{color:var(--acc);display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-top:auto;padding-top:12px}
+.pathgo svg{width:18px;height:18px}
+.homeresume{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--bd);font-size:14px}
+.home .homebtns{margin:0;gap:8px}.homebtns button{font-size:14px;min-height:44px}
+#home-exams{margin-top:44px;scroll-margin-top:calc(var(--hh,66px) + 20px)}#home-exams:focus{outline:none}#home-exams:focus-visible{outline:2px solid var(--acc);outline-offset:8px;border-radius:8px}
+.home-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.home .home-section-head h3{font-size:23px;color:var(--fg);margin:0;font-weight:650;letter-spacing:-.02em}
+.home-study{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mut)}
+.home-study .ddb{min-height:44px;color:var(--fg)}
+.homecoverage{font-size:14px;margin:12px 0 18px}
+.homefilters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 12px}
+.homefilters #sortbar{display:flex;align-items:center;gap:10px;margin:0;flex-wrap:wrap}
+.homefilters .ddb,.homefilters .chip{min-height:44px}.homefilters #dd{width:auto}
+.homecounts{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums;margin:12px 0}
+.homeexamlist{border-top:1px solid var(--bd)}
+.homeexam{width:100%;border:0;border-bottom:1px solid var(--bd);border-radius:0;padding:18px 12px;display:flex;align-items:center;gap:18px;text-align:left;background:none;min-height:84px}
+.homeexam:hover{background:var(--card)}.homeexam>span:first-child{flex:1;min-width:0}.homeexam strong{display:block;font-size:16px;font-weight:600}.homeexam .mut{display:block;font-size:13px;margin-top:4px}
+.homeexam .examstatus{text-align:right;font-size:14px;font-variant-numeric:tabular-nums}.homeexam>svg{width:18px;height:18px;flex:none;color:var(--mut)}
+.homeempty{padding:24px 12px;color:var(--mut)}
+.homeprogress{margin-top:32px}.homeprogress>summary{cursor:pointer;padding:12px 0;color:var(--mut);font-size:14px}.homeprogress .cprogs{margin-top:8px}
+.homefooter{margin-top:32px}.homefooter .socials{position:static;container-type:normal;margin:0;padding:20px 0 0;background:none;justify-content:flex-start;gap:20px}
+.homefooter .socials a,.homefooter .socials .fb{flex:none;display:flex;width:auto;min-height:44px;padding:8px 0;border:0;background:none;color:var(--mut);font-size:13px;font-weight:400;text-decoration:none}.homefooter .socials a:hover,.homefooter .socials .fb:hover{color:var(--acc)}
+.home button:focus-visible,.home summary:focus-visible,.home a:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+@media(max-width:760px){body.athome #m{padding:28px 20px}.home .homeintro h2{font-size:27px}.homepaths{grid-template-columns:1fr;gap:10px}.homepaths>button{padding:18px 20px;gap:6px}.homepaths .pathicon{display:none}.homepaths strong{font-size:19px}.homepaths .pathgo{padding-top:6px}.homeintro p{font-size:15px;margin-bottom:22px}#home-exams{margin-top:32px}.home-study{width:100%;justify-content:space-between}.homeexam{padding:16px 0;gap:8px}.homeexam strong{font-size:15px}.homeexam .examstatus{font-size:13px}.homefooter .socials{gap:16px;flex-wrap:wrap}.homefooter .socials span{display:inline}.homefilters{gap:8px}.homefilters #sortbar{gap:8px}}
+.homefilters #sortbar{flex:0 1 auto;width:auto;padding:0;border:0}.homefilters #sortbar .srt{flex:0 1 auto}.homefilters #tdd{position:relative;width:auto}.homefilters #tddm{left:0;right:auto;min-width:280px;max-width:calc(100vw - 48px)}
+@media(max-width:760px){body.athome header{gap:8px;padding:10px 12px}body.athome header h1{font-size:16px}body.athome #th{width:34px}body.athome .hnav button{width:28px}}
+
+/* Activity navigation stays separate from the tools used while solving questions. */
+.activitynav{display:flex;align-items:center;gap:6px;margin-left:12px;min-width:0}
+.activitynav #exb,.activitynav #pgb,.activitynav #ptb{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:auto;height:41px;min-height:41px;padding:0 12px;border-radius:8px;font-size:14px;font-weight:600;white-space:nowrap;background:none;border-color:transparent}
+.activitynav svg{width:18px;height:18px;flex:none}
+.activitynav #pgb[hidden]{display:none}
+.activitynav #pgb span{display:inline}
+.activitynav #exb:hover,.activitynav #pgb:hover,.activitynav #ptb:hover{background:var(--code)}
+.activitynav #exb[aria-current=page],.activitynav #pgb[aria-pressed=true],.activitynav #ptb[aria-pressed=true]{color:var(--acc);border-color:var(--bd);background:var(--code)}
+.activitynav #ptb.run{color:var(--acc);border-color:var(--acc)}
+header>#th{margin-left:auto}
+.examtools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%;font-size:15px;padding-top:10px;border-top:1px solid var(--bd)}
+.examtools>.bar{min-width:100px}.examtools>#rs{margin-left:auto}
+body.athome .examtools{display:none}
+.activitynav button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(max-width:960px){header{gap:8px}header h1{font-size:17px}.activitynav{margin-left:0}.activitynav #exb,.activitynav #pgb,.activitynav #ptb{padding:0 9px}}
+@media(max-width:760px){.activitynav{order:10;flex:1 0 100%;justify-content:space-between;padding-top:8px;border-top:1px solid var(--bd)}.activitynav #exb,.activitynav #pgb,.activitynav #ptb{flex:1;padding:0 6px;font-size:13px;min-height:44px;height:44px}.activitynav #pgb{width:auto}.activitynav svg{display:none}.examtools{order:20;gap:8px}.examtools>.bar{flex:1}.examtools #stat{font-size:13px}.examtools .zm{font-size:14px}.examtools .zm button{min-width:32px;padding:6px 8px}}
+@media(max-width:760px){header{padding:10px 12px}header h1{font-size:16px}header>#th{width:34px}.hnav button{width:28px}}
+@media(max-width:760px){.activitynav #ptb .navclock{display:none}}
+
+/* Compact, persistent view tools; detailed zoom controls open on demand. */
+.viewtools{display:flex;align-items:center;gap:6px;margin-left:auto}
+header>.viewtools+#th{margin-left:0}
+body.ptm .examtools,body.pgm .examtools{display:none}
+.zoom-control{position:relative}
+#zmb{display:grid;place-items:center;width:41px;height:41px;padding:0;border-radius:10px}
+#zmb[aria-expanded=true]{border-color:var(--acc);color:var(--acc);background:var(--code)}
+.zoom-panel{position:absolute;right:0;top:calc(100% + 10px);width:294px;padding:16px;background:var(--card);border:1px solid var(--bd);border-radius:12px;z-index:8;box-shadow:0 8px 24px #0002;font-size:14px}
+.zoom-panel[hidden]{display:none}.zoom-panel .zm{width:100%;display:flex}.zoom-panel .zm #zv{flex:1;min-width:0}.zoom-panel p{font-size:12px;color:var(--mut);margin:12px 0 0;line-height:1.5}
+body.ptm #side,body.ptm #grip{display:none}
+body.ptm #m{width:100%;max-width:960px;padding:32px 24px}
+.ptchooser{text-align:center;margin:0 auto 28px;max-width:760px}
+.ptchooser h2{font-size:30px;line-height:1.2;letter-spacing:-.025em;margin:0 0 8px}.ptchooser p{margin:0 0 20px}
+.ptcollections{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px;background:var(--code);border:1px solid var(--bd);border-radius:12px}
+.ptcollections button{min-height:46px;border:1px solid transparent;background:none;font-size:14px;font-weight:600;padding:8px}
+.ptcollections button[aria-pressed=true]{background:var(--card);border-color:var(--bd);color:var(--acc)}.ptcollections button:hover{color:var(--acc)}
+.ptcollections button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+body.ptm .pthome{padding:28px;max-width:760px;margin:0 auto 24px}
+.pthome>h2{font-size:21px;letter-spacing:-.015em}.pthome>p{color:var(--mut)}
+.pthome .ptlength-title{margin:24px 0 10px;font-size:14px;color:var(--fg)}
+.pthome .ptopts{margin:0 0 20px}.pthome .ptopt{min-height:94px}
+.ptrule-details{margin:16px 0 20px;font-size:14px}.ptrule-details summary{padding:8px 0;cursor:pointer;color:var(--mut)}.ptrule-details .ptrules{margin:8px 0}
+#ptgo{min-height:46px;min-width:160px}.pthome .pth{display:block;overflow-x:auto}
+.ptsession{padding:20px;margin-bottom:20px;border:1px solid var(--bd);border-radius:12px;background:var(--card);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.ptsession .ptclock,.ptsession .ptscore{grid-column:1/-1;font-size:28px}.ptsession .ptsub{grid-column:1/-1;margin:0 0 12px}
+.ptsession>a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--fg);font-size:13px;padding:8px 10px;border-radius:6px;min-height:40px}.ptsession>a:hover{background:var(--code)}.ptsession>a .nm{flex:1}.ptsession .ct{color:var(--mut);font-variant-numeric:tabular-nums}
+.ptsession .ptbtns{grid-column:1/-1;display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;padding:8px 0 0;margin:0;gap:8px}.ptsession .ptbtns button{min-height:44px;padding:8px 18px}
+@media(max-width:1100px) and (min-width:761px){header{column-gap:6px}header h1{font-size:16px}.activitynav #exb,.activitynav #pgb,.activitynav #ptb{padding:0 7px;font-size:13px}.activitynav svg{width:16px;height:16px}.viewtools{gap:4px}}
+@media(max-width:760px){header{position:sticky}.viewtools{order:11;margin-left:0;flex:1;justify-content:flex-end;border-top:1px solid var(--bd);padding-top:8px}.viewtools #hlb,.viewtools #zmb{width:38px;height:38px}.viewtools #tmb{height:38px}.activitynav{border-top:0}.zoom-control{position:static}.zoom-panel{right:12px;left:auto;top:calc(100% + 6px);max-width:calc(100vw - 24px)}body.ptm #m{padding:24px 16px}.ptchooser h2{font-size:26px}.ptcollections{gap:2px;padding:4px}.ptcollections button{font-size:12px;padding:8px 2px;min-height:44px}body.ptm .pthome{padding:20px}.ptsession{padding:16px;grid-template-columns:1fr}.ptsession>a{grid-column:1/-1}}
+.ptsource-details{margin:12px 0 20px;font-size:14px}.ptsource-details summary{cursor:pointer;color:var(--mut);padding:8px 0}.ptsource-details p{margin:8px 0 0;color:var(--mut)}
+@media(max-width:760px){.activitynav #exb svg{display:block;width:16px;height:16px}body.pglock .activitynav #ptb .navclock{display:inline}.ptopts{grid-template-columns:1fr}.pthome .ptopt{min-height:80px}}
+
+/* Exam progress belongs with the primary navbar controls on desktop. */
+.examtools{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:41px;align-items:center;gap:2px 10px;flex:1 1 260px;max-width:none;min-width:290px;width:auto;padding:0;border:0;margin-left:auto}
+.examtools>.bar{grid-column:2;grid-row:1;width:100%;min-width:0;height:14px;align-self:center}
+.examtools #stat{grid-column:1;grid-row:1;font-size:14px;white-space:nowrap;line-height:1.4;font-variant-numeric:tabular-nums}
+.examtools>#rs{grid-column:3;grid-row:1;min-height:41px;margin:0;padding:6px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.examtools~.viewtools{margin-left:auto}
+@media(min-width:761px) and (max-width:1400px){header{gap:8px}header h1{font-size:17px}.activitynav{margin-left:0;gap:4px}.activitynav #exb,.activitynav #pgb,.activitynav #ptb{font-size:13px;padding:0 8px}}
+@media(max-width:1100px){.examtools{order:12;flex:1 0 100%;max-width:none;min-width:0;padding-top:8px;border-top:1px solid var(--bd)}.examtools #stat{font-size:14px}.examtools~.viewtools{margin-left:auto}}
+@media(max-width:760px){.examtools{order:12}.examtools~.viewtools{margin-left:auto}}
+
+/* The same four controls form one right-aligned group in every view. */
+.viewtools #th{margin:0;flex:none}
+@media(max-width:760px){.viewtools{flex:1 0 100%;justify-content:flex-end}.viewtools #th{width:38px;height:38px}}
+
+.homeresume[hidden],.homecoverage[hidden]{display:none}
+
+/* Let sidebar pickers wrap and stack before their labels get clipped. */
+.sidetop>#sdd,.sidetop>#dd{flex:1 1 145px}
+.sidetop>#sdd .ddb>span,.sidetop>#dd .ddb>span{flex:1;min-width:0;white-space:normal;overflow:visible;text-align:left;overflow-wrap:anywhere}
+.sidetop .ddb>svg{flex:none}
+.sidetop>.dd .ddb{min-height:44px}
+.ddm li{white-space:normal;align-items:flex-start}
+.ddm li>.ck{flex:none}
+.dd-option{display:flex;flex:1;min-width:0;align-items:center;flex-wrap:wrap;gap:4px 8px;overflow-wrap:anywhere}
+.dd-option>.sub{flex-basis:100%;margin-left:0!important;padding-left:0!important}
+#side:has(.ddb[aria-expanded=true]){z-index:5}
+.pgadd{position:relative;flex:none}body.pglock .pgadd{display:none}
+.pgaddmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:3;width:300px;max-width:calc(100vw - 48px);padding:14px;border:1px solid var(--bd);border-radius:12px;background:var(--card);box-shadow:0 8px 24px #0002;font-size:14px;display:grid;gap:8px}
+.pgaddmenu[hidden],.pgaddtargets[hidden]{display:none}
+.pgaddmenu label{display:grid;gap:6px;color:var(--mut);font-size:12px}.pgaddmenu select{width:100%;min-width:0;color:var(--fg);min-height:40px;font-size:14px}
+.pgaddmenu button{min-height:44px;text-align:left}.pgaddtargets{display:grid;gap:8px;border-top:1px solid var(--bd);padding-top:12px}.pgaddtargets p{font-size:12px;color:var(--mut);margin:0}
+@media(max-width:760px){.ph{flex-wrap:wrap}.pgadd .pgopen span{display:inline}.pgaddmenu{left:0;right:auto}}
+
+/* Make adding a problem a clear primary action within each problem header. */
+.pgadd .pgopen{background:#2a5bd7;border-color:#2a5bd7;color:#fff;font-weight:600;min-height:40px;padding:8px 14px}
+.pgadd .pgopen svg{width:18px;height:18px}.pgadd .pgopen:hover{background:#214bb7;border-color:#214bb7;color:#fff}
+.pgadd .pgopen:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.pgreplace{width:min(480px,calc(100vw - 32px));padding:24px;border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--fg);box-shadow:0 16px 48px #0004}
+.pgreplace::backdrop{background:#0008}.pgreplace h2{font-size:21px;margin:0 0 12px}.pgreplace p{font-size:15px;line-height:1.6;margin:0 0 24px;overflow-wrap:anywhere}
+.pgreplace-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.pgreplace-actions button{min-height:44px;padding:8px 14px}
