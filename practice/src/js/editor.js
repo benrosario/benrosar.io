@@ -23,8 +23,18 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
     sync();
   }
   function sync() { pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; gut.style.transform = `translateY(${-ta.scrollTop}px)`; }
-  ta.addEventListener('input', () => { paint(); onChange?.(ta.value); });
+  ta.addEventListener('input', e => { paint(); onChange?.(ta.value); if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') revealCaret(); });
   ta.addEventListener('scroll', sync, { passive: true });
+
+  function revealCaret() {
+    const style = getComputedStyle(ta), lineHeight = parseFloat(style.lineHeight);
+    const row = ta.value.slice(0,ta.selectionEnd).split('\n').length-1;
+    const top = parseFloat(style.paddingTop)+row*lineHeight;
+    const bottom = top+lineHeight+parseFloat(style.paddingBottom);
+    if (bottom > ta.scrollTop+ta.clientHeight) ta.scrollTop = bottom-ta.clientHeight;
+    else if (top < ta.scrollTop) ta.scrollTop = top;
+    sync();
+  }
 
   // Replace [start, end) with text, keeping it on the undo stack, then select [a, b].
   function put(start, end, text, a = start + text.length, b = a) {
@@ -72,6 +82,7 @@ export function createEditor(root, { lang, value = '', label, onChange, onRun })
       const inner = indent + (deeper ? unit() : '');
       if (close) put(s, end, '\n' + inner + '\n' + indent, s + 1 + inner.length); // between brackets: the closer gets its own line
       else put(s, end, '\n' + inner);
+      revealCaret();
     } else if (e.key === 'Backspace' && s === end && before && !before.trim()) {
       e.preventDefault(); put(s - (before.length % unit().length || unit().length), s, '');
     } else if (')]}'.includes(e.key) && e.key.length === 1 && s === end && before.length >= unit().length && !before.trim()) {

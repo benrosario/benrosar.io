@@ -17,6 +17,11 @@ export function scrollToEl(el) {
   requestAnimationFrame(step);
 }
 export const SV = p => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+// Shared destination icons used by every playground creation/import flow.
+export const PLAYGROUND_ICONS = {
+  existing: SV('<path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8M12 9v8"/>'),
+  new: SV('<path d="M12 5v14M5 12h14"/>'),
+};
 export const fmtT = ms => { const t = Math.ceil(ms / 1e3), h = Math.floor(t / 3600), mm = String(Math.floor(t / 60) % 60).padStart(2, '0'), ss = String(t % 60).padStart(2, '0'); return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`; };
 // 50 -> "50 minutes", 110 -> "1 hour 50 minutes"; short form "50 min", "1 h 50 min"; clock form "50:00", "1:50:00".
 export const fmtMin = (n, short) => { const h = Math.floor(n / 60), m = n % 60;

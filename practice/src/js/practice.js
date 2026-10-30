@@ -222,7 +222,6 @@ export function syncHome() {
   // Return the shared controls before replacing a view, preserving their listeners and state.
   const top = $('#side .sidetop');
   for (const id of ['sdd', 'dd', 'sortbar']) { const node = $('#' + id); if (node && !top.contains(node)) top.append(node); }
-  const socials = $('.socials'); if (socials && !$('#side').contains(socials)) $('#side').append(socials);
   const home = st.cur < 0 && !st.ptView && !st.pgView, C = cs(), back = home && (C.back?.pt || st.view.exams.some(ex => ex.id === C.last));
   document.body.classList.toggle('athome', home);
   $('#exb').setAttribute('aria-current', !home && !st.ptView && !st.pgView ? 'page' : 'false');
@@ -249,10 +248,9 @@ function renderHome() {
 <p class="mut homecoverage" hidden></p>
 <div class="homefilters"></div><p class="homecounts"></p><div class="homeexamlist"></div></section>
 <details class="homeprogress"><summary>Progress across all study options</summary><ol class="cprogs">${rows}</ol></details>
-<p class="homeoff"><span class="offl" hidden></span></p><div class="homefooter"></div></section>`;
+<p class="homeoff"><span class="offl" hidden></span></p></section>`;
   m.querySelector('.home-study').append($('#sdd'));
   m.querySelector('.homefilters').append($('#dd'), $('#sortbar'));
-  m.querySelector('.homefooter').append($('.socials'));
   m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c));
   mountOffline(m.querySelector('.offl'));
   m.querySelector('[data-act=exams]').onclick = browseExams;

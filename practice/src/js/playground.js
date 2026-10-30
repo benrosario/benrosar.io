@@ -7,7 +7,7 @@
 // playground's own that only keeps the newest run.
 // During a timed practice exam the playground is locked: its button is hidden, and links to it open the attempt.
 import { st } from './state.js';
-import { $, esc, SV, confirmBtn, copyText, isMac, reduced } from './util.js';
+import { $, esc, SV, confirmBtn, copyText, isMac, reduced, PLAYGROUND_ICONS } from './util.js';
 import { createEditor } from './editor.js';
 import { createRunner } from './runner.js';
 import { pyJob, pyLoaded, stopPy } from './grading.js';
@@ -101,7 +101,7 @@ const ICON = { run: SV('<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="
   spin: SV('<path d="M21 12a9 9 0 1 1-6.2-8.56"/>'), stop: SV('<rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" stroke="none"/>'),
   import: SV('<path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/>'),
   share: SV('<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>'),
-  close: SV('<path d="M6 6l12 12M18 6 6 18"/>'), chev: SV('<path d="m6 9 6 6 6-6"/>'), plus: SV('<path d="M12 5v14M5 12h14"/>'), recent: SV('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'),
+  close: SV('<path d="M6 6l12 12M18 6 6 18"/>'), chev: SV('<path d="m6 9 6 6 6-6"/>'), plus: PLAYGROUND_ICONS.new, recent: SV('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'),
   trash: SV('<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2M10 11v6M14 11v6"/>') };
 function renderPG() {
   const m = $('#m'); m.innerHTML = `<section class="pg" aria-label="Playground">
@@ -418,7 +418,7 @@ function addProblem(x, fill) {
 }
 function pickProblem() {
   P.pick ||= { lang: '', all: false, fill: 'mine' };
-  openPicker({ prefs: P.pick, save: saveSoon, has: id => !!P.files[id], pick: (x, fill) => { if (!P.files[x.p.id]) addProblem(x, fill); open(x.p.id); ed.focus(); } });
+  openPicker({ prefs: P.pick, save: saveSoon, has: id => Object.values(P.files).some(f=>f.src?.p===id), current: () => ({id:P.cur,title:file().title,lang:file().lang}), pick: (x, fill, destination) => addToPlayground(x.p.id,destination,fill) });
 }
 // The problem's statement above the editor (its text and questions, without answers), for an imported file.
 function panel(f) {

@@ -42,7 +42,8 @@ export function dropdown(dd, { opt = o => esc(o.text), label = o => o.text, head
   function place() {
     if (ddm.hidden) return;
     const r = ddb.getBoundingClientRect(), width = Math.min(Math.max(280, r.width), innerWidth - 24);
-    const below = innerHeight - r.bottom - 12, above = r.top - 12;
+    const bottom = $('.sitefooter')?.getBoundingClientRect().top ?? innerHeight;
+    const below = bottom - r.bottom - 12, above = r.top - 12;
     const height = Math.min(440, Math.max(120, below >= 180 || below >= above ? below : above));
     Object.assign(ddm.style, { position: 'fixed', left: Math.max(12, Math.min(r.left, innerWidth - width - 12)) + 'px', right: 'auto', width: width + 'px', minWidth: '0', maxHeight: height + 'px', overflowY: 'auto', top: (below >= 180 || below >= above ? r.bottom + 6 : Math.max(12, r.top - Math.min(ddm.scrollHeight, height) - 6)) + 'px' });
   }
@@ -78,6 +79,7 @@ function initFilter() {
 const grip = $('#grip'), setW = w => { w = Math.max(200, Math.min(620, Math.round(w))); document.documentElement.style.setProperty('--sw', w + 'px'); st.S._sw = w; return w; };
 function initLayout() {
   const hdr = $('header'), setHH = () => document.documentElement.style.setProperty('--hh', hdr.offsetHeight + 'px'); setHH(); new ResizeObserver(setHH).observe(hdr);
+  const footer = $('.sitefooter'), setFH = () => document.documentElement.style.setProperty('--fh', footer.offsetHeight + 'px'); setFH(); new ResizeObserver(setFH).observe(footer);
   if (st.S._sw) setW(st.S._sw);
   // Once the exam list scrolls under the sidebar's pinned top controls, a hairline marks where they end.
   const top = side.querySelector('.sidetop'); side.addEventListener('scroll', () => top.classList.toggle('stuck', side.scrollTop > 0), { passive: true });

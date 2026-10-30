@@ -2,9 +2,9 @@
 // playground can run (the "Studying for" option's exams, or every exam), filtered by language. Typing searches every
 // exam instead (titles, problem text, code and topics), as a flat list with the best matches first. The arrow keys
 // move through it (→ opens an exam or moves into it, ← closes it or goes up to it), Enter imports, Escape closes.
-// The footer chooses what fills the blanks; a problem already in the playground opens as it was left.
+// The footer chooses what fills the blanks; choosing a problem then asks for its playground destination.
 import { st } from './state.js';
-import { esc, SV } from './util.js';
+import { esc, SV, PLAYGROUND_ICONS } from './util.js';
 import { problems } from './problems.js';
 
 let dlg, input, list, note, prefs, cb, rows = [], active = 0;
@@ -12,10 +12,10 @@ const opened = new Set(); // exams opened in the tree, for this page
 
 // prefs: {lang: '' | 'py' | 'gleam', all, fill: 'blanks' | 'mine' | 'solution'}, kept by the caller (save() persists it).
 // has(id): the problem is already in the playground. pick(x, fill): import it.
-export function openPicker({ prefs: p, save, has, pick }) {
-  prefs = p; cb = { save, has, pick };
+export function openPicker({ prefs: p, save, has, pick, current = () => null }) {
+  prefs = p; cb = { save, has, pick, current };
   if (!dlg) create();
-  input.value = ''; note.textContent = ''; sync();
+  showBrowse(); input.value = ''; note.textContent = ''; sync();
   // Open the exam being studied, so its problems are there to pick.
   const ex = st.view.exams[st.cur]; if (ex && !opened.size) opened.add(ex.id);
   build(); active = Math.max(0, rows.findIndex(r => r.k === 'x' && r.id === ex?.id)); paint();
@@ -31,7 +31,7 @@ function create() {
 <ul class="pkl" id="pkl" role="tree" aria-label="Problems"></ul>
 <p class="pkn" role="status"></p>
 <div class="pkfoot"><span id="pkfh">Fill the blanks with</span><div class="seg" role="radiogroup" aria-labelledby="pkfh"><button type="button" role="radio" data-f="blanks">Blanks</button><button type="button" role="radio" data-f="mine">My answers</button><button type="button" role="radio" data-f="solution">Solution</button></div>
-<span class="pkk mut">↑↓ move · → open · Enter imports</span></div>`;
+<span class="pkk mut">↑↓ move · → open · Enter chooses</span></div><section class="pkdestination" aria-labelledby="pkdh" hidden></section>`;
   document.body.append(dlg);
   input = dlg.querySelector('.pks'); list = dlg.querySelector('.pkl'); note = dlg.querySelector('.pkn');
   dlg.querySelector('.pkc').onclick = () => dlg.close();
@@ -77,7 +77,7 @@ function paint() {
     if (r.k === 'x') return `<li role="treeitem" id="pk${i}" data-i="${i}" aria-level="1" aria-expanded="${opened.has(r.id)}" class="pkx">${CHEV}<span class="nm">${esc(r.t)}</span><span class="ct">${r.n}</span></li>`;
     const { p, e, lang, topics } = r.x, mine = cb.has(p.id);
     const tags = [`<span class="lt ${lang}">${NAME[lang]}</span>`, p.adapted ? '<span class="tg2">Adapted</span>' : p.authored ? '<span class="tg2">Site-written</span>' : '',
-      mine ? '<span class="tg2 have" data-tip="Opens as you left it in the playground">In playground</span>' : ''].join('');
+      mine ? '<span class="tg2 have" data-tip="This problem has already been imported">Already imported</span>' : ''].join('');
     return `<li role="treeitem" id="pk${i}" data-i="${i}" aria-level="${r.lvl}" class="pkp${r.lvl === 1 ? ' flat' : ''}"><span class="nm">${hi(p.t)}</span>${r.lvl === 1 ? `<span class="ex">${hi(e.t)}</span>` : ''}<span class="tags">${tags}<span class="tp">${esc(topics.slice(0, 2).join(' · '))}</span></span></li>`;
   }).join('') || `<li class="pke" role="none">${input.value.trim() ? 'No problems match. Try fewer words, or another language.' : 'This study option has no problems in that language. Try every exam.'}</li>`;
   mark();
@@ -93,7 +93,18 @@ function toggle(r, open) { if (open) opened.add(r.id); else opened.delete(r.id);
 function act() {
   const r = rows[active]; if (!r) return;
   if (r.k === 'x') return toggle(r, !opened.has(r.id));
-  dlg.close(); cb.pick(r.x, prefs.fill);
+  const x = r.x, fill = prefs.fill, current = cb.current(), compatible = current && current.lang === x.lang;
+  dlg.querySelectorAll('.pks,.pkfl,.pkl,.pkn,.pkfoot').forEach(n=>n.hidden=true);
+  const destination = dlg.querySelector('.pkdestination'); destination.hidden = false;
+  destination.innerHTML = `<h3 id="pkdh">Where should this problem go?</h3><p class="pkdestination-name">${esc(x.p.t)}</p><button type="button" data-destination="current"${compatible?'':' disabled'}>${PLAYGROUND_ICONS.existing}<span><strong>Add to current playground</strong><small>${esc(current?.title || 'No playground open')}</small></span></button><button type="button" data-destination="new">${PLAYGROUND_ICONS.new}<span><strong>Create new playground</strong><small>A separate ${NAME[x.lang]} playground</small></span></button><p class="pkdestination-note">${compatible?'Appends to your current code.':`This problem uses ${NAME[x.lang]}. Choose a new playground to keep the languages separate.`}</p><button type="button" class="pkback">Back to problems</button>`;
+  destination.querySelector('[data-destination=current]').onclick = () => { if (!compatible) return; dlg.close(); cb.pick(x,fill,current.id); };
+  destination.querySelector('[data-destination=new]').onclick = () => { dlg.close(); cb.pick(x,fill,null); };
+  destination.querySelector('.pkback').onclick = () => { showBrowse(); input.focus(); };
+  destination.querySelector(compatible?'[data-destination=current]':'[data-destination=new]').focus();
+}
+function showBrowse() {
+  dlg.querySelector('.pkdestination').hidden = true;
+  dlg.querySelectorAll('.pks,.pkfl,.pkl,.pkn,.pkfoot').forEach(n=>n.hidden=false);
 }
 function key(e) {
   const r = rows[active], tree = !input.value.trim();

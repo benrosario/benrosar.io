@@ -243,27 +243,44 @@ test('the header title goes home, closing the exam without ending a running prac
   await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector("#ptclock")');
   await q('document.querySelector("#ptb").click()'); await sleep(50);
   assert.equal(await examTitle(), exam, 'leaving the timed view still shows the exam that was open');
-  // The socials stay at the bottom of the sidebar.
-  assert.ok(await q('(()=>{const s=document.querySelector("#side"),f=document.querySelector(".socials");return Math.abs(s.getBoundingClientRect().bottom-f.getBoundingClientRect().bottom)<2})()'));
-  // They're always the same width; in a narrow sidebar they show just the logos rather than clip their labels.
-  const socials = sw => q(`(async()=>{document.documentElement.style.setProperty("--sw","${sw}px");await new Promise(r=>requestAnimationFrame(r));
-    const as=[...document.querySelectorAll(".socials a")];return {w:as.map(a=>Math.round(a.getBoundingClientRect().width)),labels:as.every(a=>a.querySelector("span").offsetWidth>0),clipped:as.some(a=>a.scrollWidth>a.clientWidth+1)}})()`);
-  for (const sw of [200, 240, 324, 620]) {
-    const s = await socials(sw);
-    assert.equal(s.w[0], s.w[1], `equal widths at ${sw}px`); assert.equal(s.clipped, false, `nothing clipped at ${sw}px`);
-    assert.equal(s.labels, sw >= 324, `labels at ${sw}px`);
-  }
-  await q('document.documentElement.style.removeProperty("--sw")');
+  assert.equal(await q('document.querySelectorAll("#side footer").length'),0);
+  assert.ok(await q('document.querySelector(".sitefooter").parentElement===document.body'));
   assert.deepEqual(page.logs, []);
+});
+
+test('one shared contact footer remains available in every view', async () => {
+  await open(null, '?exam=final&view=home');
+  await q('window.sharedFooter=document.querySelector(".sitefooter")');
+  for (const view of ['home','exb','pgb','ptb']) {
+    if (view!=='home') await q(`document.querySelector('#${view}').click()`);
+    assert.ok(await q('document.querySelector(".sitefooter")===window.sharedFooter'));
+    assert.equal(await q('document.querySelectorAll("#fbb").length'),1);
+    for (const y of [0,500,100000]) {
+      await q(`scrollTo({top:${y},behavior:'instant'})`);
+      assert.ok(await q('(()=>{const r=document.querySelector(".sitefooter").getBoundingClientRect();return Math.abs(r.bottom-innerHeight)<2&&r.top>=0})()'));
+    }
+    assert.equal(await q('document.querySelectorAll("#side .socials,#side footer").length'),0);
+    assert.deepEqual(await q('[...document.querySelectorAll(".sitesocials span")].map(s=>s.textContent)'),['Send feedback','@benrosar.io','ben-rosario']);
+    await q('document.querySelector("#fbb").click()'); assert.ok(await q('document.querySelector("#fbd").open'));
+    await q('document.querySelector("#fbx").click()');
+  }
+  await page.viewport(360,800,true);
+  await q('Promise.all(document.querySelector("#m").getAnimations().map(a=>a.finished.catch(()=>{})))');
+  await q('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+  await q('scrollTo({top:100000,behavior:"instant"})');
+  assert.ok(await q('document.querySelector("#m").getBoundingClientRect().bottom<=document.querySelector(".sitefooter").getBoundingClientRect().top+1'));
+  assert.equal(await q('document.documentElement.scrollWidth>innerWidth'),false);
+  await page.viewport(1280,900);
+  assert.deepEqual(page.logs,[]);
 });
 
 test('Browse exams changes collections in place and preserves the surrounding page', async () => {
   await open(null, '?exam=midterm2&view=home');
   await q('Promise.all(document.querySelector("#m").getAnimations().map(a=>a.finished.catch(()=>{})))');
-  await q(`window.homeBefore = {page:document.querySelector('.home'),paths:document.querySelector('.homepaths'),browser:document.querySelector('#home-exams'),study:document.querySelector('#study'),footer:document.querySelector('.homefooter')};document.querySelector('.homeprogress').open=true;document.querySelector('#home-exams').scrollIntoView({block:'start',behavior:'instant'})`);
+  await q(`window.homeBefore = {page:document.querySelector('.home'),paths:document.querySelector('.homepaths'),browser:document.querySelector('#home-exams'),study:document.querySelector('#study'),footer:document.querySelector('.sitefooter')};document.querySelector('.homeprogress').open=true;document.querySelector('#home-exams').scrollIntoView({block:'start',behavior:'instant'})`);
   const top = await q('document.querySelector("#home-exams").getBoundingClientRect().top');
   await pick('final');
-  assert.ok(await q(`Object.entries(homeBefore).every(([k,n])=>n===document.querySelector({page:'.home',paths:'.homepaths',browser:'#home-exams',study:'#study',footer:'.homefooter'}[k]))`));
+  assert.ok(await q(`Object.entries(homeBefore).every(([k,n])=>n===document.querySelector({page:'.home',paths:'.homepaths',browser:'#home-exams',study:'#study',footer:'.sitefooter'}[k]))`));
   assert.equal(await q('document.querySelector(".homeprogress").open'), true);
   assert.ok(Math.abs((await q('document.querySelector("#home-exams").getBoundingClientRect().top'))-top)<2);
   assert.match(await q('document.querySelector(".homecounts").textContent'), /across Final/);
