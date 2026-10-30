@@ -5,12 +5,14 @@
 // Data point layout (query with the Analytics Engine SQL API, dataset "practice_events"):
 //   index1  anonymous visitor id
 //   blob1   event name: exam_open | problem_open | check | reveal | exam_complete | theme | pt_start | pt_submit | study_select
+//           | pg_open | pg_run | pg_share | pg_import | pg_from_practice (the playground)
 //   blob2   anonymous visitor id     blob3  page-load session id
 //   blob4   source exam id (the original past exam, e.g. 61a-fa25-mt2), or pt<minutes> for a timed practice exam
 //           (pt50, pt110, pt180, ...; which collection's exam it was is in blob8)
 //   blob5   question id, problem title for problem_open, or comma-separated problem ids for pt_*
 //   blob6   question kind (mc | sata | blank), theme (auto | light | dark), timeout | manual for pt_submit,
-//           or the newly selected collection for study_select
+//           the newly selected collection for study_select, or the language for pg_run (py | py-tests | gleam |
+//           gleam-tests) and pg_share (py | gleam), or the fill for pg_import (blanks | mine | solution)
 //   blob7   country (from Cloudflare)
 //   blob8   study collection selected when the event happened: midterm1 | midterm2 | midterm3 | final.
 //           Empty for events sent before study collections existed; those were all Midterm 3 practice.

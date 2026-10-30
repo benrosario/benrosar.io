@@ -31,7 +31,8 @@ export function serve(dir) {
     res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });
     res.end(readFileSync(file));
   });
-  return new Promise(r => server.listen(0, '127.0.0.1', () => r({ url: `http://127.0.0.1:${server.address().port}`, close: () => server.close() })));
+  // close() also drops open keep-alive connections, so the page really can't reach it afterwards (the offline test).
+  return new Promise(r => server.listen(0, '127.0.0.1', () => r({ url: `http://127.0.0.1:${server.address().port}`, close: () => { server.close(); server.closeAllConnections(); } })));
 }
 
 export async function launch({ headless = true } = {}) {

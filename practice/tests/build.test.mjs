@@ -19,6 +19,21 @@ test('two builds are identical (content-hashed asset names)', () => {
   assert.match(html, /data-content="\/assets\/content\.[0-9a-f]{10}\.json"/);
 });
 
+test('the service worker and the background download list exactly the files the build serves', () => {
+  const html = readFileSync(join(a, 'index.html'), 'utf8'), sw = readFileSync(join(a, 'sw.js'), 'utf8');
+  const R = JSON.parse(html.match(/<script type="application\/json" id="runtimes">(.*?)<\/script>/)[1]);
+  const M = JSON.parse(sw.match(/const MANIFEST = (\{.*?\});/)[1]);
+  assert.deepEqual(M.shell, R.shell);
+  assert.equal(M.shell[0], '/');
+  for (const u of M.shell.slice(1)) assert.ok(existsSync(join(a, u)), u);
+  assert.deepEqual(M.runtimes, [R.py.base, R.gleam.base]);
+  for (const l of ['py', 'gleam']) for (const [f, size] of R[l].files) assert.equal(readFileSync(join(a, R[l].base, f)).length, size, R[l].base + f);
+  assert.ok(R.py.files.some(([f]) => f === 'pyodide.asm.wasm') && R.py.files.some(([f]) => f === 'sqlite3-1.0.0.zip'));
+  assert.match(html, /data-py-worker="\/assets\/py-worker\.[0-9a-f]{10}\.js" data-py-base="\/assets\/pyodide\/0\.26\.4\/"/);
+  assert.doesNotMatch(html + readFileSync(join(a, R.shell.find(u => /app\./.test(u))), 'utf8'), /cdn\.jsdelivr\.net/, 'Python is served by the site');
+  assert.equal(readFileSync(join(a, '_headers'), 'utf8'), '/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/sw.js\n  Cache-Control: no-cache\n');
+});
+
 test('practice/public (what wrangler deploys) matches a fresh build', { skip: !existsSync(join(ROOT, 'public/index.html')) && 'not built yet' }, () => {
   assert.deepEqual(compare(a, join(ROOT, 'public')), [], 'run npm run practice:build');
 });

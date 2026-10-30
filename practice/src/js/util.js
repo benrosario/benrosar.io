@@ -2,6 +2,8 @@
 export const $ = s => document.querySelector(s);
 export const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Chromium reports "macOS" through userAgentData; others "MacIntel" (iPads: "MacIntel" or "iPad").
+export const isMac = /mac|iphone|ipad|ipod/i.test(navigator.userAgentData?.platform || navigator.platform || '');
 // Scroll the page to `el` (honoring its scroll-margin) in at most ~450 ms however far it is; native smooth scrolling
 // takes seconds across a long exam. Wheel, touch or key input stops it where it is.
 let scrollRun = 0;

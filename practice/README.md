@@ -1,6 +1,7 @@
 # CS 61A practice site (practice.benrosar.io)
 
-This is a static site of past CS 61A exam questions with Python checking, timed practice exams and study collections.
+This is a static site of past CS 61A exam questions with Python checking, timed practice exams, study collections
+and a Python and Gleam playground. It works offline after one visit.
 Students choose what they're studying for (Midterm 1, Midterm 2, Midterm 3 or the comprehensive Final) with
 the **Studying for** menu next to the question filter at the top of the sidebar, or with a link such as `?exam=midterm2`.
 
@@ -19,19 +20,30 @@ practice/
     store.js             browser storage and the versioned migration
     practice.js          sidebar, questions, progress, resets
     timed.js             timed practice exams
-    selector.js          "Studying for" and the ?exam= URL
+    selector.js          "Studying for" (the collection in the URL)
+    nav.js               Back and Forward: each view's URL and history entry, the ← → buttons and shortcuts
     sort.js              the Sort chips that order the sidebar's exams
-    grading.js           answer checking (Pyodide for Python doctests, the Gleam worker for Gleam tests)
-    gleam-worker.js, gleam-core.js  compiles and runs Gleam answers (official compiler, WebAssembly)
+    grading.js           answer checking (the Python worker for doctests and SQL, the Gleam worker for Gleam tests)
+    runner.js            one job at a time per worker, with time limits and restarts
+    py-worker.js         runs Python with the site's Pyodide (checks, and playground runs through src/py/run.py)
+    gleam-worker.js, gleam-core.js  compiles and runs Gleam (official compiler, WebAssembly): checks and playground runs
+    output.js            collects what a running program prints (both workers)
+    runtimes.js          the background download of Python and Gleam
+    offline.js           registers the service worker; the "Make available offline" button
+    playground.js, editor.js  the playground and its code editor
+    picker.js, problems.js    "Import a problem": the picker, and building a playground file from a problem
     feedback.js          the "Send feedback" dialog (posts to /f)
     chrome.js, highlight.js, ai.js, events.js, util.js, state.js
+  src/py/run.py          runs a playground Python program (stdin, streamed output, tracebacks of its own lines)
+  src/sw.js              the service worker (the build fills in its file list and writes public/sw.js)
   src/static/            copied as is (apple-touch-icon.jpg)
   content/exams/         source exams, each stored once (.json, or .mjs written with content/author.mjs)
   content/collections/   the four study options: scope rules, notes, picks, timed settings (index.json sets the order)
   content/timed/         modified problems for Midterm 3 timed practice
   content/python-prelude.py  Link, Tree and the doctest runner used to check Python answers
   content/COVERAGE.md    where each option's questions come from, what they cover, and the known gaps
-  scripts/               build, validate, preview sync, staff topic import, Gleam toolchain (gleam-toolchain.mjs)
+  scripts/               build, validate, preview sync, staff topic import, Gleam and Python toolchains
+                         (gleam-toolchain.mjs, pyodide-toolchain.mjs)
   tests/                 Node tests, the Python answer check, and browser tests (tests/ui)
   worker.js, wrangler.jsonc  deployment, the /e analytics endpoint and the /f feedback endpoint
 ```
@@ -42,8 +54,8 @@ practice/
 |---|---|
 | `npm run practice:build` | Validates the content and builds `practice/public/`. It fails on any content error. |
 | `npm run practice:serve` | Serves `practice/public/` at <http://localhost:8614>. |
-| `npm run practice:test` | Runs the content, collection, migration, build/preview and Worker tests, then runs every Python answer against its doctests (needs `python3`). |
-| `npm run practice:test:ui` | Runs the browser tests in headless Chrome: switching, deep links, Back/Forward, unfinished answers, migration, timed attempts, grading, keyboard, mobile and themes. Set `CHROME_PATH` if Chrome isn't in /Applications. Set `PRACTICE_SKIP_PYODIDE=1` to skip the one test that downloads Pyodide. |
+| `npm run practice:test` | Runs the content, collection, migration, build/preview, Worker and playground tests (running programs, every importable problem), then runs every Python answer against its doctests (needs `python3`). |
+| `npm run practice:test:ui` | Runs the browser tests in headless Chrome: switching, deep links, Back/Forward, unfinished answers, migration, timed attempts, grading, keyboard, mobile and themes, and (`tests/ui/playground.test.mjs`) the playground, importing problems, the timed-exam lock and offline use. Set `CHROME_PATH` if Chrome isn't in /Applications. Set `PRACTICE_SKIP_PYODIDE=1` to skip the tests that start Python. |
 | `npm run practice:sync` | Builds, then refreshes the local preview copy in `../exam-practice`. It deletes only files an earlier sync wrote. |
 | `npm run practice:check-preview` | Exits 1 if the preview copy doesn't match a fresh build. |
 | `npm run deploy:practice` | Builds, runs `practice:test`, then deploys with wrangler. It deploys only after a clean build and passing tests. |
@@ -63,11 +75,47 @@ Gleam replaced Scheme in Fall 2026 and is on the final. The course uses Gleam v1
 
 - **Checking answers.** Code answers in Gleam problems are compiled in the browser with the official Gleam compiler's WebAssembly build, the one Gleam's language tour uses. The problem's `*_test` functions then run, in the same `assert` style as the course's homework tests. "Evaluates to" questions compile `assert <expression> == <answer>`. The page shows compile errors and failed asserts, and stops infinite loops after 8 seconds.
 - **Toolchain.** `scripts/gleam-toolchain.mjs` pins the compiler (1.18.1), `gleam_stdlib` (1.0.5) and the JavaScript prelude by SHA-256. It downloads them once into `practice/.cache/` (git-ignored), so the first build needs network.
-- **What's served.** The build serves everything under `assets/gleam/<version>/`: the compiler, the standard library's source (for type-checking), the standard library precompiled to JavaScript (what a compiled answer imports), and both Apache-2.0 licences. That's about 5 MB uncompressed, loaded only when someone checks a Gleam code answer.
+- **What's served.** The build serves everything under `assets/gleam/<version>-stdlib-<version>/`: the compiler, the standard library's source (for type-checking), the standard library precompiled to JavaScript (what a compiled answer imports), and both Apache-2.0 licences. That's about 5 MB uncompressed, downloaded in the background (see Python, below). Both versions are in the path because browsers keep these files for good (`_headers`).
 - **Text answers.** Gleam text answers are compared case-sensitively, preserving string contents and token boundaries, because `Ok` and `ok` differ.
 - **Authoring.** Use `gl()` code blocks and one `glTests()` block (shown on the page as the tests), with `problem(..., {run: 'gleam'})`. Tie a code blank to a question with `blank(..., {r: 'x'})`, or write an "evaluates to" question with `blank(..., {ev: 'expression'})`.
 - **Testing.** `npm run practice:test` compiles and runs every official and accepted answer with the same compiler in Node. It also checks that each problem's tests fail when a blank is left as `todo`.
 - **Adapted problems.** These are Scheme problems this site rewrote in Gleam. They live in `content/exams/61a-fa26-gleam-adapted.mjs` and carry `adapted: {from, problem}`. The page labels them wherever they appear, including timed practice and copied AI prompts.
+
+## Python
+
+Python checks, SQL checks and the playground run CPython 3.12 in the browser with Pyodide 0.26.4, served by this site rather than a CDN.
+
+- **Toolchain.** `scripts/pyodide-toolchain.mjs` pins the Pyodide core release, the `sqlite3` package and both licences (MPL-2.0 and the PSF licence) by SHA-256, and caches them in `practice/.cache/`. The build serves them under `assets/pyodide/<version>/`: about 15 MB uncompressed.
+- **The worker.** `src/js/py-worker.js` (a classic worker, since Pyodide's loader uses `importScripts`) runs the prelude when it starts. Practice checks and the playground share it. `input()` outside a playground run raises `EOFError`.
+- **Background download.** Once the page is idle, `src/js/runtimes.js` fetches Python's files and then Gleam's, one at a time at low priority, so the first check doesn't wait for 20 MB. It skips this for visitors with data saving on or a 2G connection, and in automated browsers (`?prefetch=1` forces it). When an exam with runnable Python, SQL or Gleam questions opens, that runtime starts in the background, but only once its files are downloaded.
+
+## Playground
+
+**Playground** in the header (or `?view=play`) replaces the questions with an editor where students write and run Python or Gleam. The sidebar is hidden while it's open.
+
+- **Running.** Gleam compiles and runs about 300 ms after typing stops, like <https://playground.gleam.run>, with tabs for the output, the compiled JavaScript and the compiled Erlang. Python runs on **Run** (⌘↵ / Ctrl+Enter), or as you type with **Auto-run**; its stdin box feeds `input()`. **Run tests** runs Gleam's `*_test` functions and **Run doctests** Python's doctests. Output streams in, warnings and errors show under it, and runs stop after 10 seconds (or **Stop**).
+- **Files.** A scratch file for each language, one per share link opened and one per imported problem. Each keeps its code, stdin, tab, cursor and scroll position in `localStorage['cs61a-playground-v1']`, saved as you type. Only the 30 most recently used files besides the scratch files are kept. **Reset** (asked first) goes back to the file's starting code; **Undo** (or ⌘Z) takes a reset back.
+- **Share** copies a link with the code deflated into the URL's hash (`#py=…` / `#gleam=…`); opening it makes a new file and never overwrites anything.
+- **Editor.** A textarea over the page's syntax highlighting. Tab and Shift+Tab indent and outdent (Escape, then Tab, leaves the editor), Enter keeps the indent, a closing bracket on an empty line outdents, ⌘/ comments lines. Edits go through `insertText`, so undo works.
+- **Importing problems.** **Import problem** (⌘K / Ctrl+K anywhere) lists the problems with runnable code, by exam: the "Studying for" option's exams, or all of them, filtered by language; typing searches every exam's titles, text, code and topics. The arrow keys move (→ opens an exam, ← goes back up) and Enter imports. The blanks are left as blanks (`____` in Python, `todo` in Gleam), filled with the student's answers (drafts first), or with the solution once each of the problem's code questions has been checked in practice. Template blanks no question asks about get the official code, Gleam files get the problem's tests, and Python code that uses the course's `Link` or `Tree` gets those classes. The problem's text shows above the editor, with **Start again with** and **Open in practice**. Practice problems with runnable code have **Open in playground**.
+- **Known template stub.** Fall 2023 Midterm 2 Q5's second part (`only_long_paths`) is an unfinished stub with no blanks; practice never runs it, but **Run doctests** in the playground reports its doctest as failing even with the solution.
+- **Timed practice.** While an attempt is running (or being graded) the playground is locked: the header button, **Open in playground** and ⌘K are gone, and links or Back/Forward to it open the attempt.
+
+## Back and Forward
+
+Each view has its own URL and history entry (`src/js/nav.js`): an exam (`&x=<exam id>`), a problem jumped to from the sidebar (`&p=<number>`), the home page (`&view=home`), timed practice (`&view=timed`, `&attempt=<time>` for a past attempt) and each playground file (`&view=play&f=<file>`). A link with only `?exam=` opens the collection's last view, as before. Each entry remembers its scroll position, so Back returns to where you were and a reload reopens the same place.
+
+The ← → buttons left of the title go back and forward within the site (disabled at either end). Shortcuts: ⌘[ ⌘] anywhere and ⌘← ⌘→ outside text fields on a Mac; Alt+← Alt+→ elsewhere. Where there's nowhere to go in the site, the browser does what it normally would.
+
+## Offline use
+
+After one visit the whole site works without a connection: questions, Python and SQL checks, Gleam and the playground. `src/sw.js` is the service worker:
+
+- The page itself comes from the network when it answers within 3 seconds, so a deploy shows up as soon as there's a connection, and from the cache otherwise.
+- The page's hashed files are cached when a version installs; the Python and Gleam files are cached as the background download fetches them, and kept until a deploy stops using that version.
+- `/e`, `/f` and other sites are never touched. `_headers` makes browsers keep `/assets/*` for good and check `sw.js` on every visit.
+
+**Make available offline** (the playground's toolbar and the home page) downloads whatever is missing, even when the background download was skipped, asks the browser to keep it, and then shows **Works offline**. Automated browsers don't register the service worker unless the URL has `?sw=1`.
 
 ## Sorting
 
@@ -90,7 +138,7 @@ Migration from schema 2 is repeatable and keeps the old fields, so a rollback st
 
 ## Analytics
 
-`worker.js` documents the event layout. Every event now carries the study collection in `blob8`, alongside the original source exam id in `blob4`. Events from before collections existed have an empty `blob8`, and they were all Midterm 3 practice. Collection switches are logged as `study_select`.
+`worker.js` documents the event layout. Every event now carries the study collection in `blob8`, alongside the original source exam id in `blob4`. Events from before collections existed have an empty `blob8`, and they were all Midterm 3 practice. Collection switches are logged as `study_select`. The playground logs `pg_open`, `pg_run` (the language, and whether it ran tests), `pg_share`, `pg_import` (the problem and what filled the blanks) and `pg_from_practice`; live Gleam runs as you type aren't logged.
 
 ## Feedback
 
@@ -129,4 +177,4 @@ A persistent notice distinguishes browser-reported quota limits, denied storage 
 
 Storage availability is resolved inside error handling, including browsers whose `localStorage` getter itself throws. If the initial read failed and an older save later becomes accessible, saving is paused to avoid overwriting that older progress; the notice asks the student to copy new answers and reload. No saved progress is automatically deleted to make space.
 
-Saving uses local browser storage and needs no internet connection. Network errors can affect question loading, Python/SQLite downloads, or the initial Gleam toolchain load; they are reported separately by those features. Browser tests simulate quota/permission errors, retry recovery, mobile layout, and successful saving while network access is disabled.
+Saving uses local browser storage and needs no internet connection. On a first visit, before the site is cached for offline use, network errors can affect question loading or the Python and Gleam downloads; they are reported separately by those features. Browser tests simulate quota/permission errors, retry recovery, mobile layout, and successful saving while network access is disabled.

@@ -1,5 +1,9 @@
 // One request at a time per worker: a timeout cannot strand other checks or mix compiler state.
-export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000 } = {}) {
+// run(data, onProgress, {runMs}) resolves with the worker's result; messages the worker sends as {id, p} while the job
+// runs go to onProgress, and runMs can give this request its own time limit. With latestWins (the playground's live runs), a new request drops older ones still waiting, and
+// stops one that has been running for over staleMs, since only the newest code's result is wanted. Each dropped
+// request resolves with {superseded: true}. A result with {restart: true} gets a fresh worker for the next request.
+export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000, latestWins = false, staleMs = 1000 } = {}) {
   let worker, active, timer, warm = false, seq = 0;
   const queue = [];
   const stop = () => { clearTimeout(timer); worker?.terminate(); worker = null; warm = false; };
@@ -12,9 +16,10 @@ export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000 } 
   }
   function deadline(loaded) {
     clearTimeout(timer);
+    const ms = active?.runMs || runMs;
     timer = setTimeout(() => finish({ ok: false, unavailable: !loaded, err: loaded
-      ? 'Timed out after 8 seconds (infinite loop or recursion?)'
-      : `${name} took too long to load. Check your connection and try again.` }, true), loaded ? runMs : loadMs);
+      ? `Timed out after ${ms / 1000} seconds (infinite loop or recursion?)`
+      : `${name} took too long to load. Check your connection and try again.` }, true), loaded ? ms : loadMs);
   }
   function pump() {
     if (active || !queue.length) return;
@@ -24,8 +29,9 @@ export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000 } 
         worker = makeWorker();
         worker.onmessage = ({ data }) => {
           if (!active || data.id !== active.id) return;
-          if (data.loaded) { warm = true; deadline(true); }
-          else finish(data.r, !!data.r?.unavailable);
+          if (data.loaded) { warm = true; active.started = Date.now(); deadline(true); }
+          else if ('p' in data) active.progress?.(data.p);
+          else finish(data.r, !!(data.r?.unavailable || data.r?.restart));
         };
         worker.onerror = worker.onmessageerror = e => finish({ ok: false, unavailable: true,
           err: `${name} failed to load or stopped: ${e.message || 'Please try again.'}` }, true);
@@ -35,7 +41,13 @@ export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000 } 
       worker.postMessage({ id: active.id, ...active.data });
     } catch (e) { finish({ ok: false, unavailable: true, err: `${name} could not start: ${e.message}` }, true); }
   }
-  const run = data => new Promise(resolve => { queue.push({ id: ++seq, data, resolve }); pump(); });
+  const run = (data, progress, { runMs } = {}) => new Promise(resolve => {
+    if (latestWins) {
+      queue.splice(0).forEach(j => j.resolve({ superseded: true }));
+      if (active?.started && Date.now() - active.started > staleMs) { const job = active; active = null; stop(); job.resolve({ superseded: true }); }
+    }
+    queue.push({ id: ++seq, data, progress, runMs, resolve }); pump();
+  });
   run.loaded = () => warm;
   run.dispose = () => { stop(); const pending = [active, ...queue]; active = null; queue.length = 0;
     pending.forEach(j => j?.resolve({ ok: false, unavailable: true, err: `${name} check cancelled. Try again.` })); };

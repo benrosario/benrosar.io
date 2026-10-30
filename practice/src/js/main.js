@@ -11,11 +11,18 @@ import { $ } from './util.js';
 import { initSort } from './sort.js';
 import { initSaveNotice } from './save-notice.js';
 import { initFeedback } from './feedback.js';
+import { prefetchRuntimes } from './runtimes.js';
+import { initNav, navReady } from './nav.js';
+import { initPlayground } from './playground.js';
+import { initOffline } from './offline.js';
 
 const TAG = document.currentScript || document.querySelector('script[data-content]'), CONTENT = TAG.dataset.content;
 st.gleam = { worker: TAG.dataset.gleamWorker, base: TAG.dataset.gleamBase };
+st.py = { worker: TAG.dataset.pyWorker, base: TAG.dataset.pyBase };
+st.runtimes = JSON.parse(document.getElementById('runtimes').textContent);
 const reportSaving = initSaveNotice(() => st.save());
 initFeedback();
+initOffline(); // the service worker, before anything else is fetched
 
 async function boot() {
   const bank = await fetch(CONTENT).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
@@ -27,10 +34,14 @@ async function boot() {
   initEvents(); initTheme();
   // A URL that names a collection wins; otherwise the last one used (Midterm 3 for people with schema-2 data).
   select(fromURL() || st.S._c, { initial: true });
+  initNav(); // the exam or view the URL names, if any
   initSelector(); initChrome(); initSort(); initTopicControls();
   $('#home').onclick = e => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); goHome(); };
+  prefetchRuntimes(); // before the first render, which may ask to start a runtime once it's downloaded
   render(); applyZoom(true);
   initTimed();
+  await initPlayground(); // opens it for a playground link or a share link
+  navReady();
 }
 boot().catch(err => {
   console.error(err);

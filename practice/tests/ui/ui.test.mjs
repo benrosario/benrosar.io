@@ -235,7 +235,8 @@ test('the home page lists progress for every study option, most correct first', 
   await q(`(async()=>{const b=await fetch(document.querySelector("script[data-content]").dataset.content).then(r=>r.json());
     const e=b.exams.find(e=>e.id=="61a-fa26-mt1"),S=JSON.parse(localStorage.getItem("${KEY}"));
     for(const p of e.p)for(const x of p.b)if(x.k)S[e.id+"|"+x.id]={v:"",ok:true};S._cs.midterm2.ex="";localStorage.setItem("${KEY}",JSON.stringify(S))})()`);
-  await page.reload(); await page.waitFor('document.querySelector("#m .home .cprogs")');
+  // A link without an exam opens the saved view (a reload would reopen the exam the URL names).
+  await page.goto(URL0 + '?exam=midterm2'); await page.waitFor('document.querySelector("#m .home .cprogs")');
   const rows = await q('[...document.querySelectorAll(".cprogs button")].map(b=>({c:b.dataset.c,pct:+b.querySelector(".num").textContent.match(/(\\d+)%/)[1],cur:b.getAttribute("aria-current")}))');
   assert.deepEqual(rows.map(r => r.c).sort(), ['final', 'midterm1', 'midterm2', 'midterm3']);
   assert.equal(rows[0].c, 'midterm1'); assert.ok(rows[0].pct > 0);

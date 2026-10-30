@@ -12,9 +12,11 @@ import { aiPrompt } from './ai.js';
 import { timedPool, timedLengths, pickTimed } from './model.js';
 import { ev } from './events.js';
 import { render, syncHome } from './practice.js';
+import { record } from './nav.js';
+import { leavePG, locked } from './playground.js';
 import { explanationHTML } from './learning.js';
 
-const m = $('#m'), nav = $('#nav'), ptb = $('#ptb');
+const m = $('#m'), nav = $('#nav'), ptb = $('#ptb'), pgb = $('#pgb');
 const PTICON = SV('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>'), BACKICON = SV('<path d="M19 12H5M12 19l-7-7 7-7"/>');
 let ptBusy = false, PROB = null, MOD = {};
 const lookup = () => { if (!PROB) { PROB = {}; for (const e of st.bank.exams) for (const p of e.p) PROB[p.id] = { p, e }; for (const k in st.bank.timed) MOD[k] = Object.fromEntries(st.bank.timed[k].map(p => [p.id, p])); } };
@@ -59,6 +61,7 @@ function ptStart(L) {
 const findInView = (V, id) => { for (const ex of V.exams) for (const P of ex.problems) if (P.p.id === id) return P; return null; };
 
 export function showPT(on) {
+  if (on) leavePG();
   st.ptView = on; if (!on) st.ptHist = null; st.S._view = on ? 'pt' : ''; st.save(); document.body.classList.toggle('ptm', on);
   if (on) renderPT(); else render(); scrollTo(0, 0); ptTick();
 }
@@ -66,6 +69,7 @@ export function showPT(on) {
 export function renderPT() {
   syncHome();
   if (st.ptHist != null && !ptX()) st.ptHist = null;
+  record();
   const X = ptX(); m.innerHTML = ''; nav.innerHTML = ''; FILLS.length = 0; if (!X) return ptHome();
   const rev = !!X.done, all = ptQs(X), nt = document.createElement('div'); nt.className = 'note';
   const other = X.c !== st.cid ? `<b>This is your ${esc(label(X.c))} practice exam.</b> You’re studying for ${esc(st.view.label)}; switching didn’t pause or restart it. ` : '';
@@ -235,6 +239,7 @@ export function ptTick() {
   const tip = st.ptView ? 'Back to the past-exam practice questions' : live ? `Return to your ${label(X.c)} practice exam` : `Take a timed ${st.view.label} practice exam`;
   if (ptb.dataset.l !== lbl || ptb.dataset.tip !== tip) { ptb.dataset.l = lbl; ptb.innerHTML = (st.ptView ? BACKICON : PTICON) + `<span>${esc(lbl)}</span>`; ptb.dataset.tip = tip; ptb.setAttribute('aria-label', lbl); }
   ptb.className = cls;
+  pgb.hidden = locked(); document.body.classList.toggle('pglock', locked()); // no playground during a practice exam (until it's graded)
 }
 export function initTimed() {
   ptb.onclick = () => showPT(!st.ptView);

@@ -1,8 +1,8 @@
 // The practice view: sidebar of source exams in the selected collection, the selected exam's problems, and progress.
 import { st, cs } from './state.js';
-import { $, esc, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, wireAI } from './util.js';
+import { $, esc, SV, slide, confirmBtn, confetti, reduced, scrollToEl, AI_ICON, wireAI } from './util.js';
 import { segHTML, wireFills, FILLS } from './highlight.js';
-import { grade, keyText, GV, howChecked, runs, loadingText, canCheckSolution, gradeSolution, solutionQuestions } from './grading.js';
+import { grade, keyText, GV, howChecked, runs, loadingText, canCheckSolution, gradeSolution, solutionQuestions, warmFor } from './grading.js';
 import { aiPrompt } from './ai.js';
 import { counts, collectionCounts, sharedIn, sortExams, sortOptions, SORTS } from './model.js';
 import { ev } from './events.js';
@@ -11,6 +11,10 @@ import { dropdown, ddSync } from './chrome.js';
 import { hintsFor, explanationHTML } from './learning.js';
 import { topicStats, matchesTopic, missedQuestion } from './study.js';
 import { select } from './selector.js';
+import { record, setProblem } from './nav.js';
+import { leavePG, openProblem } from './playground.js';
+import { mountOffline } from './offline.js';
+const PLAYICON = SV('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>');
 
 const m = $('#m'), nav = $('#nav'), flt = $('#flt');
 const TIPICON = { dn: '★', csm: '◆', oos: '⊘', note: 'ⓘ', adapted: '⇄' }, BADGE = { dn: 'DeNero pick', csm: 'CSM pick', oos: 'Out of scope' };
@@ -144,7 +148,8 @@ function toggleExam(d, id, open) {
 // The main area always shows the selected exam (its problems in this collection) in full; the filter only narrows the sidebar.
 let evEx = null;
 export function render() {
-  syncHome(); if (st.ptView) return renderPT(); if (st.cur < 0) return renderHome();
+  // The playground draws itself; a redraw while it's open (a collection switch) only updates the URL.
+  syncHome(); if (st.ptView) return renderPT(); record(); if (st.pgView) return; if (st.cur < 0) return renderHome();
   const ex = st.view.exams[st.cur]; cs().ex = ex.id; st.save(); m.innerHTML = ''; FILLS.length = 0;
   const key = st.cid + ':' + ex.id; if (key !== evEx) { evEx = key; ev('exam_open', { x: ex.id }); }
   const nt = document.createElement('div'); nt.className = 'note';
@@ -156,7 +161,10 @@ export function render() {
     if (!selected.length) return;
     const p = P.p, d = document.createElement('section'); d.className = 'prob'; d.id = `p-${st.cur}-${j}`; d.style.scrollMarginTop = '64px';
     const tips = [...(p.adapted ? [{ k: 'adapted', t: `Adapted to Gleam by this site from ${p.adapted.from}; not written by course staff` }] : []), ...(P.tips || [])];
-    d.innerHTML = `<h2>${esc(p.t)}</h2>` + (tips.length ? `<div class="tips">${tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
+    // Problems with code the site runs open in the playground (hidden during a practice exam: body.pglock).
+    const play = p.run ? `<button type="button" class="pgopen" data-tip="Run and edit this problem’s code in the playground, with your answers filled in">${PLAYICON}<span>Open in playground</span></button>` : '';
+    d.innerHTML = `<div class="ph"><h2>${esc(p.t)}</h2>${play}</div>` + (tips.length ? `<div class="tips">${tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
+    if (p.run) d.querySelector('.pgopen').onclick = () => { ev('pg_from_practice', { x: ex.id, q: p.id }); openProblem(p.id); };
     if (p.authored) d.insertAdjacentHTML('beforeend','<p class="authored">Original practice written by this site; not a past exam or course-staff problem.</p>');
     let qi = 0;
     p.b.forEach(b => {
@@ -169,11 +177,13 @@ export function render() {
   if(!m.querySelector('.prob')) { const empty=document.createElement('p'); empty.className='note'; empty.textContent='No matching questions in this exam. Choose another topic or switch the filter to All questions.'; m.append(empty); }
   wireReset(ex);
   stats();
+  warmFor(ex.problems.map(P => P.p));
 }
 // Home (the header title): no exam selected. Closing the timed exam view doesn't end a running attempt; the sidebar
 // button and the button here go back to it. The title toggles: on the home page it returns to where home was opened
 // from (C.back: timed view or not, the attempt being reviewed, the exam and the scroll position).
 export function goHome() {
+  if (st.pgView) { leavePG(); st.cur = -1; render(); scrollTo(0, 0); return; }
   if (st.cur < 0 && !st.ptView) return goBack();
   const ex = st.view.exams[st.cur], C = cs(); if (ex) C.last = ex.id;
   C.back = { pt: st.ptView ? 1 : 0, h: st.ptHist, ex: ex?.id || '', y: scrollY };
@@ -188,7 +198,7 @@ function goBack(pt = !!cs().back?.pt) {
 }
 // The title's tooltip and pressed look say whether it leaves the current exam or goes back to it.
 export function syncHome() {
-  const home = st.cur < 0 && !st.ptView, C = cs(), back = home && (C.back?.pt || st.view.exams.some(ex => ex.id === C.last));
+  const home = st.cur < 0 && !st.ptView && !st.pgView, C = cs(), back = home && (C.back?.pt || st.view.exams.some(ex => ex.id === C.last));
   document.body.classList.toggle('athome', home);
   $('#home').dataset.tip = !home ? 'Home: close the open exam' : back ? 'Back to where you were' : 'Home';
 }
@@ -204,8 +214,9 @@ function renderHome() {
 ${st.view.coverage?.text ? `<p class="mut">${esc(st.view.coverage.text)}</p>` : ''}
 <p>Pick an exam in the sidebar to work through its questions, or take a timed practice exam.</p>
 <div class="homebtns">${last >= 0 ? `<button class="p" data-act="last">Continue ${esc(st.view.exams[last].t)}</button>` : ''}<button${last < 0 ? ' class="p"' : ''} data-act="pt">${live ? `Return to your ${esc(st.views[X.c]?.label || '')} practice exam` : 'Take a timed practice exam'}</button></div>
-<h3>Your progress</h3><ol class="cprogs">${rows}</ol></section>`;
-  m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c, { push: true }));
+<h3>Your progress</h3><ol class="cprogs">${rows}</ol><p class="homeoff"><span class="offl" hidden></span></p></section>`;
+  m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c));
+  mountOffline(m.querySelector('.offl'));
   const b = m.querySelector('[data-act=last]'); if (b) b.onclick = () => goBack(false);
   m.querySelector('[data-act=pt]').onclick = () => cs().back?.pt ? goBack(true) : showPT(true);
   stats();
@@ -217,7 +228,8 @@ function omittedText(o) {
 }
 // Jump to exam i, problem j (and optionally a question) without disturbing anything else.
 export function goTo(i, j, qid) {
-  if (st.cur != i) { st.cur = i; render(); } else sidebar(); const ex = st.view.exams[i];
+  const ex = st.view.exams[i]; setProblem(ex.id, ex.problems[j].p.id);
+  if (st.cur != i) { st.cur = i; render(); } else { sidebar(); record(); }
   ev('problem_open', { x: ex.id, q: shortT(ex.problems[j].p.t) });
   const el = document.getElementById(qid != null ? `q-${i}-${qid}` : `p-${i}-${j}`) || document.getElementById(`p-${i}-${j}`);
   scrollToEl(el);

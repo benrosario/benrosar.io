@@ -1,7 +1,8 @@
 // Build the static practice site: src/ + content/ -> public/ (the directory wrangler deploys).
 // Output: index.html (page shell), assets/app.<hash>.js (bundled modules), assets/styles.<hash>.css,
 // assets/content.<hash>.json (question bank + study collections), assets/gleam-worker.<hash>.js and
-// assets/gleam/<version>/ (the Gleam compiler and standard library; see gleam-toolchain.mjs), plus src/static/.
+// assets/gleam/<version>-stdlib-<version>/ (the Gleam compiler and standard library; see gleam-toolchain.mjs), assets/py-worker.<hash>.js
+// and assets/pyodide/<version>/ (Python; see pyodide-toolchain.mjs), sw.js (offline use), _headers (caching), plus src/static/.
 // The content is validated first; the build fails on any content error.
 // Usage: node practice/scripts/build.mjs [--out <dir>] [--allow-invalid]   (the flag is for work in progress only)
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync } from 'node:fs';
@@ -9,7 +10,8 @@ import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validate } from './validate.mjs';
-import { gleamAssets, GLEAM } from './gleam-toolchain.mjs';
+import { gleamAssets, GLEAM, STDLIB } from './gleam-toolchain.mjs';
+import { pyodideAssets, PYODIDE } from './pyodide-toolchain.mjs';
 import { enrich } from '../content/enrich.mjs';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -42,17 +44,31 @@ export async function build(out = join(ROOT, 'public'), { allowInvalid = false }
   const { build: esbuild } = await import('esbuild');
   const js = await esbuild({ entryPoints: [join(ROOT, 'src/js/main.js')], bundle: true, format: 'iife', target: 'es2022', write: false, legalComments: 'none' });
   const gw = await esbuild({ entryPoints: [join(ROOT, 'src/js/gleam-worker.js')], bundle: true, format: 'esm', target: 'es2022', write: false, legalComments: 'none' });
-  const files = { css: readFileSync(join(ROOT, 'src/styles.css'), 'utf8'), content: JSON.stringify(bank), app: js.outputFiles[0].text, gleamWorker: gw.outputFiles[0].text };
-  const name = { css: `assets/styles.${hash(files.css)}.css`, content: `assets/content.${bank.version}.json`, app: `assets/app.${hash(files.app)}.js`, gleamWorker: `assets/gleam-worker.${hash(files.gleamWorker)}.js` };
-  const gleamBase = `assets/gleam/${GLEAM}/`, gleam = await gleamAssets();
+  // A classic worker: Pyodide's loader uses importScripts. run.py is bundled in as text.
+  const pw = await esbuild({ entryPoints: [join(ROOT, 'src/js/py-worker.js')], bundle: true, format: 'iife', target: 'es2022', write: false, legalComments: 'none', loader: { '.py': 'text' } });
+  const files = { css: readFileSync(join(ROOT, 'src/styles.css'), 'utf8'), content: JSON.stringify(bank), app: js.outputFiles[0].text, gleamWorker: gw.outputFiles[0].text, pyWorker: pw.outputFiles[0].text };
+  const name = { css: `assets/styles.${hash(files.css)}.css`, content: `assets/content.${bank.version}.json`, app: `assets/app.${hash(files.app)}.js`, gleamWorker: `assets/gleam-worker.${hash(files.gleamWorker)}.js`, pyWorker: `assets/py-worker.${hash(files.pyWorker)}.js` };
+  // Both versions are in the path, since _headers lets browsers keep these files for good.
+  const gleamBase = `assets/gleam/${GLEAM}-stdlib-${STDLIB}/`, gleam = await gleamAssets(), pyBase = `assets/pyodide/${PYODIDE}/`, pyodide = await pyodideAssets();
+  // The files the background download fetches (runtimes.js), with their sizes for its progress: not the licences.
+  const list = (base, f) => ({ base: '/' + base, files: Object.keys(f).filter(k => !/^LICEN[CS]E/.test(k)).map(k => [k, Buffer.byteLength(f[k])]) });
+  // shell: what the page needs besides the runtimes, which the service worker caches as it installs (src/sw.js).
+  const shell = ['/', ...Object.values(name).map(n => '/' + n), ...readdirSync(join(ROOT, 'src/static')).map(f => '/' + f)];
+  const runtimes = JSON.stringify({ py: list(pyBase, pyodide), gleam: list(gleamBase, gleam), shell });
+  const swSrc = readFileSync(join(ROOT, 'src/sw.js'), 'utf8'), swManifest = { shell, runtimes: ['/' + pyBase, '/' + gleamBase] };
+  const sw = swSrc.replace('/*MANIFEST*/ null', JSON.stringify({ version: hash(swSrc + JSON.stringify(swManifest)), ...swManifest }));
   const html = readFileSync(join(ROOT, 'src/index.html'), 'utf8')
     .replace('<!--STYLES-->', `<link rel="stylesheet" href="/${name.css}">\n<link rel="preload" href="/${name.content}" as="fetch" crossorigin>`)
-    .replace('<!--SCRIPTS-->', `<script src="/${name.app}" data-content="/${name.content}" data-gleam-worker="/${name.gleamWorker}" data-gleam-base="/${gleamBase}" defer></script>`);
+    .replace('<!--SCRIPTS-->', `<script type="application/json" id="runtimes">${runtimes}</script>\n<script src="/${name.app}" data-content="/${name.content}" data-gleam-worker="/${name.gleamWorker}" data-gleam-base="/${gleamBase}" data-py-worker="/${name.pyWorker}" data-py-base="/${pyBase}" defer></script>`);
   rmSync(out, { recursive: true, force: true });
   mkdirSync(join(out, 'assets'), { recursive: true });
   for (const k in files) writeFileSync(join(out, name[k]), files[k]);
-  for (const f in gleam) { mkdirSync(dirname(join(out, gleamBase, f)), { recursive: true }); writeFileSync(join(out, gleamBase, f), gleam[f]); }
+  for (const [base, set] of [[gleamBase, gleam], [pyBase, pyodide]]) for (const f in set) { mkdirSync(dirname(join(out, base, f)), { recursive: true }); writeFileSync(join(out, base, f), set[f]); }
   writeFileSync(join(out, 'index.html'), html);
+  writeFileSync(join(out, 'sw.js'), sw);
+  // Hashed and versioned files never change, so browsers can keep them without asking again (Cloudflare reads
+  // _headers). The service worker is checked on every visit, so a deploy reaches people who have it.
+  writeFileSync(join(out, '_headers'), ['/assets/*', '  Cache-Control: public, max-age=31536000, immutable', '/sw.js', '  Cache-Control: no-cache', ''].join('\n'));
   for (const f of readdirSync(join(ROOT, 'src/static'))) copyFileSync(join(ROOT, 'src/static', f), join(out, f));
   return { out, assets: Object.values(name), version: bank.version };
 }

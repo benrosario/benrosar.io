@@ -9,6 +9,8 @@ button.p{background:#2a5bd7;border-color:#2a5bd7;color:#fff}#rs{color:#fff;backg
 .bar{flex:1;min-width:168px;height:10px;background:var(--bd);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
 #stat{color:var(--mut);font-size:15.5px}#th,#hlb{display:grid;place-items:center;width:43px;height:41px;padding:0}#hlb[aria-pressed=false]{color:var(--mut)}#hlb[aria-pressed=false] .on-only{display:none}
 body.nohl pre.code span:not(.blank){color:inherit!important;font-style:normal!important;font-weight:inherit!important}main{max-width:900px;margin:0 auto;padding:16px;flex:1;min-width:0;zoom:var(--zm,1)}
+.hnav{flex:none;display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.hnav button{display:grid;place-items:center;width:41px;height:39px;padding:0;border:0;border-radius:0}.hnav button+button{border-left:1px solid var(--bd)}.hnav button:hover:not(:disabled){background:var(--code)}.hnav button:disabled{opacity:1;cursor:default;color:color-mix(in srgb,var(--mut) 50%,transparent)}.hnav button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+@media (max-width:760px){.hnav button{width:34px}header h1{margin-right:0}header h1 a{padding:0 11px 0 8px}} /* ← → stay beside the title on a 360px phone */
 .zm{display:flex;align-items:center;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.zm button{border:0;border-radius:0;padding:6px 12px;min-width:41px}.zm #zf{border-left:1px solid var(--bd)}
 .zm #zv{width:70px;border:0;border-left:1px solid var(--bd);border-right:1px solid var(--bd);background:var(--card);color:var(--fg);font:inherit;text-align:center;padding:6px 5px;font-variant-numeric:tabular-nums}.zm #zv:focus{outline:2px solid var(--acc);outline-offset:-2px}.zm button.on{background:var(--acc);color:#fff}
 .wrap{display:flex;align-items:flex-start;overflow-x:clip}
@@ -183,3 +185,53 @@ body.athome #rs{display:none}
 @media(min-width:761px){body.has-save-notice aside,body.has-save-notice .grip{top:calc(var(--hh,66px) + var(--save-h,0px));height:calc(100vh - var(--hh,66px) - var(--save-h,0px))}}
 @media(max-width:760px){.save-notice{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 16px}.save-buttons button{min-height:40px}}
 
+/* Playground (playground.js, editor.js). Header button, then the view: the sidebar is hidden while it's open. */
+#pgb{display:inline-flex;align-items:center;gap:7px;height:41px;padding:0 13px;border-radius:10px;font-weight:600;white-space:nowrap}#pgb[hidden]{display:none}#pgb:hover{background:var(--code)}
+#pgb[aria-pressed=true]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--card));color:var(--acc)}
+body.pgm #side,body.pgm .grip,body.pgm #rs,body.pgm #stat{display:none}body.pgm .bar{visibility:hidden;min-width:0}body.pgm main{max-width:none}
+.pg{display:flex;flex-direction:column;gap:10px;height:calc(100vh - var(--hh,66px) - 32px);min-height:440px}
+.pgbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.pgbar button{display:inline-flex;align-items:center;gap:6px}.pgbar button[hidden]{display:none}.pgbar button svg{width:14px;height:14px}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden}.seg button{border:0;border-radius:0}.seg button+button{border-left:1px solid var(--bd)}.seg button[aria-checked=true]{background:var(--acc);color:#fff}
+.pgt{font-weight:600}.pgrt{font-size:13.5px;color:var(--mut)}.pgrt.on::before{content:'';display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--ok);vertical-align:1px}
+.pgsp{flex:1}.pgauto{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);cursor:pointer}.pgauto[hidden],.pglive[hidden]{display:none}.pglive{font-size:13.5px}
+.pgsave{margin:0}.pghint{margin:0;font-size:13px}
+.pgmain{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px}
+.pged,.pgout{min-height:0;border:1px solid var(--bd);border-radius:10px;background:var(--card);overflow:hidden}.pged:focus-within{border-color:var(--acc)}
+.pgout{display:flex;flex-direction:column}
+.pgtabs{display:flex;border-bottom:1px solid var(--bd)}.pgtabs[hidden]{display:none}.pgtabs button{padding:8px 12px;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;background:none;color:var(--mut);font-size:14px}.pgtabs button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--acc)}
+.pgstat{display:flex;align-items:center;gap:8px;min-height:36px;padding:5px 12px;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--mut)}.pgmsg.ok{color:var(--ok)}.pgmsg.no{color:var(--no)}.pgundo{padding:2px 9px;font-size:13px}
+.pgout .pgo{flex:1;min-height:0;margin:0;padding:10px 12px;border-radius:0;background:none;overflow:auto}.pgo:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.pgo .se{color:color-mix(in srgb,var(--no) 75%,var(--fg))}.pgo .pge{display:block;margin-top:6px;color:var(--no)}.pgo .pgw{display:block;color:var(--hn)}.pgo .pgok{display:block;margin-top:6px;color:var(--ok)}
+.pgin{border-top:1px solid var(--bd);padding:7px 12px}.pgin[hidden]{display:none}.pgin summary{cursor:pointer;font-size:14px}
+.pgin textarea{display:block;width:100%;min-height:72px;margin-top:6px;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--code);color:var(--fg);font:13px/1.5 ui-monospace,Menlo,monospace;resize:vertical}
+.ed{position:relative;height:100%;min-height:260px;font:13.5px/1.6 ui-monospace,Menlo,monospace;--gw:calc(var(--gd,2) * 1ch + 22px)}
+.ed .edta,.ed .edhl{position:absolute;inset:0;margin:0;padding:10px 14px 10px calc(var(--gw) + 12px);border:0;border-radius:0;background:none;font:inherit;white-space:pre;tab-size:4;overflow:auto}
+.ed .edhl{overflow:hidden;pointer-events:none;color:var(--fg)}
+.ed .edta{z-index:1;resize:none;outline:none;color:transparent;caret-color:var(--fg)}.ed .edta::selection{background:color-mix(in srgb,var(--acc) 30%,transparent);color:transparent}
+.edln{position:absolute;top:0;bottom:0;left:0;width:var(--gw);overflow:hidden;border-right:1px solid var(--bd);background:var(--code);color:var(--mut);text-align:right;user-select:none}.edln>div{padding:10px 9px 10px 0;white-space:pre}
+@media(max-width:760px){.pglg{display:none}#pgb{width:41px;padding:0;justify-content:center}#pgb span{display:none}.pg{height:auto;min-height:0}.pgmain{grid-template-columns:minmax(0,1fr)}.pged{height:55vh}.pgout{min-height:260px}.pgsp{display:none}}
+/* Importing practice problems into the playground (picker.js, the problem panel, "Open in playground"). */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ph h2{margin-bottom:8px}
+.pgopen{flex:none;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;font-size:14px;color:var(--mut)}.pgopen svg{width:15px;height:15px}.pgopen:hover{color:var(--acc);border-color:var(--acc)}body.pglock .pgopen{display:none}
+.pgprob{border:1px solid var(--bd);border-radius:10px;background:var(--card)}.pgprob[hidden]{display:none}.pgprob>summary{padding:8px 12px;cursor:pointer;font-weight:600}.pgprob .pgpx{font-weight:400;font-size:14px}
+.pgpa{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:0 12px 8px;font-size:14px}.pgpa[hidden]{display:none}.pgpa button{padding:3px 10px;font-size:14px}.pgpa button:disabled{cursor:not-allowed;opacity:.5}
+.pgpb{max-height:min(30vh,320px);overflow:auto;padding:4px 12px 10px;border-top:1px solid var(--bd);font-size:14.5px}.pgpb pre{font-size:12.5px}.pgq{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--bd)}.pgq p{margin:4px 0}
+.pick{width:min(640px,calc(100vw - 32px));max-height:min(720px,calc(100vh - 48px));padding:0;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--fg);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.pick[open]{display:flex;flex-direction:column}.pick::backdrop{background:rgba(0,0,0,.35)}
+.pkt{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 6px}.pkt h2{margin:0;font-size:17px}.pkc{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:none;color:var(--mut)}
+.pks{margin:4px 14px 8px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}.pks:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.pkfl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:0 14px 8px;font-size:14px}.pka{display:inline-flex;align-items:center;gap:6px;color:var(--mut);cursor:pointer}.pka[hidden]{display:none}
+.pick .seg button{padding:4px 11px;font-size:14px}
+.pkl{flex:1;min-height:120px;margin:0;padding:4px 6px;list-style:none;overflow:auto;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.pkl li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:7px 10px;border-radius:7px;cursor:pointer}.pkl li.on{background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.pkx{font-weight:600}.pkx svg{flex:none;width:14px;height:14px;color:var(--mut);transition:transform .15s}.pkx[aria-expanded=true] svg{transform:rotate(90deg)}.pkx .nm{flex:1}.pkx .ct{font-weight:400;font-size:13.5px;color:var(--mut)}
+.pkp{padding-left:34px!important}.pkp.flat{padding-left:10px!important}.pkp .nm{flex:1 1 auto}.pkp .ex{flex-basis:100%;order:3;font-size:13px;color:var(--mut)}.pkp mark{background:color-mix(in srgb,var(--acc) 25%,transparent);color:inherit;border-radius:2px}
+.pkp .tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px}.pkp .tp{color:var(--mut)}
+.lt,.tg2{padding:1px 7px;border:1px solid var(--bd);border-radius:999px;color:var(--mut)}.lt.gleam{border-color:color-mix(in srgb,#ffaff3 60%,var(--bd))}.lt.py{border-color:color-mix(in srgb,#3776ab 50%,var(--bd))}.tg2.have{color:var(--acc);border-color:var(--acc)}.tg2.lk{color:var(--no)}
+.pke{padding:16px 10px!important;color:var(--mut);cursor:default!important}
+.pkn{margin:0;padding:0 14px;font-size:13.5px;color:var(--no)}.pkn:empty{display:none}.pkn:not(:empty){padding:8px 14px 0}
+.pkfoot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px 12px;font-size:14px}.pkk{margin-left:auto;font-size:13px}
+@media(max-width:760px){.pgopen span{display:none}.pgopen{padding:4px 7px}.pkk{display:none}}
+/* "Make available offline" / "Works offline" (offline.js), in the playground's toolbar and on the home page. */
+.offl[hidden]{display:none}.offl button{padding:3px 10px;font-size:13.5px}.offl button:disabled{cursor:progress;font-variant-numeric:tabular-nums}
+.offl.ready span{font-size:13.5px;color:var(--ok)}.offl.failed button{color:var(--no);border-color:var(--no)}.homeoff{margin:16px 0 0}.homeoff:has(.offl[hidden]){display:none}

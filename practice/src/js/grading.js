@@ -1,6 +1,7 @@
 // Answer checking. Runtimes are isolated in serialized, restartable browser workers.
 import { st } from './state.js';
 import { createRunner } from './runner.js';
+import { whenDownloaded } from './runtimes.js';
 import { matchesAnswer, restrictionError } from './answers.js';
 export { norm } from './answers.js';
 export const GV = 5;
@@ -27,31 +28,25 @@ export function loadingText(q, p) {
   if (isGleam(p)) return gleamLoaded() ? 'Compiling…' : 'Loading Gleam (first run downloads the compiler)…';
   return pyLoaded() ? 'Running…' : 'Loading Python (first run takes a few seconds)…';
 }
-const py = createRunner(() => {
-  const src = `importScripts('https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js');
-const ready=(async()=>{self.py=await loadPyodide();py.runPython(${JSON.stringify(st.bank.prelude + String.fromCharCode(10) + (st.bank.sqlPrelude || ''))})})();
-let sqlReady;
-onmessage=async ({data})=>{
-  const {id,full,test,sql}=data;
-  try { await ready; if(sql) await (sqlReady ||= py.loadPackage('sqlite3')); }
-  catch(e) { postMessage({id,r:{ok:false,unavailable:true,err:'Python or SQLite failed to load: '+String(e.message||e)}});return; }
-  postMessage({id,loaded:true});
-  let r;
-  try {
-    if(sql){py.globals.set('SQL_JOB',JSON.stringify(sql));r=JSON.parse(py.runPython('__import__("json").dumps(run_sql(__import__("json").loads(SQL_JOB)))'));}
-    else {py.globals.set('SRC',full);py.globals.set('TST',test);r=JSON.parse(py.runPython('__import__("json").dumps(run_tests(SRC,TST))'));}
-  }catch(e){r={ok:false,err:String(e.message||e)}}
-  postMessage({id,r});
-};`;
-  const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
-  try { return new Worker(url); } finally { URL.revokeObjectURL(url); }
-}, 'Python / SQLite');
+const py = createRunner(() => new Worker(st.py.worker), 'Python / SQLite');
 const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam');
+// py-worker.js runs the prelude when it starts. The playground shares this worker, and stops it with stopPy.
+export const pyJob = (data, progress, opts) => py({ base: st.py.base, prelude: st.bank.prelude + '\n' + (st.bank.sqlPrelude || ''), ...data }, progress, opts);
+export const stopPy = () => py.dispose();
+// Start the runtimes an exam's questions need when it's shown, so the first check doesn't wait for Python (about
+// 3 seconds) or Gleam to start: only once the background download has their files, and once each.
+const warming = {};
+export function warmFor(problems) {
+  const need = { py: problems.some(p => p.sql || p.run && p.run.lang !== 'gleam'), gleam: problems.some(p => p.run?.lang === 'gleam') };
+  const start = { py: () => pyJob({}), gleam: () => runGleam('') }, run = { py, gleam: gl };
+  for (const lang in need) if (need[lang] && !run[lang].loaded() && !warming[lang])
+    whenDownloaded(lang, () => { warming[lang] ||= start[lang]().finally(() => warming[lang] = null); });
+}
 export const pyLoaded = () => py.loaded();
 export const gleamLoaded = () => gl.loaded();
 export const runGleam = source => gl({ base: st.gleam.base, source });
-export const runPy = (full, test) => py({ full, test });
-export const runSQL = sql => py({ sql });
+export const runPy = (full, test) => pyJob({ full, test });
+export const runSQL = sql => pyJob({ sql });
 // Put answers into code: ⟦B0_1⟧ marks a blank; a blank alone on its line may hold several lines.
 export function fill(text, alone, vals) {
   return text.split('\n').map(line => {

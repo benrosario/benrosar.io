@@ -1,5 +1,5 @@
-// "Studying for": picks the study collection, keeps it in the URL (?exam=midterm2) and remembers each collection's
-// navigation (selected exam, filter, open sidebar groups, scroll position) separately.
+// "Studying for": picks the study collection (?exam=midterm2 in the URL, kept by nav.js) and remembers each
+// collection's navigation (selected exam, filter, open sidebar groups, scroll position) separately.
 // It is a dropdown beside the filter, in the same style (native picker on touch devices).
 import { st, cs } from './state.js';
 import { $, esc } from './util.js';
@@ -11,10 +11,6 @@ import { drawSort } from './sort.js';
 
 const ALIAS = { mt1: 'midterm1', mt2: 'midterm2', mt3: 'midterm3', 'midterm-1': 'midterm1', 'midterm-2': 'midterm2', 'midterm-3': 'midterm3', comprehensive: 'final' };
 export const fromURL = () => { const v = (new URLSearchParams(location.search).get('exam') || '').toLowerCase(); const id = ALIAS[v] || v; return st.views[id] ? id : null; };
-function setURL(cid, push) {
-  const u = new URL(location.href); if (u.searchParams.get('exam') === cid) return; u.searchParams.set('exam', cid);
-  history[push ? 'pushState' : 'replaceState']({ exam: cid }, '', u);
-}
 
 const sel = $('#study'), ddb = $('#sdd .ddb');
 // The button shows the option's name; the custom menu also shows its coverage, and the tooltip says it in full.
@@ -26,8 +22,8 @@ function draw() {
   sel.value = st.cid; menu.sync();
   ddb.dataset.tip = `Studying for ${full(st.view)}. ${st.view.coverage?.text || ''}`;
 }
-// Make collection `cid` current. push: add a history entry (user action); otherwise replace (load / Back / Forward).
-export function select(cid, { push = false, initial = false } = {}) {
+// Make collection `cid` current. Drawing it adds a history entry (nav.js), except on load and during Back / Forward.
+export function select(cid, { initial = false } = {}) {
   if (!initial && cid === st.cid) return;
   if (!initial && !st.ptView) cs().y = scrollY;
   // A finished attempt from the collection being left is done with (it's in that collection's history).
@@ -39,10 +35,9 @@ export function select(cid, { push = false, initial = false } = {}) {
   st.cur = home || C.ex === '' ? -1 : Math.max(0, st.view.exams.findIndex(ex => ex.id === C.ex));
   if (!C.open) C.open = st.cur < 0 ? {} : { [st.view.exams[st.cur].id]: 1 };
   $('#flt').value = C.f || 'all'; if (!$('#flt').value) $('#flt').value = 'all'; ddSync();
-  st.save(); draw(); if (!initial) drawSort(); setURL(cid, push);
+  st.save(); draw(); if (!initial) drawSort();
   if (!initial) { if (st.ptView) renderPT(); else render(); scrollTo(0, st.ptView ? 0 : C.y || 0); ptTick(); ev('study_select', { v: cid }); }
 }
 export function initSelector() {
-  sel.onchange = () => select(sel.value, { push: true });
-  addEventListener('popstate', () => { const cid = fromURL(); if (cid && cid !== st.cid) select(cid); });
+  sel.onchange = () => select(sel.value);
 }
