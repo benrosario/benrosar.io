@@ -1,4 +1,4 @@
-// Browser storage: one JSON object under KEY (the same key the site has always used).
+// Browser storage: one JSON object under KEY (for CS 61A, the same key the site has always used; each course has its own).
 //
 // Saved answers  "<exam id>|<question id>": {v, ok, m?, o?, gv}   (permanent question ids, shared by every collection)
 // Preferences    _uid, _theme, _hl, _sw (sidebar width), _zoom, _zprev (zoom to go back to when fit is turned off), _tm (countdown timer), _view ('pt' when on timed practice)
@@ -6,7 +6,9 @@
 //                _dr: {<qid>: draft} unchecked answers, and collection/content-version fields on timed attempts.
 // Schema 2 (before study collections) used _ex (index of the selected exam), _f, _open, _fo and _ptlen; migration
 // copies them into _cs.midterm3 and leaves the old fields in place, so an older build of the page still works.
-export const KEY = 'cs61a-practice-v2', BACKUP = KEY + ':before-sv3', SCHEMA = 3;
+import { storageKey } from './course.js';
+
+export const KEY = storageKey('practice-v2'), BACKUP = KEY + ':before-sv3', SCHEMA = 3;
 
 // Bring a saved state object up to SCHEMA. Pure and repeatable: running it again changes nothing.
 // ctx: {legacyOrder: exam ids in the schema-2 sidebar order, defaultCollection, collections: ids}

@@ -1,5 +1,5 @@
 // Timed practice exams, drawn from the selected collection's pool and graded only on submit.
-// - Midterm 3 draws modified versions of the staff-recommended problems (pool "modified", content/timed/midterm3.json).
+// - Midterm 3 draws modified versions of the staff-recommended problems (pool "modified", courses/61a/timed/midterm3.json).
 // - Other collections draw original past-exam problems from their own scope (pool "source"); the page says so.
 // One attempt can be active at a time (S._pt); it keeps running, and submits itself, whatever collection is selected.
 // Each attempt records its collection (c), content version (cv), pool, problem ids, question keys and a small
@@ -15,6 +15,7 @@ import { render, syncHome } from './practice.js';
 import { select } from './selector.js';
 import { record } from './nav.js';
 import { leavePG, locked } from './playground.js';
+import { hasPlayground } from './course.js';
 import { explanationHTML } from './learning.js';
 
 const m = $('#m'), nav = $('#nav'), ptb = $('#ptb'), pgb = $('#pgb');
@@ -254,7 +255,7 @@ export function ptTick() {
   const tip = st.ptView ? 'Back to the past-exam practice questions' : live ? `Return to your ${label(X.c)} practice exam` : `Take a timed ${st.view.label} practice exam`;
   if (ptb.dataset.l !== lbl || ptb.dataset.tip !== tip) { ptb.dataset.l = lbl; ptb.innerHTML = PTICON + `<span>${esc(live ? 'Practice exam' : lbl)}</span>${live ? `<span class="navclock"> · ${esc(fmtT(left))}</span>` : ''}`; ptb.dataset.tip = tip; ptb.setAttribute('aria-label', lbl); }
   ptb.className = cls;
-  pgb.hidden = locked(); document.body.classList.toggle('pglock', locked()); // no playground during a practice exam (until it's graded)
+  pgb.hidden = locked() || !hasPlayground; document.body.classList.toggle('pglock', locked()); // no playground during a practice exam (until it's graded)
 }
 export function initTimed() {
   ptb.onclick = () => showPT(!st.ptView);

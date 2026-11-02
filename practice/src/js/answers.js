@@ -16,7 +16,9 @@ export const norm = s => String(s).trim().replace(/;$/, '');
 export function matchesAnswer(answer, expected, lang, runnable = false) {
   // Runnable Python must preserve indentation; alternate formatting is checked by execution.
   if (lang === 'py' && runnable) return norm(answer) === norm(expected);
-  return JSON.stringify(tokens(answer, lang, runnable)) === JSON.stringify(tokens(expected, lang, runnable));
+  // A semicolon ending a line (Java, SQL) doesn't change the answer.
+  const strip = x => String(x).replace(/;[ \t]*$/gm, '');
+  return JSON.stringify(tokens(strip(answer), lang, runnable)) === JSON.stringify(tokens(strip(expected), lang, runnable));
 }
 export function restrictionError(q, p, answer) {
   const ts = tokens(answer, p.run?.lang === 'gleam' ? 'gleam' : q.sql ? 'sql' : 'py');

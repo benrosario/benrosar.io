@@ -1,18 +1,21 @@
-// Rendering of prose/code segments with lightweight syntax highlighting (Python, Gleam, Scheme, SQL).
+// Rendering of prose/code segments with lightweight syntax highlighting (Python, Gleam, Scheme, SQL, Java), and txt:
+// plain-text diagrams, shown as they are.
 // Code uses ⟪a⟫ for a lettered blank, ⟪⟫ for an unlabeled one, and ⟦text⟧ to mark filled-in answer text.
 import { esc, confirmBtn } from './util.js';
 
 const KW = { py: 'def class return if elif else for while in not and or is lambda yield from import None True False try except raise assert pass break continue with as global nonlocal del finally',
   scm: 'define lambda if cond let begin and or else quote define-macro cons-stream expect',
   sql: 'SELECT FROM WHERE AS GROUP BY ORDER LIMIT HAVING CREATE TABLE UNION AND OR NOT DESC ASC JOIN ON INSERT INTO VALUES DISTINCT',
-  gleam: 'fn pub let case if as import type opaque const assert todo panic use echo' };
+  gleam: 'fn pub let case if as import type opaque const assert todo panic use echo',
+  java: 'public private protected static final abstract class interface extends implements new return if else for while do switch case default break continue this super null true false void int long double float boolean char byte short try catch finally throw throws import package instanceof var' };
 const BI = { py: 'print len range list map filter sum max min abs isinstance iter next str int float tuple sorted any all super type dict set zip enumerate reversed repr round pow self Link Tree',
   scm: 'car cdr cons list append null? nil #t #f length map filter reduce eq? equal? not display print cadr',
   sql: 'COUNT SUM AVG MIN MAX ABS ROUND',
-  gleam: 'list int float string dict option result io bool' };
+  gleam: 'list int float string dict option result io bool',
+  java: 'String Integer Object List ArrayList LinkedList Map HashMap TreeMap Set HashSet TreeSet Iterator Iterable Comparable Comparator Math System' };
 const HSETS = {}; for (const l in KW) HSETS[l] = [new Set(KW[l].split(' ')), new Set(BI[l].split(' '))];
-const TQ = /^("""|''')/, PROMPT = { py: /^(>>>|\.\.\.)(?=\s|$)/, scm: /^(scm>|\.\.\.>)/, sql: /^(sql>|\.\.\.>)/, gleam: /^(?!)/ },
-  COMMENT = { py: /^#.*/, scm: /^;.*/, sql: /^--.*/, gleam: /^\/\/.*/ }, WORD = { py: /^[A-Za-z_]\w*/, scm: /^[#A-Za-z_][\w\-?!*<>=]*/, sql: /^[A-Za-z_]\w*/, gleam: /^[A-Za-z_]\w*/ };
+const TQ = /^("""|''')/, PROMPT = { py: /^(>>>|\.\.\.)(?=\s|$)/, scm: /^(scm>|\.\.\.>)/, sql: /^(sql>|\.\.\.>)/, gleam: /^(?!)/, java: /^(?!)/ },
+  COMMENT = { py: /^#.*/, scm: /^;.*/, sql: /^--.*/, gleam: /^\/\/.*/, java: /^(\/\/.*|\/\*.*)/ }, WORD = { py: /^[A-Za-z_]\w*/, scm: /^[#A-Za-z_][\w\-?!*<>=]*/, sql: /^[A-Za-z_]\w*/, gleam: /^[A-Za-z_]\w*/, java: /^[A-Za-z_$][\w$]*/ };
 // Highlight one line. st.doc holds the open triple-quote while inside a docstring.
 function hlLine(line, lang, st) {
   const [kw, bi] = HSETS[lang]; let o = '', i = 0, prev = ''; const put = (c, t) => o += c ? `<span class="${c}">${esc(t)}</span>` : esc(t);
@@ -32,7 +35,7 @@ function hlLine(line, lang, st) {
     if (m = r.match(/^\d[\d_]*(\.\d+)?/)) { put('hn', m[0]); i += m[0].length; continue; }
     if (m = r.match(WORD[lang])) {
       const w = m[0], key = lang == 'sql' ? w.toUpperCase() : w;
-      const fn = prev == 'def' || prev == 'class' || prev == 'define' || prev == 'fn' || ((lang == 'py' || lang == 'gleam') && /^\s*\(/.test(line.slice(i + w.length)) && !kw.has(w) && !bi.has(w) && !/^[A-Z]/.test(w));
+      const fn = prev == 'def' || prev == 'class' || prev == 'define' || prev == 'fn' || ((lang == 'py' || lang == 'gleam' || lang == 'java') && /^\s*\(/.test(line.slice(i + w.length)) && !kw.has(w) && !bi.has(w) && !/^[A-Z]/.test(w));
       // Gleam types and constructors (Int, Ok, Tree) are capitalized.
       put(kw.has(key) ? 'hk' : bi.has(key) || (lang == 'gleam' && /^[A-Z]/.test(w)) ? 'hb' : fn ? 'hf' : '', w); prev = w; i += w.length; continue;
     }
@@ -40,7 +43,7 @@ function hlLine(line, lang, st) {
   }
   return o;
 }
-export function hl(code, lang) { const st = { doc: null }; return code.split('\n').map(l => hlLine(l, lang, st)).join('\n'); }
+export function hl(code, lang) { if (lang === 'txt') return esc(code); const st = { doc: null }; return code.split('\n').map(l => hlLine(l, lang, st)).join('\n'); }
 // Code blocks whose blanks can be filled in with "Show all answers", by index into this list (reset per render).
 export const FILLS = [];
 function fillCode(code, f) {
@@ -68,7 +71,7 @@ export function segHTML(segs) {
     : `<p>${esc(g.p).replace(/_{3,}/g, '<span class="blank">&nbsp;</span>')}</p>`).join('');
 }
 // Plain-text versions for the copied AI prompt and stored attempt snapshots.
-const FENCE = { py: 'python', scm: 'scheme', sql: 'sql', gleam: 'gleam' };
+const FENCE = { py: 'python', scm: 'scheme', sql: 'sql', gleam: 'gleam', java: 'java', txt: '' };
 export function segText(segs) {
   return segs.map(g => g.c != null ? '```' + FENCE[g.lang] + '\n' + g.c.replace(/⟪([a-z]?)⟫/g, (t, x) => '____' + (x ? '(' + x + ')' : '') + '____') + '\n```'
     : g.h ? g.h : g.p.replace(/_{3,}/g, '______')).join('\n\n');

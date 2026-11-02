@@ -5,6 +5,7 @@
 // Not registered in automated browsers (the UI tests) unless the URL has ?sw=1.
 import { st } from './state.js';
 import { status, onStatus, downloadAll, LANGS } from './runtimes.js';
+import { hasPlayground, langNames } from './course.js';
 
 let registered = false, state = 'unknown', pct = 0; // state: unknown | idle | saving | ready | failed
 const mounts = new Set();
@@ -36,12 +37,14 @@ export function mountOffline(el) {
   if (state === 'unknown' && registered) check(); else draw();
 }
 async function check() { const ok = await offlineReady(); if (state !== 'saving') state = ok ? 'ready' : 'idle'; draw(); }
-const TIP = 'Saves the questions, Python and Gleam in this browser (about 20 MB), so practice and the playground work without a connection';
+const TIP = hasPlayground ? `Saves the questions, ${langNames('and')} in this browser (about 20 MB), so practice and the playground work without a connection`
+  : 'Saves the questions in this browser, so practice works without a connection';
+const SAVED = hasPlayground ? `${langNames('and')} and the questions are saved in this browser` : 'The questions are saved in this browser';
 function draw() {
   for (const el of mounts) {
     if (!el.isConnected) { mounts.delete(el); continue; }
     el.hidden = state === 'unknown'; el.className = 'offl ' + state;
-    if (state === 'ready') { el.innerHTML = '<span data-tip="Python, Gleam and the questions are saved in this browser">✓ Works offline</span>'; continue; }
+    if (state === 'ready') { el.innerHTML = `<span data-tip="${SAVED}">✓ Works offline</span>`; continue; }
     el.innerHTML = `<button type="button" data-tip="${TIP}"${state === 'saving' ? ' disabled' : ''}>${state === 'saving' ? `Saving for offline… ${pct}%` : state === 'failed' ? 'Couldn’t save for offline. Try again' : 'Make available offline'}</button>`;
     el.querySelector('button').onclick = save;
   }
@@ -50,7 +53,7 @@ async function save() {
   state = 'saving'; pct = 0; draw();
   try { await navigator.storage?.persist?.(); } catch {} // so the browser doesn't clear it when space runs low
   const total = LANGS.reduce((n, l) => n + status[l].total, 0);
-  const off = onStatus(() => { pct = Math.floor(100 * LANGS.reduce((n, l) => n + Math.min(status[l].loaded, status[l].total), 0) / total); draw(); });
+  const off = onStatus(() => { pct = total && Math.floor(100 * LANGS.reduce((n, l) => n + Math.min(status[l].loaded, status[l].total), 0) / total); draw(); });
   try { await downloadAll(true); state = await offlineReady() ? 'ready' : 'failed'; } catch { state = 'failed'; }
   off(); draw();
 }

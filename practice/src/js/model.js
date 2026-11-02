@@ -7,6 +7,8 @@
 //   question id (qid)  "<exam id>|<question id>", the key saved answers have always used
 //   bank.collections[] study options ("Studying for"), each referencing shared content with its own scope,
 //                      recommendations, notes and timed-practice settings
+import { COURSE } from './course.js';
+
 export const QID = (examId, q) => examId + '|' + q.id;
 const ROMAN = /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)\.(\s|$)/;
 const PART = /^\(([a-z])\s?\)/;
@@ -36,6 +38,7 @@ export function parseStaffNum(n) {
 // The staff topic tags that apply to one question, or null when the problem has no staff tags.
 // A question whose part can't be matched to a tagged part gets the union of every part's tags (the conservative choice).
 export function questionTopics(p, q) {
+  if (q.topics) return [...q.topics].sort(); // the question's own tags (CS 61B tags each sub-question)
   if (!p.topics?.length) return null;
   const E = p.topics.map(x => ({ ...parseStaffNum(x.n), t: x.t }));
   const whole = E.filter(x => !x.parts);
@@ -149,16 +152,7 @@ export function pickTimed(pool, n, seen = {}, balanced = false, rand = Math.rand
 }
 
 // ---- topic names ----
-const NAMES = { VARS_AND_FUNCTIONS: 'variables and functions', CONTROL: 'control', HIGHER_ORDER_FUNCTIONS: 'higher-order functions',
-  ENVIRONMENT_DIAGRAMS: 'environment diagrams', LAMBDAS: 'lambdas', RECURSION: 'recursion', TREE_RECURSION: 'tree recursion',
-  SEQUENCES: 'sequences', LISTS: 'lists', DATA_ABSTRACTION: 'data abstraction', TREES: 'trees', MUTABILITY: 'mutability',
-  ITERATORS: 'iterators', GENERATORS: 'generators', OBJECTS: 'objects', INHERITANCE: 'inheritance', REPRESENTATION: 'string representation',
-  MUTABLE_TREES: 'mutable trees', LINKED_LISTS: 'linked lists', GROWTH: 'orders of growth', EFFICIENCY: 'efficiency',
-  INTERPRETERS: 'interpreters', SQL: 'SQL', SCHEME: 'Scheme', SCHEME_LISTS: 'Scheme lists', MACROS: 'macros', TAIL_RECURSION: 'tail recursion',
-  PROGRAMS_AS_DATA: 'programs as data', NONLOCAL: 'nonlocal', SELF_REFERENCE: 'self-reference', BNF: 'BNF', REGEX: 'regular expressions', WWPD: 'what would Python display',
-  SCHEME_DATA_ABSTRACTION: 'Scheme data abstraction', GLEAM: 'Gleam', FUNCTIONAL_PROGRAMMING: 'functional programming', ALGEBRAIC_DATA_TYPES: 'algebraic data types',
-  IMMUTABLE_DATA: 'immutable data', PATTERN_MATCHING: 'pattern matching' };
-export const topicName = t => NAMES[t] || t.toLowerCase().replace(/_/g, ' ');
+export const topicName = t => COURSE.topics[t] || t.toLowerCase().replace(/_/g, ' '); // the course's names (course.json)
 
 // ---- sorting the sidebar's source exams ----
 // When an exam was given, from its id ("61a-fa25-mt2" -> Fall 2025): a number that sorts chronologically.

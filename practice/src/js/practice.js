@@ -16,6 +16,7 @@ import { record, setProblem } from './nav.js';
 import { leavePG, showPG } from './playground.js';
 import { mountOffline } from './offline.js';
 import { wireProblemAdd } from './problem-add.js';
+import { hasPlayground, langNames } from './course.js';
 const iSafe = id => id.replace(/[^a-zA-Z0-9-]/g,'-');
 const PLAYICON = SV('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>');
 
@@ -170,9 +171,9 @@ export function render() {
     const p = P.p, d = document.createElement('section'); d.className = 'prob'; d.id = `p-${st.cur}-${j}`; d.style.scrollMarginTop = '64px';
     const tips = [...(p.adapted ? [{ k: 'adapted', t: `Adapted to Gleam by this site from ${p.adapted.from}; not written by course staff` }] : []), ...(P.tips || [])];
     // Every problem can be added as runnable code or commented notes (hidden during a timed attempt).
-    const play = `<div class="pgadd"><button type="button" class="pgopen" aria-expanded="false" aria-controls="pgadd-${iSafe(p.id)}">${PLAYICON}<span>Add to playground</span></button><div class="pgaddmenu" id="pgadd-${iSafe(p.id)}" hidden></div></div>`;
+    const play = !hasPlayground ? '' : `<div class="pgadd"><button type="button" class="pgopen" aria-expanded="false" aria-controls="pgadd-${iSafe(p.id)}">${PLAYICON}<span>Add to playground</span></button><div class="pgaddmenu" id="pgadd-${iSafe(p.id)}" hidden></div></div>`;
     d.innerHTML = `<div class="ph"><h2>${esc(p.t)}</h2>${play}</div>` + (tips.length ? `<div class="tips">${tips.map(t => `<span class="tip ${t.k}">${TIPICON[t.k]} ${esc(t.t)}</span>`).join('')}</div>` : '');
-    wireProblemAdd(d.querySelector('.pgadd'), p.id);
+    if (hasPlayground) wireProblemAdd(d.querySelector('.pgadd'), p.id);
     if (p.authored) d.insertAdjacentHTML('beforeend','<p class="authored">Original practice written by this site; not a past exam or course-staff problem.</p>');
     let qi = 0;
     p.b.forEach(b => {
@@ -241,10 +242,10 @@ function renderHome() {
   const rows = all.map(({ v, t }) => `<li><button type="button" data-c="${esc(v.id)}"${v.id === st.cid ? ' aria-current="true"' : ''}><span class="cn"><b>${esc(v.label)}</b><span class="sub">${esc(v.sub)}</span>${v.id === st.cid ? '<span class="now">Studying for</span>' : ''}</span><span class="num">${t.ok}/${t.n} correct</span></button></li>`).join('');
   const arrow = SV('<path d="M5 12h14M13 6l6 6-6 6"/>');
   m.innerHTML = `<section class="prob home">
-<div class="homeintro"><h2>How do you want to practice?</h2><p class="mut">Past exams, a place to experiment, or a timed challenge. Pick up wherever you are.</p></div>
+<div class="homeintro"><h2>How do you want to practice?</h2><p class="mut">Past exams, ${hasPlayground ? 'a place to experiment, ' : ''}or a timed challenge. Pick up wherever you are.</p></div>
 <div class="homepaths" aria-label="Ways to practice">
 <button type="button" data-act="exams"><span class="pathicon">${SV('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>')}</span><strong>Exams</strong><span>Work through past exam questions at your own pace.</span><span class="pathgo">Open exams ${arrow}</span></button>
-<button type="button" data-act="play"><span class="pathicon">${PLAYICON}</span><strong>Playground</strong><span>Experiment with Python and Gleam in your own workspace.</span><span class="pathgo">Open playground ${arrow}</span></button>
+${!hasPlayground ? '' : `<button type="button" data-act="play"><span class="pathicon">${PLAYICON}</span><strong>Playground</strong><span>Experiment with ${langNames('and')} in your own workspace.</span><span class="pathgo">Open playground ${arrow}</span></button>`}
 <button type="button" data-act="pt"><span class="pathicon">${SV('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')}</span><strong>Practice exam</strong><span>Take a timed exam, then review your answers and results.</span><span class="pathgo">${live ? 'Resume practice exam' : 'Set up an exam'} ${arrow}</span></button>
 </div>
 <div class="homeresume" hidden></div>
@@ -259,7 +260,7 @@ function renderHome() {
   m.querySelectorAll('.cprogs button').forEach(b => b.onclick = () => select(b.dataset.c));
   mountOffline(m.querySelector('.offl'));
   m.querySelector('[data-act=exams]').onclick = browseExams;
-  m.querySelector('[data-act=play]').onclick = () => showPG();
+  if (hasPlayground) m.querySelector('[data-act=play]').onclick = () => showPG();
   m.querySelector('[data-act=pt]').onclick = () => { st.ptHist = null; showPT(true); };
   refreshHomeCollection();
 }

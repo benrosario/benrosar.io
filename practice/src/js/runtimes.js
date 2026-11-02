@@ -8,8 +8,9 @@
 // {py: {base, files: [[name, bytes], …]}, gleam: {…}, shell: [the page's own files]}.
 import { st } from './state.js';
 import { swControl } from './offline.js';
+import { COURSE } from './course.js';
 
-export const LANGS = ['py', 'gleam'];
+export const LANGS = ['py', 'gleam'].filter(l => COURSE.langs.includes(l)); // the course's runtimes, in download order
 const subs = new Set(), jobs = {};
 // status[lang]: {state: 'waiting' | 'downloading' | 'ready' | 'skipped' | 'failed', loaded, total} (bytes)
 export const status = {};

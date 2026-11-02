@@ -11,6 +11,7 @@
 // the Debug button becomes Stop debug, which goes back to editing.
 // During a timed practice exam the playground is locked: its button is hidden, and links to it open the attempt.
 import { st } from './state.js';
+import { storageKey, hasPlayground, langNames } from './course.js';
 import { $, esc, SV, confirmBtn, copyText, isMac, reduced, PLAYGROUND_ICONS } from './util.js';
 import { createEditor } from './editor.js';
 import { createRunner } from './runner.js';
@@ -27,7 +28,7 @@ import { segHTML } from './highlight.js';
 import { goTo } from './practice.js';
 import { select } from './selector.js';
 
-const KEY = 'cs61a-playground-v1', KEEP = 30, RUN_MS = 10000, NAME = { py: 'Python', gleam: 'Gleam' };
+const KEY = storageKey('playground-v1'), KEEP = 30, RUN_MS = 10000, NAME = { py: 'Python', gleam: 'Gleam' };
 const STARTER = {
   py: `def square(x):
     """Return x squared.
@@ -628,6 +629,7 @@ export function openProblem(id) { if (!locked()) showPG(id); }
 const pgb = $('#pgb');
 // Open the playground on file id (or the last file used). Locked during a timed practice exam.
 export function showPG(id) {
+  if (!hasPlayground) return;
   if (locked()) return showPT(true);
   if (!P) load();
   if (id && !P.files[id]) { const x = findProblem(id); if (x) addProblem(x, 'mine'); } // a link to a problem not in the playground yet
@@ -654,9 +656,10 @@ const SHARED = location.hash.match(/^#(py|gleam)=([zu][A-Za-z0-9_-]*)$/);
 // At startup, after the first render: a share link becomes a new file, and the playground opens if the URL asks for
 // it (nav.js sets st.pgWant) or a share link was opened.
 export async function initPlayground() {
+  if (!hasPlayground) { pgb.hidden = true; return; } // a course with no language that runs
   load();
   pgb.innerHTML = SV('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>') + '<span>Playground</span>';
-  pgb.dataset.tip = 'Playground: write and run Python or Gleam';
+  pgb.dataset.tip = `Playground: write and run ${langNames('or')}`;
   pgb.onclick = () => { if (!st.pgView) return showPG(); leavePG(); render(); scrollTo({ top: 0, behavior: 'instant' }); };
   const h = SHARED;
   if (h) {

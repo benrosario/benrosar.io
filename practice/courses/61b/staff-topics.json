@@ -1,0 +1,3205 @@
+{
+ "source": "https://fa26.datastructur.es/resources/exam-archive/",
+ "exams": {
+  "fa20-final": {
+   "q2": [
+    "JAVA",
+    "SORTING"
+   ],
+   "q3": [
+    "JAVA",
+    "TREE_TRAVERSALS"
+   ],
+   "q4a": [
+    "JAVA",
+    "ITERATORS"
+   ],
+   "q4b": [
+    "JAVA",
+    "ITERATORS",
+    "ADTS"
+   ],
+   "q4c": [
+    "JAVA",
+    "COMPARATORS",
+    "HEAPS"
+   ],
+   "q7": [
+    "JAVA",
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q8a": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q8b": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q8c": [
+    "BSTS",
+    "RED_BLACK_TREES",
+    "TREE_TRAVERSALS"
+   ],
+   "q9": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q10a": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q10b": [
+    "SHORTEST_PATHS"
+   ],
+   "q6": [
+    "MSTS"
+   ]
+  },
+  "fa20-mt1": {
+   "q2a": [
+    "JAVA"
+   ],
+   "q2b": [
+    "JAVA",
+    "COMPARATORS"
+   ],
+   "q2c": [
+    "JAVA",
+    "COMPARATORS"
+   ],
+   "q4": [
+    "JAVA",
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q6a": [
+    "JAVA",
+    "LISTS",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q6b": [
+    "JAVA",
+    "LISTS",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q6c": [
+    "JAVA",
+    "LISTS",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q6d": [
+    "JAVA",
+    "LISTS",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q5": [
+    "LISTS",
+    "ARRAYS",
+    "DEQUES"
+   ],
+   "q7a": [
+    "DEQUES"
+   ],
+   "q7b": [
+    "DEQUES",
+    "ABSTRACTION"
+   ],
+   "q7c": [
+    "DEQUES",
+    "ABSTRACTION"
+   ],
+   "q7d": [
+    "DEQUES",
+    "ABSTRACTION"
+   ],
+   "q7e": [
+    "DEQUES",
+    "ABSTRACTION"
+   ],
+   "q3a": [
+    "DMS"
+   ],
+   "q3b": [
+    "DMS"
+   ],
+   "q3c": [
+    "DMS"
+   ],
+   "q2d": [
+    "COMPARATORS"
+   ]
+  },
+  "fa22-mt1": {
+   "q1a": [
+    "JAVA"
+   ],
+   "q1b": [
+    "JAVA"
+   ],
+   "q2a": [
+    "JAVA",
+    "LINKED_LISTS"
+   ],
+   "q4": [
+    "TESTING"
+   ],
+   "q3": [
+    "LINKED_LISTS"
+   ],
+   "q6": [
+    "LINKED_LISTS"
+   ],
+   "q5a": [
+    "ARRAYS"
+   ],
+   "q5b": [
+    "ARRAYS"
+   ]
+  },
+  "fa23-mt1": {
+   "q1": [
+    "JAVA"
+   ],
+   "q4c": [
+    "JAVA",
+    "LISTS",
+    "EQUALS"
+   ],
+   "q5a": [
+    "JAVA",
+    "ARRAYS"
+   ],
+   "q5b": [
+    "JAVA",
+    "ARRAYS"
+   ],
+   "q4a": [
+    "LISTS"
+   ],
+   "q4b": [
+    "LISTS"
+   ],
+   "q2": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q3a": [
+    "ITERATORS"
+   ],
+   "q3b": [
+    "ITERATORS"
+   ],
+   "q4d": [
+    "COMPARATORS"
+   ]
+  },
+  "fa24-final": {
+   "q1a": [
+    "JAVA",
+    "ITERATORS"
+   ],
+   "q1e": [
+    "JAVA",
+    "HASHING"
+   ],
+   "q1c": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q2a": [
+    "INHERITANCE"
+   ],
+   "q2b": [
+    "INHERITANCE",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q2c": [
+    "INHERITANCE",
+    "GRAPH_TRAVERSALS",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q2d": [
+    "INHERITANCE"
+   ],
+   "q2e": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q2f": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q2g": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q2h": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q3a": [
+    "COMPARATORS",
+    "HEAPS",
+    "SHORTEST_PATHS"
+   ],
+   "q1b": [
+    "ASYMPTOTICS"
+   ],
+   "q4e": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q4f": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q4g": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q4h": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q5b": [
+    "ASYMPTOTICS",
+    "TRIES"
+   ],
+   "q5c": [
+    "ADTS",
+    "TRIES"
+   ],
+   "q1d": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q4a": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q4b": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q3b": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q6e": [
+    "GRAPH_TRAVERSALS",
+    "MSTS"
+   ],
+   "q6a": [
+    "MSTS"
+   ],
+   "q6b": [
+    "MSTS"
+   ],
+   "q6c": [
+    "MSTS"
+   ],
+   "q6d": [
+    "MSTS"
+   ],
+   "q5a": [
+    "TRIES"
+   ],
+   "q4c": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q4d": [
+    "SORTING",
+    "RADIX_SORTS"
+   ]
+  },
+  "fa24-mt1": {
+   "q2a": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q2b": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q2e": [
+    "JAVA",
+    "ABSTRACTION"
+   ],
+   "q2f": [
+    "JAVA",
+    "ARRAYS"
+   ],
+   "q2g": [
+    "JAVA",
+    "ARRAYS"
+   ],
+   "q3a": [
+    "JAVA"
+   ],
+   "q3b": [
+    "JAVA"
+   ],
+   "q3c": [
+    "JAVA"
+   ],
+   "q7a": [
+    "JAVA",
+    "LINKED_LISTS"
+   ],
+   "q7h": [
+    "JAVA",
+    "EQUALS"
+   ],
+   "q2c": [
+    "TESTING"
+   ],
+   "q2d": [
+    "TESTING"
+   ],
+   "q5": [
+    "LISTS",
+    "COMPARATORS"
+   ],
+   "q6a": [
+    "LINKED_LISTS"
+   ],
+   "q6b": [
+    "LINKED_LISTS"
+   ],
+   "q6c": [
+    "LINKED_LISTS",
+    "ITERATION"
+   ],
+   "q6d": [
+    "LINKED_LISTS",
+    "ITERATION"
+   ],
+   "q6e": [
+    "LINKED_LISTS",
+    "ITERATORS"
+   ],
+   "q7b": [
+    "LINKED_LISTS"
+   ],
+   "q7c": [
+    "LINKED_LISTS"
+   ],
+   "q7d": [
+    "LINKED_LISTS"
+   ],
+   "q7e": [
+    "LINKED_LISTS"
+   ],
+   "q7f": [
+    "LINKED_LISTS"
+   ],
+   "q7g": [
+    "LINKED_LISTS"
+   ],
+   "q4a": [
+    "ARRAYS"
+   ],
+   "q4b": [
+    "ARRAYS",
+    "ITERATION"
+   ],
+   "q1a": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q1b": [
+    "INHERITANCE",
+    "DMS"
+   ]
+  },
+  "fa25-final": {
+   "q1.1": [
+    "JAVA",
+    "LISTS"
+   ],
+   "q1.2": [
+    "JAVA",
+    "ADTS"
+   ],
+   "q1.3": [
+    "JAVA",
+    "ADTS"
+   ],
+   "q2.1": [
+    "TESTING",
+    "LISTS"
+   ],
+   "q2.2": [
+    "LISTS",
+    "INHERITANCE"
+   ],
+   "q4.1": [
+    "LINKED_LISTS",
+    "DEQUES"
+   ],
+   "q4.2": [
+    "LINKED_LISTS",
+    "DEQUES"
+   ],
+   "q4.3": [
+    "LINKED_LISTS",
+    "DEQUES"
+   ],
+   "q1.4": [
+    "ITERATORS",
+    "COMPARATORS"
+   ],
+   "q7.2": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5.1": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q5.5": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q5.7": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6.1": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q6.2": [
+    "ASYMPTOTICS",
+    "ITERATION"
+   ],
+   "q6.3": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q8.6": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q8.9": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q5.6": [
+    "DISJOINT_SETS"
+   ],
+   "q6.10": [
+    "DISJOINT_SETS"
+   ],
+   "q3": [
+    "ADTS",
+    "ITERATION"
+   ],
+   "q5.2": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q5.3": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q6.7": [
+    "BSTS"
+   ],
+   "q6.9": [
+    "RED_BLACK_TREES"
+   ],
+   "q7.1": [
+    "HASHING"
+   ],
+   "q5.4": [
+    "HEAPS"
+   ],
+   "q5.12": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q6.8": [
+    "HEAPS"
+   ],
+   "q6.4": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q6.5": [
+    "MSTS"
+   ],
+   "q6.6": [
+    "MSTS"
+   ],
+   "q5.8": [
+    "TRIES"
+   ],
+   "q5.9": [
+    "TRIES"
+   ],
+   "q5.10": [
+    "TRIES"
+   ],
+   "q5.11": [
+    "SORTING"
+   ],
+   "q8.1": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q8.2": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q8.3": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q8.4": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q8.5": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q8.7": [
+    "SORTING"
+   ],
+   "q8.8": [
+    "SORTING"
+   ],
+   "q8.10": [
+    "SORTING"
+   ]
+  },
+  "fa25-mt2": {
+   "q4": [
+    "JAVA",
+    "ADTS"
+   ],
+   "q5.2": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5.3": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q6.1": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q6.2": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q6.3": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q6.4": [
+    "ASYMPTOTICS",
+    "SHORTEST_PATHS"
+   ],
+   "q2.9": [
+    "DISJOINT_SETS"
+   ],
+   "q2.10": [
+    "DISJOINT_SETS"
+   ],
+   "q7": [
+    "DISJOINT_SETS",
+    "ADTS"
+   ],
+   "q2.3": [
+    "ADTS",
+    "HEAPS"
+   ],
+   "q1.2": [
+    "BSTS"
+   ],
+   "q1.3": [
+    "BSTS"
+   ],
+   "q1.5": [
+    "BSTS",
+    "HEAPS"
+   ],
+   "q2.6": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q1.7": [
+    "RED_BLACK_TREES"
+   ],
+   "q2.7": [
+    "RED_BLACK_TREES"
+   ],
+   "q2.4": [
+    "HASHING"
+   ],
+   "q2.5": [
+    "HASHING"
+   ],
+   "q5.1": [
+    "HASHING"
+   ],
+   "q1.1": [
+    "HEAPS"
+   ],
+   "q2.1": [
+    "HEAPS"
+   ],
+   "q2.2": [
+    "HEAPS"
+   ],
+   "q1.4": [
+    "TREE_TRAVERSALS"
+   ],
+   "q1.6": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q3.1": [
+    "SHORTEST_PATHS"
+   ],
+   "q3.2": [
+    "SHORTEST_PATHS"
+   ],
+   "q3.3": [
+    "SHORTEST_PATHS"
+   ],
+   "q3.4": [
+    "SHORTEST_PATHS"
+   ],
+   "q3.6": [
+    "MSTS"
+   ],
+   "q3.7": [
+    "MSTS"
+   ],
+   "q3.8": [
+    "MSTS"
+   ],
+   "q3.9": [
+    "MSTS"
+   ],
+   "q3.10": [
+    "MSTS"
+   ],
+   "q3.5": [
+    "TOPOLOGICAL_SORT"
+   ]
+  },
+  "sp18-final": {
+   "q3c": [
+    "JAVA",
+    "ITERATORS"
+   ],
+   "q3d": [
+    "JAVA"
+   ],
+   "q4": [
+    "JAVA"
+   ],
+   "q11a": [
+    "JAVA"
+   ],
+   "q11b": [
+    "JAVA",
+    "ARRAYS"
+   ],
+   "q11c": [
+    "JAVA"
+   ],
+   "q11d": [
+    "JAVA",
+    "ASYMPTOTICS"
+   ],
+   "q3a": [
+    "LINKED_LISTS"
+   ],
+   "q3b": [
+    "LINKED_LISTS",
+    "ITERATORS"
+   ],
+   "q8a": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q8b": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q9": [
+    "ASYMPTOTICS",
+    "SHORTEST_PATHS"
+   ],
+   "q10": [
+    "BSTS",
+    "HEAPS",
+    "SORTING"
+   ],
+   "q5": [
+    "HASHING"
+   ],
+   "q7c": [
+    "HEAPS"
+   ],
+   "q12a": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12c": [
+    "TREE_TRAVERSALS"
+   ],
+   "q1a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1b": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6a": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q13": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6b": [
+    "SHORTEST_PATHS"
+   ],
+   "q1c": [
+    "MSTS"
+   ],
+   "q1d": [
+    "MSTS"
+   ],
+   "q1e": [
+    "MSTS"
+   ],
+   "q1f": [
+    "MSTS"
+   ],
+   "q7b": [
+    "MSTS"
+   ],
+   "q2a": [
+    "SORTING"
+   ],
+   "q2b": [
+    "SORTING"
+   ],
+   "q2c": [
+    "SORTING"
+   ],
+   "q2d": [
+    "SORTING"
+   ],
+   "q2e": [
+    "SORTING"
+   ],
+   "q7a": [
+    "SORTING"
+   ]
+  },
+  "sp19-final": {
+   "q6": [
+    "JAVA"
+   ],
+   "q5": [
+    "LINKED_LISTS",
+    "BSTS",
+    "HASHING",
+    "HEAPS",
+    "SHORTEST_PATHS",
+    "SORTING",
+    "K_D_TREES"
+   ],
+   "q7b": [
+    "ITERATORS",
+    "DISJOINT_SETS"
+   ],
+   "q8a": [
+    "ASYMPTOTICS"
+   ],
+   "q8b": [
+    "ASYMPTOTICS"
+   ],
+   "q8c": [
+    "ASYMPTOTICS"
+   ],
+   "q8d": [
+    "ASYMPTOTICS"
+   ],
+   "q9ai": [
+    "ASYMPTOTICS",
+    "REDUCTIONS"
+   ],
+   "q10d": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q7a": [
+    "DISJOINT_SETS"
+   ],
+   "q4a": [
+    "BSTS"
+   ],
+   "q4b": [
+    "BSTS"
+   ],
+   "q10a": [
+    "HASHING"
+   ],
+   "q10b": [
+    "HASHING"
+   ],
+   "q10c": [
+    "HASHING"
+   ],
+   "q1ai": [
+    "HEAPS"
+   ],
+   "q1aii": [
+    "HEAPS"
+   ],
+   "q12a": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12c": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12d": [
+    "TREE_TRAVERSALS"
+   ],
+   "q12e": [
+    "TREE_TRAVERSALS"
+   ],
+   "q11a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q11b": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q11c": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q3b": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q3e": [
+    "SHORTEST_PATHS"
+   ],
+   "q3a": [
+    "MSTS"
+   ],
+   "q3c": [
+    "MSTS"
+   ],
+   "q3d": [
+    "MSTS"
+   ],
+   "q1b": [
+    "SORTING"
+   ],
+   "q1c": [
+    "SORTING"
+   ],
+   "q1d": [
+    "SORTING"
+   ],
+   "q1e": [
+    "SORTING"
+   ],
+   "q1f": [
+    "SORTING"
+   ],
+   "q1g": [
+    "SORTING"
+   ],
+   "q2a": [
+    "SORTING"
+   ],
+   "q2b": [
+    "SORTING"
+   ],
+   "q2c": [
+    "SORTING"
+   ],
+   "q2d": [
+    "SORTING"
+   ],
+   "q9aii": [
+    "REDUCTIONS"
+   ],
+   "q9aiii": [
+    "REDUCTIONS"
+   ]
+  },
+  "sp19-mt1": {
+   "q1a": [
+    "JAVA"
+   ],
+   "q1b": [
+    "JAVA"
+   ],
+   "q2": [
+    "JAVA"
+   ],
+   "q3": [
+    "JAVA"
+   ],
+   "q4a": [
+    "JAVA",
+    "LISTS"
+   ],
+   "q4b": [
+    "JAVA",
+    "LISTS"
+   ],
+   "q7": [
+    "JAVA"
+   ],
+   "q5": [
+    "LINKED_LISTS"
+   ],
+   "q6a": [
+    "LINKED_LISTS"
+   ],
+   "q6b": [
+    "LINKED_LISTS"
+   ],
+   "q9a": [
+    "ITERATORS"
+   ],
+   "q9b": [
+    "ITERATORS"
+   ],
+   "q8": [
+    "COMPARATORS"
+   ]
+  },
+  "sp19-mt2": {
+   "q5": [
+    "JAVA"
+   ],
+   "q10bi": [
+    "ARRAYS"
+   ],
+   "q10bii": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q10biii": [
+    "ARRAYS"
+   ],
+   "q10biv": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q2d": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q2e": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q10a": [
+    "ASYMPTOTICS"
+   ],
+   "q6": [
+    "DISJOINT_SETS"
+   ],
+   "q1a": [
+    "BSTS"
+   ],
+   "q1b": [
+    "BSTS"
+   ],
+   "q11": [
+    "BSTS",
+    "HEAPS"
+   ],
+   "q4a": [
+    "RED_BLACK_TREES"
+   ],
+   "q4b": [
+    "RED_BLACK_TREES"
+   ],
+   "q4c": [
+    "RED_BLACK_TREES"
+   ],
+   "q2a": [
+    "HASHING"
+   ],
+   "q2b": [
+    "HASHING"
+   ],
+   "q2c": [
+    "HASHING"
+   ],
+   "q9a": [
+    "HEAPS"
+   ],
+   "q9b": [
+    "HEAPS"
+   ],
+   "q8a": [
+    "TREE_TRAVERSALS"
+   ],
+   "q8b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q8c": [
+    "TREE_TRAVERSALS"
+   ],
+   "q8d": [
+    "TREE_TRAVERSALS"
+   ],
+   "q7a": [
+    "SHORTEST_PATHS"
+   ],
+   "q7b": [
+    "SHORTEST_PATHS"
+   ],
+   "q7c": [
+    "SHORTEST_PATHS"
+   ],
+   "q7d": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q3a": [
+    "K_D_TREES"
+   ],
+   "q3b": [
+    "K_D_TREES"
+   ],
+   "q3c": [
+    "K_D_TREES"
+   ],
+   "q3d": [
+    "K_D_TREES"
+   ],
+   "q3e": [
+    "K_D_TREES"
+   ]
+  },
+  "sp21-mt1": {
+   "q1b": [
+    "JAVA",
+    "ARRAYS",
+    "ABSTRACTION"
+   ],
+   "q1c": [
+    "JAVA",
+    "ARRAYS",
+    "ABSTRACTION"
+   ],
+   "q2": [
+    "JAVA"
+   ],
+   "q6": [
+    "JAVA"
+   ],
+   "q6c": [
+    "JAVA",
+    "LISTS"
+   ],
+   "q1d": [
+    "LISTS",
+    "ARRAYS"
+   ],
+   "q5": [
+    "LISTS",
+    "ABSTRACTION",
+    "INHERITANCE",
+    "ITERATION",
+    "RECURSION"
+   ],
+   "q4": [
+    "LINKED_LISTS"
+   ],
+   "q4a": [
+    "LINKED_LISTS"
+   ],
+   "q7": [
+    "LINKED_LISTS",
+    "PROJECT_2048",
+    "ITERATION"
+   ],
+   "q1a": [
+    "ARRAYS"
+   ],
+   "q3": [
+    "DMS"
+   ]
+  },
+  "sp23-final": {
+   "q1": [
+    "JAVA",
+    "DMS"
+   ],
+   "q6a": [
+    "ABSTRACTION"
+   ],
+   "q6c": [
+    "ABSTRACTION",
+    "COMPARISON_SORTS",
+    "RADIX_SORTS"
+   ],
+   "q4a": [
+    "ASYMPTOTICS"
+   ],
+   "q4b": [
+    "ASYMPTOTICS"
+   ],
+   "q4c": [
+    "ASYMPTOTICS"
+   ],
+   "q4d": [
+    "ASYMPTOTICS"
+   ],
+   "q4e": [
+    "ASYMPTOTICS"
+   ],
+   "q4f": [
+    "ASYMPTOTICS"
+   ],
+   "q4g": [
+    "ASYMPTOTICS"
+   ],
+   "q4h": [
+    "ASYMPTOTICS"
+   ],
+   "q4i": [
+    "ASYMPTOTICS"
+   ],
+   "q4j": [
+    "ASYMPTOTICS"
+   ],
+   "q2d": [
+    "BSTS"
+   ],
+   "q3a": [
+    "HASHING"
+   ],
+   "q3b": [
+    "HASHING"
+   ],
+   "q3c": [
+    "HASHING"
+   ],
+   "q3d": [
+    "HASHING"
+   ],
+   "q3e": [
+    "HASHING"
+   ],
+   "q3f": [
+    "HASHING"
+   ],
+   "q3g": [
+    "HASHING"
+   ],
+   "q6b": [
+    "HEAPS",
+    "COMPARISON_SORTS"
+   ],
+   "q2b": [
+    "SHORTEST_PATHS"
+   ],
+   "q2c": [
+    "SHORTEST_PATHS"
+   ],
+   "q2a": [
+    "MSTS"
+   ],
+   "q8a": [
+    "MSTS"
+   ],
+   "q5a": [
+    "TRIES"
+   ],
+   "q5b": [
+    "TRIES"
+   ],
+   "q5c": [
+    "TRIES"
+   ],
+   "q5d": [
+    "TRIES"
+   ],
+   "q6d": [
+    "COMPARISON_SORTS",
+    "RADIX_SORTS"
+   ],
+   "q7.1a": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.1b": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.1c": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.2ai": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.2aii": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.2bi": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.2bii": [
+    "COMPARISON_SORTS"
+   ],
+   "q7.3a": [
+    "COMPARISON_SORTS",
+    "RADIX_SORTS"
+   ],
+   "q7.3b": [
+    "COMPARISON_SORTS",
+    "RADIX_SORTS"
+   ],
+   "q7.3c": [
+    "COMPARISON_SORTS",
+    "RADIX_SORTS"
+   ]
+  },
+  "sp23-mt1": {
+   "q1": [
+    "JAVA"
+   ],
+   "q2": [
+    "JAVA",
+    "ADTS"
+   ],
+   "q3": [
+    "JAVA"
+   ],
+   "q6": [
+    "JAVA"
+   ],
+   "q5": [
+    "LINKED_LISTS",
+    "ARRAYS"
+   ],
+   "q7": [
+    "LINKED_LISTS"
+   ],
+   "q4": [
+    "ARRAYS"
+   ],
+   "q8": [
+    "DMS"
+   ]
+  },
+  "sp24-final": {
+   "q1a": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1b": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1c": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1g": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1h": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1i": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q2a": [
+    "LINKED_LISTS",
+    "ITERATION"
+   ],
+   "q2c": [
+    "LINKED_LISTS"
+   ],
+   "q2d": [
+    "LINKED_LISTS",
+    "ASYMPTOTICS"
+   ],
+   "q1d": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q1e": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q1f": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q2b": [
+    "ASYMPTOTICS"
+   ],
+   "q6b": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q7a": [
+    "ASYMPTOTICS",
+    "GRAPH_TRAVERSALS"
+   ],
+   "q7d": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q7e": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q7f": [
+    "ASYMPTOTICS",
+    "GRAPH_TRAVERSALS",
+    "SORTING"
+   ],
+   "q3a": [
+    "DISJOINT_SETS"
+   ],
+   "q3b": [
+    "DISJOINT_SETS"
+   ],
+   "q3c": [
+    "DISJOINT_SETS"
+   ],
+   "q3d": [
+    "DISJOINT_SETS"
+   ],
+   "q4a": [
+    "HEAPS"
+   ],
+   "q4b": [
+    "HEAPS"
+   ],
+   "q4c": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q4d": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q6d": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q5b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q5c": [
+    "TREE_TRAVERSALS"
+   ],
+   "q5a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q7b": [
+    "GRAPH_TRAVERSALS",
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q8": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q6a": [
+    "SORTING"
+   ],
+   "q6c": [
+    "SORTING"
+   ],
+   "q6e": [
+    "SORTING"
+   ],
+   "q6f": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q6g": [
+    "SORTING"
+   ],
+   "q7c": [
+    "SORTING",
+    "GRAPH_REPRESENTATIONS"
+   ]
+  },
+  "sp24-mt1": {
+   "q1b": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1c": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q2": [
+    "JAVA",
+    "COMPARATORS"
+   ],
+   "q3a": [
+    "JAVA"
+   ],
+   "q4": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q5": [
+    "JAVA",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q6": [
+    "LINKED_LISTS",
+    "DEQUES"
+   ],
+   "q3b": [
+    "ARRAYS",
+    "ITERATION"
+   ],
+   "q1a": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q1d": [
+    "INHERITANCE"
+   ],
+   "q1e": [
+    "INHERITANCE"
+   ]
+  },
+  "sp25-mt1": {
+   "q1a": [
+    "JAVA",
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q1b": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1c": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1d": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q5a": [
+    "TESTING",
+    "DEQUES"
+   ],
+   "q3a": [
+    "LISTS",
+    "LINKED_LISTS"
+   ],
+   "q3b": [
+    "LINKED_LISTS",
+    "ITERATORS"
+   ],
+   "q2a": [
+    "ARRAYS",
+    "PROJECT_2048",
+    "ITERATION"
+   ],
+   "q2b": [
+    "ARRAYS",
+    "PROJECT_2048"
+   ],
+   "q5b": [
+    "DEQUES",
+    "ADTS"
+   ],
+   "q4": [
+    "ITERATORS",
+    "COMPARATORS"
+   ],
+   "q2c": [
+    "COMPARATORS",
+    "PROJECT_2048"
+   ]
+  },
+  "sp26-mt2": {
+   "q1.1": [
+    "JAVA",
+    "INHERITANCE"
+   ],
+   "q1.2": [
+    "JAVA",
+    "ITERATORS"
+   ],
+   "q1.3": [
+    "JAVA",
+    "COMPARATORS"
+   ],
+   "q6.4": [
+    "TESTING",
+    "DEQUES"
+   ],
+   "q1.12": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q1.14": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q4.1": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q4.2": [
+    "ASYMPTOTICS",
+    "ITERATION"
+   ],
+   "q4.3": [
+    "ASYMPTOTICS",
+    "HASHING",
+    "HEAPS"
+   ],
+   "q1.4": [
+    "DISJOINT_SETS",
+    "BSTS",
+    "HEAPS"
+   ],
+   "q1.8": [
+    "DISJOINT_SETS"
+   ],
+   "q1.9": [
+    "DISJOINT_SETS"
+   ],
+   "q6.1": [
+    "DISJOINT_SETS",
+    "PERCOLATION"
+   ],
+   "q3.5": [
+    "ADTS",
+    "TREE_TRAVERSALS",
+    "RECURSION"
+   ],
+   "q6.3": [
+    "ADTS",
+    "BSTS"
+   ],
+   "q1.5": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q1.11": [
+    "B_TREES"
+   ],
+   "q1.6": [
+    "RED_BLACK_TREES"
+   ],
+   "q1.13": [
+    "HASHING"
+   ],
+   "q1.7": [
+    "HEAPS"
+   ],
+   "q1.10": [
+    "HEAPS"
+   ],
+   "q2.1": [
+    "TREE_TRAVERSALS"
+   ],
+   "q2.2": [
+    "TREE_TRAVERSALS"
+   ],
+   "q2.3": [
+    "TREE_TRAVERSALS"
+   ],
+   "q2.4": [
+    "TREE_TRAVERSALS"
+   ],
+   "q2.5": [
+    "TREE_TRAVERSALS",
+    "GRAPH_TRAVERSALS"
+   ],
+   "q3.1": [
+    "TREE_TRAVERSALS"
+   ],
+   "q3.2": [
+    "TREE_TRAVERSALS",
+    "GRAPH_TRAVERSALS"
+   ],
+   "q3.4": [
+    "TREE_TRAVERSALS"
+   ],
+   "q3.3": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q3.6": [
+    "GRAPH_TRAVERSALS",
+    "RECURSION"
+   ],
+   "q5.3": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q6.2": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5.1": [
+    "SHORTEST_PATHS"
+   ],
+   "q5.4": [
+    "SHORTEST_PATHS"
+   ],
+   "q5.2": [
+    "MSTS"
+   ],
+   "q5.5": [
+    "MSTS"
+   ],
+   "q5.6": [
+    "TOPOLOGICAL_SORT"
+   ],
+   "q5.7": [
+    "TOPOLOGICAL_SORT"
+   ]
+  },
+  "su23-mt1": {
+   "q1.a": [
+    "JAVA",
+    "DMS"
+   ],
+   "q1.b": [
+    "JAVA",
+    "DMS"
+   ],
+   "q2.a": [
+    "JAVA",
+    "ITERATORS"
+   ],
+   "q2.b": [
+    "JAVA",
+    "ARRAYS",
+    "ITERATORS"
+   ],
+   "q6.a": [
+    "JAVA",
+    "LINKED_LISTS"
+   ],
+   "q6.b": [
+    "JAVA",
+    "LINKED_LISTS",
+    "BSTS"
+   ],
+   "q4.a": [
+    "COMPARATORS"
+   ],
+   "q4.b": [
+    "COMPARATORS"
+   ],
+   "q4.c": [
+    "COMPARATORS"
+   ],
+   "q4.d": [
+    "COMPARATORS"
+   ],
+   "q5.a": [
+    "ASYMPTOTICS"
+   ],
+   "q5.b": [
+    "ASYMPTOTICS"
+   ],
+   "q5.c": [
+    "ASYMPTOTICS"
+   ],
+   "q5.d": [
+    "ASYMPTOTICS"
+   ],
+   "q3.b": [
+    "BSTS"
+   ],
+   "q3.a": [
+    "TREE_TRAVERSALS"
+   ]
+  },
+  "sp21-mt2": {
+   "q3": [
+    "GIT"
+   ],
+   "q6": [
+    "ITERATORS",
+    "DISJOINT_SETS"
+   ],
+   "q4a": [
+    "ASYMPTOTICS",
+    "RED_BLACK_TREES"
+   ],
+   "q7": [
+    "ASYMPTOTICS"
+   ],
+   "q4": [
+    "ADTS",
+    "HASHING"
+   ],
+   "q5a": [
+    "BSTS",
+    "HASHING"
+   ],
+   "q8a": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q8b": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q8c": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q5b": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q2": [
+    "HEAPS",
+    "TREE_TRAVERSALS"
+   ],
+   "q1": [
+    "GRAPH_TRAVERSALS"
+   ]
+  },
+  "su23-final": {
+   "q4": [
+    "GIT"
+   ],
+   "q1.g": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q1.h": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q1.i": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q6.b": [
+    "ASYMPTOTICS",
+    "HEAPS",
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q7.b": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q7.c": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q8.b": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q8.c": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q5.a": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q5.b": [
+    "RED_BLACK_TREES"
+   ],
+   "q5.c": [
+    "RED_BLACK_TREES"
+   ],
+   "q2.a": [
+    "HASHING"
+   ],
+   "q2.b": [
+    "HASHING"
+   ],
+   "q2.c": [
+    "HASHING"
+   ],
+   "q8.a": [
+    "HEAPS"
+   ],
+   "q3.4": [
+    "TREE_TRAVERSALS"
+   ],
+   "q3.a": [
+    "TREE_TRAVERSALS"
+   ],
+   "q3.b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q3.c": [
+    "TREE_TRAVERSALS"
+   ],
+   "q1.b": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1.d": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6.a": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q6.c": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q9": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q1.a": [
+    "SORTING"
+   ],
+   "q1.c": [
+    "SORTING"
+   ],
+   "q1.e": [
+    "SORTING"
+   ],
+   "q1.f": [
+    "SORTING"
+   ],
+   "q7.a": [
+    "SORTING"
+   ]
+  },
+  "fa23-final": {
+   "q2a": [
+    "LISTS",
+    "LINKED_LISTS"
+   ],
+   "q2b": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q11a": [
+    "COMPARATORS",
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q11c": [
+    "COMPARATORS",
+    "SORTING"
+   ],
+   "q6b": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q3a": [
+    "ASYMPTOTICS"
+   ],
+   "q3b": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q3c": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q3d": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q4a": [
+    "DISJOINT_SETS"
+   ],
+   "q4b1": [
+    "DISJOINT_SETS"
+   ],
+   "q4b2": [
+    "DISJOINT_SETS"
+   ],
+   "q4b3": [
+    "DISJOINT_SETS"
+   ],
+   "q4b4": [
+    "DISJOINT_SETS"
+   ],
+   "q4b5": [
+    "DISJOINT_SETS"
+   ],
+   "q7b": [
+    "ADTS",
+    "HEAPS"
+   ],
+   "q5a1": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q5a2": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q5a3": [
+    "RED_BLACK_TREES"
+   ],
+   "q5a4": [
+    "RED_BLACK_TREES"
+   ],
+   "q6a": [
+    "HASHING"
+   ],
+   "q6c": [
+    "HASHING"
+   ],
+   "q1g": [
+    "HEAPS"
+   ],
+   "q7a": [
+    "HEAPS"
+   ],
+   "q5b1": [
+    "TREE_TRAVERSALS"
+   ],
+   "q5b2": [
+    "TREE_TRAVERSALS"
+   ],
+   "q5c": [
+    "TREE_TRAVERSALS",
+    "RECURSION"
+   ],
+   "q8a": [
+    "GRAPH_TRAVERSALS",
+    "SHORTEST_PATHS"
+   ],
+   "q1c": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q1d": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q1h": [
+    "SHORTEST_PATHS"
+   ],
+   "q1i": [
+    "SHORTEST_PATHS"
+   ],
+   "q8c": [
+    "SHORTEST_PATHS"
+   ],
+   "q1a": [
+    "MSTS"
+   ],
+   "q1b": [
+    "MSTS"
+   ],
+   "q9a": [
+    "MSTS"
+   ],
+   "q9b": [
+    "MSTS"
+   ],
+   "q9c": [
+    "MSTS"
+   ],
+   "q1e": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q1f": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q10a1": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q10a2": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q10a3": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q10a4": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q10b1": [
+    "SORTING"
+   ],
+   "q10b2": [
+    "SORTING"
+   ],
+   "q10b3": [
+    "SORTING"
+   ],
+   "q10b4": [
+    "SORTING"
+   ],
+   "q11b": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q8b": [
+    "TOPOLOGICAL_SORT"
+   ]
+  },
+  "fa25-mt1": {
+   "q6.2": [
+    "LISTS",
+    "RECURSION"
+   ],
+   "q6.3": [
+    "LISTS",
+    "RECURSION"
+   ],
+   "q3": [
+    "LINKED_LISTS",
+    "DEQUES"
+   ],
+   "q7.1": [
+    "LINKED_LISTS",
+    "RECURSION"
+   ],
+   "q7.2": [
+    "LINKED_LISTS",
+    "RECURSION"
+   ],
+   "q8": [
+    "LINKED_LISTS",
+    "ITERATORS"
+   ],
+   "q5": [
+    "ARRAYS",
+    "DEQUES"
+   ],
+   "q4": [
+    "DEQUES",
+    "ABSTRACTION"
+   ],
+   "q2": [
+    "EQUALS"
+   ],
+   "q1": [
+    "ADTS",
+    "ITERATION"
+   ],
+   "q6.1": [
+    "ITERATION"
+   ]
+  },
+  "sp26-final": {
+   "q7.3": [
+    "LISTS",
+    "ASYMPTOTICS"
+   ],
+   "q6.1": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q6.2": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q4.1": [
+    "ASYMPTOTICS",
+    "BSTS",
+    "HASHING"
+   ],
+   "q4.2": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q4.3": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q5.2": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q5.3": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q7.1": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q7.2": [
+    "ASYMPTOTICS",
+    "SORTING"
+   ],
+   "q7.4": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q1.1": [
+    "DISJOINT_SETS"
+   ],
+   "q1.2": [
+    "DISJOINT_SETS"
+   ],
+   "q8.1": [
+    "ADTS",
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q8.2": [
+    "ADTS",
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q8.3": [
+    "ADTS",
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q9.1": [
+    "ADTS",
+    "HASHING"
+   ],
+   "q10.1": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q10.2": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q10.3": [
+    "BSTS",
+    "RECURSION"
+   ],
+   "q5.1": [
+    "RED_BLACK_TREES",
+    "HASHING"
+   ],
+   "q11": [
+    "HASHING",
+    "TRIES",
+    "RECURSION"
+   ],
+   "q2.1": [
+    "HEAPS"
+   ],
+   "q2.2": [
+    "HEAPS"
+   ],
+   "q2.3": [
+    "HEAPS",
+    "SORTING"
+   ],
+   "q2.4": [
+    "HEAPS"
+   ],
+   "q2.5": [
+    "HEAPS"
+   ],
+   "q1.8": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1.9": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1.10": [
+    "SHORTEST_PATHS"
+   ],
+   "q1.12": [
+    "MSTS"
+   ],
+   "q1.3": [
+    "TRIES"
+   ],
+   "q1.4": [
+    "TRIES"
+   ],
+   "q1.5": [
+    "SORTING"
+   ],
+   "q1.6": [
+    "SORTING",
+    "RADIX_SORTS"
+   ],
+   "q2.6": [
+    "SORTING",
+    "COMPARISON_SORTS"
+   ],
+   "q2.7": [
+    "SORTING"
+   ],
+   "q1.11": [
+    "TOPOLOGICAL_SORT"
+   ],
+   "q1.7": [
+    "RADIX_SORTS"
+   ]
+  },
+  "fa22-final": {
+   "q7.3-q7.4": [
+    "LINKED_LISTS",
+    "HASHING"
+   ],
+   "q9": [
+    "ITERATORS",
+    "COMPARATORS"
+   ],
+   "q3.1": [
+    "ASYMPTOTICS"
+   ],
+   "q3.2": [
+    "ASYMPTOTICS"
+   ],
+   "q3.3": [
+    "ASYMPTOTICS"
+   ],
+   "q3.4": [
+    "ASYMPTOTICS"
+   ],
+   "q3.5": [
+    "ASYMPTOTICS"
+   ],
+   "q7.1-q7.2": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q1.3": [
+    "DISJOINT_SETS"
+   ],
+   "q1.1": [
+    "BSTS",
+    "HASHING"
+   ],
+   "q4": [
+    "BSTS"
+   ],
+   "q7.5": [
+    "BSTS",
+    "RED_BLACK_TREES"
+   ],
+   "q8": [
+    "HEAPS"
+   ],
+   "q5.4": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5.5": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5.1-q5.2": [
+    "SHORTEST_PATHS"
+   ],
+   "q5.3": [
+    "SHORTEST_PATHS"
+   ],
+   "q5.6-q5.9": [
+    "SHORTEST_PATHS"
+   ],
+   "q10": [
+    "MSTS"
+   ],
+   "q6": [
+    "TRIES"
+   ],
+   "q1.2": [
+    "SORTING"
+   ],
+   "q1.4": [
+    "SORTING"
+   ],
+   "q2": [
+    "SORTING"
+   ]
+  },
+  "fa22-mt2": {
+   "q8a": [
+    "LINKED_LISTS",
+    "ADTS"
+   ],
+   "q8b": [
+    "LINKED_LISTS",
+    "ADTS"
+   ],
+   "q8c": [
+    "LINKED_LISTS",
+    "ADTS"
+   ],
+   "q7a": [
+    "INHERITANCE",
+    "DMS",
+    "ASYMPTOTICS"
+   ],
+   "q7b": [
+    "INHERITANCE",
+    "DMS",
+    "ASYMPTOTICS"
+   ],
+   "q7c": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q7d": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q7e": [
+    "INHERITANCE",
+    "DMS",
+    "ASYMPTOTICS"
+   ],
+   "q2": [
+    "ITERATORS"
+   ],
+   "q6": [
+    "ASYMPTOTICS"
+   ],
+   "q1": [
+    "DISJOINT_SETS"
+   ],
+   "q5a": [
+    "BSTS",
+    "HEAPS"
+   ],
+   "q5b": [
+    "BSTS",
+    "HEAPS",
+    "TREE_TRAVERSALS"
+   ],
+   "q5c": [
+    "BSTS",
+    "HEAPS",
+    "TREE_TRAVERSALS"
+   ],
+   "q5d": [
+    "BSTS",
+    "HEAPS",
+    "TREE_TRAVERSALS"
+   ],
+   "q5e": [
+    "BSTS",
+    "HEAPS"
+   ],
+   "q4a": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q4b": [
+    "RED_BLACK_TREES"
+   ],
+   "q4c": [
+    "RED_BLACK_TREES"
+   ],
+   "q4d": [
+    "RED_BLACK_TREES"
+   ],
+   "q4e": [
+    "RED_BLACK_TREES"
+   ],
+   "q3a": [
+    "HASHING"
+   ],
+   "q3b": [
+    "HASHING"
+   ]
+  },
+  "sp22-final": {
+   "q10": [
+    "LINKED_LISTS"
+   ],
+   "q5d": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q5e": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q5f": [
+    "ASYMPTOTICS",
+    "BSTS",
+    "TRIES"
+   ],
+   "q6a": [
+    "ASYMPTOTICS"
+   ],
+   "q6b": [
+    "ASYMPTOTICS"
+   ],
+   "q6c": [
+    "ASYMPTOTICS"
+   ],
+   "q6d": [
+    "ASYMPTOTICS"
+   ],
+   "q6e": [
+    "ASYMPTOTICS"
+   ],
+   "q6f": [
+    "ASYMPTOTICS"
+   ],
+   "q8a": [
+    "B_TREES"
+   ],
+   "q8c": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q8b": [
+    "RED_BLACK_TREES"
+   ],
+   "q4": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1a": [
+    "SHORTEST_PATHS"
+   ],
+   "q5b": [
+    "SHORTEST_PATHS",
+    "MSTS"
+   ],
+   "q1b": [
+    "MSTS"
+   ],
+   "q1c": [
+    "MSTS"
+   ],
+   "q9a": [
+    "SORTING"
+   ],
+   "q9b": [
+    "SORTING"
+   ],
+   "q9c": [
+    "SORTING"
+   ],
+   "q9d": [
+    "SORTING"
+   ],
+   "q9e": [
+    "SORTING"
+   ],
+   "q9f": [
+    "SORTING"
+   ],
+   "q2": [
+    "REGEX"
+   ],
+   "q3": [
+    "BITS"
+   ],
+   "q5c": [
+    "GAME_TREES"
+   ]
+  },
+  "sp24-mt2": {
+   "q3a": [
+    "LINKED_LISTS",
+    "BSTS",
+    "RECURSION"
+   ],
+   "q2a": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q2b": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q5a": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5b": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5c": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5d": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5e": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5f": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q2c": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q2d": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q2e": [
+    "ASYMPTOTICS",
+    "ITERATION"
+   ],
+   "q2f": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q3b": [
+    "ASYMPTOTICS"
+   ],
+   "q1a": [
+    "BSTS"
+   ],
+   "q1c": [
+    "BSTS",
+    "HEAPS"
+   ],
+   "q4a": [
+    "RED_BLACK_TREES"
+   ],
+   "q4b": [
+    "RED_BLACK_TREES",
+    "RECURSION"
+   ],
+   "q1d": [
+    "HEAPS"
+   ],
+   "q1b": [
+    "TREE_TRAVERSALS"
+   ],
+   "q1k": [
+    "TREE_TRAVERSALS",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q1e": [
+    "SHORTEST_PATHS"
+   ],
+   "q1f": [
+    "SHORTEST_PATHS"
+   ],
+   "q1g": [
+    "SHORTEST_PATHS"
+   ],
+   "q6a": [
+    "SHORTEST_PATHS"
+   ],
+   "q1h": [
+    "MSTS"
+   ],
+   "q1i": [
+    "MSTS"
+   ],
+   "q6b": [
+    "MSTS"
+   ],
+   "q6c": [
+    "MSTS"
+   ],
+   "q6d": [
+    "MSTS"
+   ],
+   "q1j": [
+    "TOPOLOGICAL_SORT"
+   ]
+  },
+  "sp25-final": {
+   "q3": [
+    "LINKED_LISTS",
+    "ADTS"
+   ],
+   "q4b": [
+    "ARRAYS",
+    "ASYMPTOTICS"
+   ],
+   "q8a": [
+    "ABSTRACTION",
+    "INHERITANCE"
+   ],
+   "q8d": [
+    "ABSTRACTION",
+    "ADTS"
+   ],
+   "q8c": [
+    "INHERITANCE",
+    "DMS"
+   ],
+   "q6b": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q6d": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q1h": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q1i": [
+    "ASYMPTOTICS",
+    "HEAPS"
+   ],
+   "q4a": [
+    "ASYMPTOTICS",
+    "RECURSION"
+   ],
+   "q4c": [
+    "ASYMPTOTICS"
+   ],
+   "q4d": [
+    "ASYMPTOTICS"
+   ],
+   "q4e": [
+    "ASYMPTOTICS"
+   ],
+   "q5a": [
+    "ASYMPTOTICS",
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q2b": [
+    "DISJOINT_SETS"
+   ],
+   "q7": [
+    "DISJOINT_SETS",
+    "MSTS"
+   ],
+   "q8b": [
+    "ADTS"
+   ],
+   "q1a": [
+    "BSTS"
+   ],
+   "q1j": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q1k": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q2a": [
+    "RED_BLACK_TREES",
+    "TRIES"
+   ],
+   "q6a": [
+    "HASHING"
+   ],
+   "q6c": [
+    "HASHING"
+   ],
+   "q5b": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5c": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q5d": [
+    "GRAPH_TRAVERSALS",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q8e": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1d": [
+    "SORTING"
+   ],
+   "q1e": [
+    "SORTING"
+   ],
+   "q1g": [
+    "SORTING"
+   ],
+   "q1l": [
+    "TOPOLOGICAL_SORT"
+   ],
+   "q1b": [
+    "RADIX_SORTS"
+   ],
+   "q1c": [
+    "RADIX_SORTS"
+   ],
+   "q1f": [
+    "RADIX_SORTS"
+   ]
+  },
+  "sp25-mt2": {
+   "q1h": [
+    "LINKED_LISTS",
+    "HEAPS"
+   ],
+   "q1i": [
+    "LINKED_LISTS",
+    "HEAPS"
+   ],
+   "q3a": [
+    "ARRAYS",
+    "DISJOINT_SETS"
+   ],
+   "q5a": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q5c": [
+    "EQUALS",
+    "HASHING"
+   ],
+   "q3b": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q4 Set I (a-e)": [
+    "ASYMPTOTICS"
+   ],
+   "q4 Set II (a-e)": [
+    "ASYMPTOTICS"
+   ],
+   "q1f": [
+    "DISJOINT_SETS"
+   ],
+   "q1j": [
+    "DISJOINT_SETS",
+    "HEAPS"
+   ],
+   "q1l": [
+    "DISJOINT_SETS"
+   ],
+   "q3c": [
+    "DISJOINT_SETS"
+   ],
+   "q3d": [
+    "DISJOINT_SETS"
+   ],
+   "q3e": [
+    "DISJOINT_SETS",
+    "TREE_TRAVERSALS"
+   ],
+   "q1k": [
+    "BSTS"
+   ],
+   "q2a": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q1a": [
+    "RED_BLACK_TREES"
+   ],
+   "q1b": [
+    "RED_BLACK_TREES"
+   ],
+   "q2b": [
+    "RED_BLACK_TREES"
+   ],
+   "q2c": [
+    "RED_BLACK_TREES"
+   ],
+   "q2d": [
+    "RED_BLACK_TREES"
+   ],
+   "q5b": [
+    "HASHING"
+   ],
+   "q1g": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6b": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q6c": [
+    "SHORTEST_PATHS"
+   ],
+   "q6d": [
+    "SHORTEST_PATHS"
+   ],
+   "q6e": [
+    "SHORTEST_PATHS"
+   ],
+   "q6f": [
+    "SHORTEST_PATHS"
+   ],
+   "q1c": [
+    "MSTS"
+   ],
+   "q1d": [
+    "MSTS"
+   ],
+   "q1e": [
+    "MSTS"
+   ]
+  },
+  "sp23-mt2": {
+   "q1c": [
+    "DMS"
+   ],
+   "q2b": [
+    "ITERATORS",
+    "BSTS"
+   ],
+   "q8": [
+    "ASYMPTOTICS"
+   ],
+   "q3": [
+    "DISJOINT_SETS"
+   ],
+   "q1a": [
+    "ADTS"
+   ],
+   "q1b": [
+    "ADTS"
+   ],
+   "q2a": [
+    "BSTS"
+   ],
+   "q5": [
+    "BSTS"
+   ],
+   "q4": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q6.1": [
+    "HASHING"
+   ],
+   "q6.2": [
+    "HASHING"
+   ],
+   "q7": [
+    "HEAPS"
+   ]
+  },
+  "fa23-mt2": {
+   "q1a": [
+    "ASYMPTOTICS"
+   ],
+   "q1b": [
+    "ASYMPTOTICS"
+   ],
+   "q1d": [
+    "ASYMPTOTICS",
+    "TREE_TRAVERSALS"
+   ],
+   "q1f": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q1j": [
+    "ASYMPTOTICS",
+    "B_TREES"
+   ],
+   "q6a": [
+    "ASYMPTOTICS"
+   ],
+   "q6b": [
+    "ASYMPTOTICS"
+   ],
+   "q6c": [
+    "ASYMPTOTICS"
+   ],
+   "q6d": [
+    "ASYMPTOTICS"
+   ],
+   "q6e": [
+    "ASYMPTOTICS"
+   ],
+   "q6f": [
+    "ASYMPTOTICS"
+   ],
+   "q1c": [
+    "DISJOINT_SETS"
+   ],
+   "q3": [
+    "DISJOINT_SETS",
+    "PERCOLATION"
+   ],
+   "q1l": [
+    "ADTS"
+   ],
+   "q1m": [
+    "ADTS"
+   ],
+   "q1n": [
+    "ADTS"
+   ],
+   "q1e": [
+    "B_TREES"
+   ],
+   "q2a": [
+    "B_TREES"
+   ],
+   "q2d": [
+    "B_TREES"
+   ],
+   "q1g": [
+    "RED_BLACK_TREES"
+   ],
+   "q2b": [
+    "RED_BLACK_TREES"
+   ],
+   "q2c": [
+    "RED_BLACK_TREES"
+   ],
+   "q1h": [
+    "HASHING"
+   ],
+   "q1i": [
+    "HASHING"
+   ],
+   "q1k": [
+    "HASHING"
+   ],
+   "q4.1": [
+    "HEAPS"
+   ],
+   "q4.2": [
+    "HEAPS"
+   ],
+   "q4.3": [
+    "HEAPS"
+   ],
+   "q5": [
+    "TREE_TRAVERSALS"
+   ]
+  },
+  "fa24-mt2": {
+   "q1c": [
+    "ASYMPTOTICS",
+    "BSTS"
+   ],
+   "q2a": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q2b": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q2c": [
+    "ASYMPTOTICS",
+    "DISJOINT_SETS"
+   ],
+   "q5": [
+    "ADTS",
+    "GRAPH_TRAVERSALS"
+   ],
+   "q1a": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q1b": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q4a": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q4b": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q3a": [
+    "HASHING"
+   ],
+   "q3b": [
+    "HASHING"
+   ],
+   "q3c": [
+    "HASHING"
+   ],
+   "q3d": [
+    "HASHING"
+   ],
+   "q3e": [
+    "HASHING"
+   ],
+   "q1d": [
+    "HEAPS"
+   ],
+   "q1e": [
+    "GRAPH_REPRESENTATIONS",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q1f": [
+    "GRAPH_REPRESENTATIONS"
+   ]
+  },
+  "su22-final": {
+   "q6a": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6b": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6d": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6e": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6g": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q6h": [
+    "ASYMPTOTICS",
+    "HASHING"
+   ],
+   "q7d": [
+    "ASYMPTOTICS",
+    "SHORTEST_PATHS"
+   ],
+   "q8a": [
+    "BSTS",
+    "TREE_TRAVERSALS"
+   ],
+   "q8b": [
+    "BSTS"
+   ],
+   "q9a": [
+    "B_TREES"
+   ],
+   "q9b": [
+    "B_TREES"
+   ],
+   "q9c": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q9d": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q9e": [
+    "B_TREES",
+    "RED_BLACK_TREES"
+   ],
+   "q9f": [
+    "RED_BLACK_TREES"
+   ],
+   "q6c": [
+    "HASHING"
+   ],
+   "q6f": [
+    "HASHING"
+   ],
+   "q3a": [
+    "HEAPS",
+    "COMPARISON_SORTS"
+   ],
+   "q3b": [
+    "HEAPS",
+    "COMPARISON_SORTS"
+   ],
+   "q3c": [
+    "HEAPS",
+    "COMPARISON_SORTS",
+    "TOPOLOGICAL_SORT"
+   ],
+   "q2a": [
+    "GRAPH_TRAVERSALS"
+   ],
+   "q7a": [
+    "SHORTEST_PATHS"
+   ],
+   "q7b": [
+    "SHORTEST_PATHS"
+   ],
+   "q7c": [
+    "SHORTEST_PATHS"
+   ],
+   "q7e": [
+    "MSTS"
+   ],
+   "q7f": [
+    "MSTS"
+   ],
+   "q7g": [
+    "MSTS"
+   ],
+   "q7h": [
+    "MSTS"
+   ],
+   "q7i": [
+    "MSTS"
+   ],
+   "q7j": [
+    "MSTS"
+   ],
+   "q10a": [
+    "TRIES"
+   ],
+   "q10b": [
+    "TRIES"
+   ],
+   "q10c": [
+    "TRIES"
+   ],
+   "q2b": [
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q2c": [
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q2d": [
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q2e": [
+    "GRAPH_REPRESENTATIONS"
+   ],
+   "q4a": [
+    "COMPARISON_SORTS"
+   ],
+   "q4b": [
+    "COMPARISON_SORTS"
+   ],
+   "q4c": [
+    "COMPARISON_SORTS"
+   ],
+   "q4d": [
+    "RADIX_SORTS"
+   ]
+  }
+ }
+}

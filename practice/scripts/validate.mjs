@@ -2,14 +2,11 @@
 // Returns a list of error strings; an empty list means the bundle is valid.
 import { resolveCollection, timedPool, timedLengths, questionTopics, FORMAT_TAGS, QID } from '../src/js/model.js';
 import { restrictionError } from '../src/js/answers.js';
+import { readFileSync } from 'node:fs';
 
-const LANGS = new Set(['py', 'scm', 'sql', 'gleam']), KINDS = new Set(['mc', 'sata', 'blank']);
-export const KNOWN_TOPICS = new Set(['VARS_AND_FUNCTIONS', 'CONTROL', 'HIGHER_ORDER_FUNCTIONS', 'ENVIRONMENT_DIAGRAMS', 'LAMBDAS', 'RECURSION', 'TREE_RECURSION',
-  'SEQUENCES', 'LISTS', 'DATA_ABSTRACTION', 'TREES', 'MUTABILITY', 'ITERATORS', 'GENERATORS', 'OBJECTS', 'INHERITANCE', 'REPRESENTATION', 'MUTABLE_TREES',
-  'LINKED_LISTS', 'GROWTH', 'EFFICIENCY', 'INTERPRETERS', 'SQL', 'SCHEME', 'SCHEME_LISTS', 'MACROS', 'TAIL_RECURSION', 'PROGRAMS_AS_DATA', 'NONLOCAL',
-  'SELF_REFERENCE', 'BNF', 'REGEX', 'UNTAGGED', 'WWPD', 'SCHEME_DATA_ABSTRACTION',
-  // Gleam replaced Scheme in Fall 2026; these are this site's tags until the course staff publish their own.
-  'GLEAM', 'FUNCTIONAL_PROGRAMMING', 'ALGEBRAIC_DATA_TYPES', 'IMMUTABLE_DATA', 'PATTERN_MATCHING']);
+const LANGS = new Set(['py', 'scm', 'sql', 'gleam', 'java', 'txt']), KINDS = new Set(['mc', 'sata', 'blank']);
+// Each course's staff topic tags (and the site's own) are the keys of `topics` in its course.json.
+const CS61A = JSON.parse(readFileSync(new URL('../courses/61a/course.json', import.meta.url), 'utf8'));
 
 function checkSegs(segs, where, E) {
   if (!Array.isArray(segs) || !segs.length) return E.push(`${where}: empty text`);
@@ -58,7 +55,8 @@ export function checkProblem(p, where, E) {
   if (p.sql && !(p.sql.chunks?.length && p.sql.fixtures?.length >= 3)) E.push(`${where}: SQL needs queries and at least three datasets`);
 }
 
-export function validate(bank) {
+export function validate(bank, course = CS61A) {
+  const KNOWN_TOPICS = new Set(Object.keys(course.topics));
   const E = [], examIds = new Set(), probIds = new Set();
   for (const e of bank.exams) {
     if (examIds.has(e.id)) E.push(`duplicate exam id ${e.id}`); examIds.add(e.id);
@@ -66,7 +64,7 @@ export function validate(bank) {
     if(e.src?.site && !e.p.every(p=>p.authored)) E.push(`${e.id}: site-authored problems must be labeled`);
     if (e.src?.adapted) { if (!e.p.every(p => p.adapted)) E.push(`${e.id}: every problem in an adapted set must say what it was adapted from`); }
     else if (!e.src?.site && (!e.src?.exam || !e.src?.sol)) E.push(`${e.id}: missing source links`);
-    if (!e.src?.site && !e.src?.adapted && !e.by?.length) E.push(`${e.id}: no instructors (add its semester to content/instructors.json)`);
+    if (!e.src?.site && !e.src?.adapted && !e.by?.length) E.push(`${e.id}: no instructors (add its semester to the course's instructors.json)`);
     const qids = new Set();
     for (const p of e.p) {
       if (p.id !== `${e.id}/${p.n}`) E.push(`${e.id}: problem id ${p.id} should be ${e.id}/${p.n}`);
@@ -74,6 +72,7 @@ export function validate(bank) {
       checkProblem(p, p.id, E);
       for (const b of p.b) if (b.k) { if (qids.has(b.id)) E.push(`${QID(e.id, b)}: duplicate question id in exam`); qids.add(b.id); }
       for (const t of (p.topics || []).flatMap(x => x.t)) if (!KNOWN_TOPICS.has(t)) E.push(`${p.id}: unknown staff topic ${t}`);
+      for (const b of p.b) for (const t of b.topics || []) if (!KNOWN_TOPICS.has(t)) E.push(`${QID(e.id, b)}: unknown staff topic ${t}`);
     }
   }
   for (const k in bank.timed) {
@@ -108,7 +107,7 @@ export function validate(bank) {
     const pool = timedPool(bank, V);
     for (const L of timedLengths(V, pool)) if (!L.ok) E.push(`${w}: timed length ${L.min} min needs ${L.count} problems; the pool has ${pool.length} in ${new Set(pool.map(x => x.bucket)).size} topic groups`);
   }
-  if (bank.collections.map(c => c.id).join() !== 'midterm1,midterm2,midterm3,final') E.push('collections must be midterm1, midterm2, midterm3, final in that order');
+  if (bank.collections.map(c => c.id).join() !== course.collections.join()) E.push(`collections must be ${course.collections.join(', ')} in that order`);
   if (!bank.collections.some(c => c.id === bank.defaultCollection)) E.push('defaultCollection is not a collection');
   return E;
 }

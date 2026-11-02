@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  // Static CS 61A exam practice site, served at practice.benrosar.io.
+  // Static CS 61A exam practice site, served at practice.benrosar.io (courses/61a; wrangler-61b.jsonc is CS 61B).
   "name": "benrosar-io-practice",
   "compatibility_date": "2026-09-16",
   "account_id": "abfb73a975a267f55e5755d5cfc9be70",
@@ -14,7 +14,7 @@
   // Only POST /e (usage events) and POST /f (feedback) run the Worker; everything else is served as static files.
   "main": "./worker.js",
   "assets": {
-    "directory": "./public",
+    "directory": "./public/61a",
     "not_found_handling": "none",
     "run_worker_first": ["/e", "/f"]
   },

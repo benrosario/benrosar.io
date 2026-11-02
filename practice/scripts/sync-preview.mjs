@@ -1,16 +1,18 @@
-// Build the site and copy it into the local preview folder (default: ../../../exam-practice next to this repo).
-// The preview is generated: edit practice/src and practice/content, never the copy.
+// Build a course's site and copy it into its local preview folder (the course's `preview`, relative to practice/:
+// CS 61A's is ../../../exam-practice next to this repo). The preview is generated: edit practice/src and
+// practice/courses, never the copy.
 // It only ever deletes files that an earlier sync wrote (listed in .preview-manifest.json); dotfiles such as .claude
 // and .wrangler are left alone. `--check` changes nothing and exits 1 if the preview doesn't match a fresh build.
-// Usage: node practice/scripts/sync-preview.mjs [--to <dir>] [--check]
+// Usage: node practice/scripts/sync-preview.mjs [--course <id>] [--to <dir>] [--check]
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync, rmSync, mkdtempSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { build, ROOT } from './build.mjs';
+import { build, ROOT, loadCourse } from './build.mjs';
 
-export const DEFAULT_PREVIEW = resolve(ROOT, '../../exam-practice');
+export const previewDir = course => resolve(ROOT, loadCourse(course).preview);
+export const DEFAULT_PREVIEW = previewDir();
 const MANIFEST = '.preview-manifest.json';
 const sha = f => createHash('sha256').update(readFileSync(f)).digest('hex');
 function files(dir) {
@@ -29,8 +31,9 @@ export function compare(built, preview) {
   return d;
 }
 
-export async function sync(to = DEFAULT_PREVIEW) {
-  const { out } = await build();
+export async function sync(to, course) {
+  to ??= previewDir(course);
+  const { out } = await build(undefined, { course });
   mkdirSync(to, { recursive: true });
   const prev = existsSync(join(to, MANIFEST)) ? JSON.parse(readFileSync(join(to, MANIFEST), 'utf8')).files : [];
   const now = files(out);
@@ -43,13 +46,14 @@ export async function sync(to = DEFAULT_PREVIEW) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const i = process.argv.indexOf('--to'), to = i > 0 ? resolve(process.argv[i + 1]) : DEFAULT_PREVIEW;
+  const arg = f => { const i = process.argv.indexOf(f); return i > 0 ? process.argv[i + 1] : undefined; };
+  const course = arg('--course'), to = arg('--to') ? resolve(arg('--to')) : previewDir(course);
   if (process.argv.includes('--check')) {
-    const tmp = mkdtempSync(join(tmpdir(), 'practice-check-')); await build(tmp);
+    const tmp = mkdtempSync(join(tmpdir(), 'practice-check-')); await build(tmp, { course });
     const d = compare(tmp, to); rmSync(tmp, { recursive: true, force: true });
     console.log(d.length ? `preview is out of date (run npm run practice:sync):\n  ${d.join('\n  ')}` : `preview matches a fresh build (${to})`);
     process.exit(d.length ? 1 : 0);
   }
-  const r = await sync(to);
+  const r = await sync(to, course);
   console.log(`synced ${r.files} files to ${r.to}`);
 }

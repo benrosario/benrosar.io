@@ -1,0 +1,124 @@
+{
+ "id": "midterm2",
+ "label": "Midterm 2",
+ "ref": "Midterm 2",
+ "sub": "Through tries",
+ "coverage": {
+  "text": "Fall 2026 Midterm 2 (Wed 11/4, 8–10pm). This site hasn’t confirmed its scope yet; this option assumes everything through lecture 28 (Tries).",
+  "url": "https://fa26.datastructur.es/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "JAVA",
+   "GIT",
+   "TESTING",
+   "LISTS",
+   "LINKED_LISTS",
+   "ARRAYS",
+   "DEQUES",
+   "ABSTRACTION",
+   "INHERITANCE",
+   "DMS",
+   "ITERATORS",
+   "COMPARATORS",
+   "EQUALS",
+   "ITERATION",
+   "RECURSION",
+   "ASYMPTOTICS",
+   "DISJOINT_SETS",
+   "ADTS",
+   "BSTS",
+   "B_TREES",
+   "RED_BLACK_TREES",
+   "HEAPS",
+   "TREE_TRAVERSALS",
+   "GRAPH_TRAVERSALS",
+   "GRAPH_REPRESENTATIONS",
+   "SHORTEST_PATHS",
+   "MSTS",
+   "TOPOLOGICAL_SORT",
+   "HASHING",
+   "TRIES",
+   "PERCOLATION"
+  ],
+  "note": "Problems are included when every topic tagged on them was taught by lecture 28. The scope is this site’s guess until course staff confirm it."
+ },
+ "noPicks": "Course staff haven’t named practice questions here yet, so nothing is marked recommended.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 3
+   },
+   {
+    "min": 110,
+    "count": 7
+   }
+  ],
+  "balanced": false,
+  "intro": "Each exam draws past Midterm 2 problems at random. They aren’t modified, so you may have seen some of them already."
+ },
+ "exams": [
+  {
+   "exam": "61b-fa25-mt2"
+  },
+  {
+   "exam": "61b-sp26-mt2",
+   "note": "This site asks 5.3–5.5 as True/False only; the counterexamples are in the answer notes."
+  },
+  {
+   "exam": "61b-sp25-mt2",
+   "note": "This site asks the LLRB table (2a) as three questions, the hashing parts (5) for the verdict only, and the asymptotics sets (4) without the exam’s Decline option."
+  },
+  {
+   "exam": "61b-fa24-mt2",
+   "note": "This site asks the drawn answers (the pairs in 3b, the LLRB in 4a) as multiple choice, and 3e as which listed hash lists loop forever."
+  },
+  {
+   "exam": "61b-sp24-mt2",
+   "note": "Staff removed 1(k) after grading, so it’s left out. This site asks the write-in Θ answers in 2(a)–(d) as multiple choice."
+  },
+  {
+   "exam": "61b-fa23-mt2",
+   "note": "This site asks the LLRB operation table (2b) one operation at a time, and the tables in 4 as two blanks each (the numbers, then their indices)."
+  },
+  {
+   "exam": "61b-sp23-mt2",
+   "note": "This exam’s point values are written ×100. This site asks Q6 Part 1 for the classification only; the reasons and colliding words are in the answer notes."
+  },
+  {
+   "exam": "61b-fa22-mt2",
+   "note": "This exam’s points total 4000. This site asks the hash table and 2-3 tree drawings (3, 4a) as fill-in questions, and the design question (8) as multiple choice with the method descriptions in the answer note."
+  },
+  {
+   "exam": "61b-sp21-mt2",
+   "note": "This exam’s points total 1920. Pictures are written as text, and the free-form setIterator (6) has blanks following the solution’s structure."
+  },
+  {
+   "exam": "61b-fa20-mt2",
+   "note": "This exam’s points total 960. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Pictures are written as text, and compress (5) and window (8c) have blanks following the solution’s structure."
+  },
+  {
+   "exam": "61b-sp19-mt2",
+   "note": "This exam’s points total 480. Drawn trees are written as value(left, right); drawn answers are multiple choice or fill-in. In 10(a), g2’s loop as printed never ends, so this site accepts that as well as the staff answer."
+  },
+  {
+   "exam": "61b-sp18-mt2",
+   "note": "This exam’s points total 240. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers and the free-response algorithm (9) are multiple choice or fill-in."
+  },
+  {
+   "exam": "61b-sp17-mt2",
+   "note": "This exam’s points total 120. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers and the free-response algorithm (8d) are multiple choice or fill-in; 7(e), graded on the explanation alone, is left out."
+  },
+  {
+   "exam": "61b-sp16-mt2",
+   "note": "This exam’s points total 60. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers are fill-in or multiple choice; Q7, drawn with pictorial symbols, is left out."
+  },
+  {
+   "exam": "61b-sp15-mt2",
+   "note": "The course’s topic index doesn’t cover this exam, so its topic tags are this site’s. Drawn answers are fill-in or multiple choice, and the short-answer and design questions (2c, 4a, 6, 7, 10) are multiple choice with the staff’s reasoning in the answer notes."
+  }
+ ]
+}

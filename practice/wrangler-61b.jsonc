@@ -1,0 +1,32 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Static CS 61B exam practice site (courses/61b), the same app as CS 61A's (wrangler.jsonc). Domain not final.
+  "name": "benrosar-io-practice-61b",
+  "compatibility_date": "2026-09-16",
+  "account_id": "abfb73a975a267f55e5755d5cfc9be70",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "61b.benrosar.io",
+      "custom_domain": true
+    }
+  ],
+  // Only POST /e (usage events) and POST /f (feedback) run the Worker; everything else is served as static files.
+  "main": "./worker.js",
+  "assets": {
+    "directory": "./public/61b",
+    "not_found_handling": "none",
+    "run_worker_first": ["/e", "/f"]
+  },
+  // Its own dataset, so CS 61A's analytics stay as they were.
+  "analytics_engine_datasets": [
+    {
+      "binding": "EVENTS",
+      "dataset": "practice_events_61b"
+    }
+  ],
+  // Feedback (POST /f) is emailed to the FEEDBACK_TO secret: `wrangler secret put FEEDBACK_TO --config practice/wrangler-61b.jsonc`.
+  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io", "SITE": "cs61b practice" },
+  "send_email": [{ "name": "SEND_EMAIL", "allowed_sender_addresses": ["feedback@benrosar.io"] }],
+  "ratelimits": [{ "name": "FEEDBACK_LIMIT", "namespace_id": "6102", "simple": { "limit": 5, "period": 60 } }]
+}

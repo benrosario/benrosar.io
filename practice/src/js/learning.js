@@ -1,5 +1,6 @@
 import { questionTopics, topicName } from './model.js';
 import { esc } from './util.js';
+import { COURSE } from './course.js';
 
 // Site-authored topic walkthroughs are deliberately distinguished from a question's own explanation.
 export const GUIDES = {
@@ -32,7 +33,8 @@ export const GUIDES = {
   FUNCTIONAL_PROGRAMMING: ['Separate transforming one value from combining many values.', 'Follow the data through each function in order.', 'Mapping square over [1, 2, 3] produces [1, 4, 9]. Filtering values greater than 1 first and then mapping square produces [4, 9]. Reversing operations may change which inputs pass the filter.'],
   INTERPRETERS: ['Separate source syntax from the value it denotes.', 'Evaluate operand expressions before applying an ordinary operation.', 'For Add(Number(2), Multiply(Number(3), Number(4))), the syntax contains five nodes. Evaluation returns 14: multiply gives 12, then addition gives 2 + 12. Returning a new Add node constructs syntax instead of interpreting it.'],
 };
-export function guideFor(p, q) { return (questionTopics(p,q) || []).map(topic => ({topic,guide:GUIDES[topic]})).find(x => x.guide); }
+// The walkthroughs are written for CS 61A (Python and Gleam examples); other courses have none yet.
+export function guideFor(p, q) { const G = COURSE.id === '61a' ? GUIDES : {}; return (questionTopics(p,q) || []).map(topic => ({topic,guide:G[topic]})).find(x => x.guide); }
 export function hintsFor(p, q) { return q.hints || guideFor(p,q)?.guide.slice(0,2) || ['Trace a small valid example and identify the required result.', 'Check the smallest input and one boundary case before generalizing.']; }
 export function explanationHTML(p, q) {
   const specific = q.x ? `<div class="x"><b>${q.explanationBy === 'site' ? 'Explanation by this site' : 'Answer note'}</b><p>${esc(q.x)}</p></div>` : '';

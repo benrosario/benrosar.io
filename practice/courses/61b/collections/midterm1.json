@@ -1,0 +1,103 @@
+{
+ "id": "midterm1",
+ "label": "Mini-Midterm 1",
+ "ref": "Mini-Midterm 1",
+ "sub": "Lectures 1–12",
+ "coverage": {
+  "text": "Fall 2026 Mini-Midterm 1 (Wed 9/23, 8–9:20pm), given after lecture 12. This option assumes it covered lectures 1–12.",
+  "url": "https://fa26.datastructur.es/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "JAVA",
+   "GIT",
+   "TESTING",
+   "LISTS",
+   "LINKED_LISTS",
+   "ARRAYS",
+   "DEQUES",
+   "ABSTRACTION",
+   "INHERITANCE",
+   "DMS",
+   "ITERATORS",
+   "COMPARATORS",
+   "EQUALS",
+   "ITERATION",
+   "RECURSION"
+  ],
+  "note": "Problems are included when every topic tagged on them was taught before Mini-Midterm 1. That classification is this site’s, not a staff recommendation."
+ },
+ "noPicks": "Course staff haven’t named practice questions here yet, so nothing is marked recommended.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 3
+   },
+   {
+    "min": 110,
+    "count": 6
+   }
+  ],
+  "balanced": false,
+  "intro": "Each exam draws past Midterm 1 problems at random. They aren’t modified, so you may have seen some of them already."
+ },
+ "exams": [
+  {
+   "exam": "61b-fa25-mt1"
+  },
+  {
+   "exam": "61b-sp25-mt1",
+   "note": "The printed staff key for 2(a) reads index j − 1 starting from j = 0, which would go out of bounds; this site accepts the corrected loop."
+  },
+  {
+   "exam": "61b-fa24-mt1",
+   "note": "The staff key for 1(a) line 3 reads “spawn FootballPlayer”, but the code prints “spawn Footballer”; this site accepts both."
+  },
+  {
+   "exam": "61b-sp24-mt1"
+  },
+  {
+   "exam": "61b-fa23-mt1",
+   "note": "Staff note that Q2 mixes overloading and overriding, which more recent semesters treat as out of scope."
+  },
+  {
+   "exam": "61b-sp23-mt1",
+   "note": "This exam’s points total 4800."
+  },
+  {
+   "exam": "61b-fa22-mt1",
+   "note": "This exam’s points total 2400. The box-and-pointer diagram (1a) is asked as questions about the final state."
+  },
+  {
+   "exam": "61b-sp21-mt1",
+   "note": "This exam’s points total 1280. Written explanations are asked as multiple choice, and 6(d) (0 points) is left out."
+  },
+  {
+   "exam": "61b-fa20-mt1",
+   "note": "Coding answers follow the staff solution’s structure. Testing prompts in Q6 are adapted to multiple choice; the administrative Q1 is left out."
+  },
+  {
+   "exam": "61b-sp19-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp18-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp17-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp16-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp15-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  }
+ ]
+}

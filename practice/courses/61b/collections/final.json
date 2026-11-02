@@ -1,0 +1,198 @@
+{
+ "id": "final",
+ "label": "Final",
+ "ref": "the final",
+ "sub": "Comprehensive",
+ "coverage": {
+  "text": "Fall 2026 Final (Thu 12/17, 3–6pm). This option assumes the whole course.",
+  "url": "https://fa26.datastructur.es/"
+ },
+ "scope": {
+  "basis": "topics",
+  "topics": [
+   "JAVA",
+   "GIT",
+   "TESTING",
+   "LISTS",
+   "LINKED_LISTS",
+   "ARRAYS",
+   "DEQUES",
+   "ABSTRACTION",
+   "INHERITANCE",
+   "DMS",
+   "ITERATORS",
+   "COMPARATORS",
+   "EQUALS",
+   "ITERATION",
+   "RECURSION",
+   "ASYMPTOTICS",
+   "DISJOINT_SETS",
+   "ADTS",
+   "BSTS",
+   "B_TREES",
+   "RED_BLACK_TREES",
+   "HASHING",
+   "HEAPS",
+   "TREE_TRAVERSALS",
+   "GRAPH_TRAVERSALS",
+   "GRAPH_REPRESENTATIONS",
+   "SHORTEST_PATHS",
+   "MSTS",
+   "TOPOLOGICAL_SORT",
+   "TRIES",
+   "K_D_TREES",
+   "SORTING",
+   "COMPARISON_SORTS",
+   "RADIX_SORTS",
+   "REDUCTIONS",
+   "GAME_TREES",
+   "REGEX",
+   "BITS",
+   "PROJECT_2048",
+   "PERCOLATION"
+  ],
+  "note": "Problems from any topic in the course are included. That classification is this site’s, not a staff recommendation."
+ },
+ "noPicks": "Course staff haven’t named practice questions here yet, so nothing is marked recommended.",
+ "timed": {
+  "pool": "source",
+  "lengths": [
+   {
+    "min": 50,
+    "count": 3
+   }
+  ],
+  "balanced": false,
+  "intro": "Each exam draws problems from the whole course at random."
+ },
+ "exams": [
+  { "exam": "61b-sp26-final" },
+  { "exam": "61b-fa25-final" },
+  { "exam": "61b-sp25-final" },
+  { "exam": "61b-fa24-final" },
+  { "exam": "61b-sp24-final" },
+  { "exam": "61b-fa23-final" },
+  { "exam": "61b-sp23-final" },
+  { "exam": "61b-fa22-final", "note": "The solution PDF is scanned. Diagram questions are described in text; the struck A* question is omitted." },
+  { "exam": "61b-sp21-final" },
+  { "exam": "61b-fa20-final" },
+  { "exam": "61b-sp19-final" },
+  { "exam": "61b-sp18-final" },
+  { "exam": "61b-sp17-final" },
+  { "exam": "61b-sp16-final" },
+  { "exam": "61b-sp15-final" },
+  {
+   "exam": "61b-sp26-mt2",
+   "note": "This site asks 5.3–5.5 as True/False only; the counterexamples are in the answer notes."
+  },
+  {
+   "exam": "61b-fa25-mt2"
+  },
+  {
+   "exam": "61b-sp25-mt2",
+   "note": "This site asks the LLRB table (2a) as three questions, the hashing parts (5) for the verdict only, and the asymptotics sets (4) without the exam’s Decline option."
+  },
+  {
+   "exam": "61b-fa24-mt2",
+   "note": "This site asks the drawn answers (the pairs in 3b, the LLRB in 4a) as multiple choice, and 3e as which listed hash lists loop forever."
+  },
+  {
+   "exam": "61b-sp24-mt2",
+   "note": "Staff removed 1(k) after grading, so it’s left out. This site asks the write-in Θ answers in 2(a)–(d) as multiple choice."
+  },
+  {
+   "exam": "61b-fa23-mt2",
+   "note": "This site asks the LLRB operation table (2b) one operation at a time, and the tables in 4 as two blanks each (the numbers, then their indices)."
+  },
+  {
+   "exam": "61b-sp23-mt2",
+   "note": "This exam’s point values are written ×100. This site asks Q6 Part 1 for the classification only; the reasons and colliding words are in the answer notes."
+  },
+  {
+   "exam": "61b-fa22-mt2",
+   "note": "This exam’s points total 4000. This site asks the hash table and 2-3 tree drawings (3, 4a) as fill-in questions, and the design question (8) as multiple choice with the method descriptions in the answer note."
+  },
+  {
+   "exam": "61b-sp21-mt2",
+   "note": "This exam’s points total 1920. Pictures are written as text, and the free-form setIterator (6) has blanks following the solution’s structure."
+  },
+  {
+   "exam": "61b-fa20-mt2",
+   "note": "This exam’s points total 960. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Pictures are written as text, and compress (5) and window (8c) have blanks following the solution’s structure."
+  },
+  {
+   "exam": "61b-sp19-mt2",
+   "note": "This exam’s points total 480. Drawn trees are written as value(left, right); drawn answers are multiple choice or fill-in. In 10(a), g2’s loop as printed never ends, so this site accepts that as well as the staff answer."
+  },
+  {
+   "exam": "61b-sp18-mt2",
+   "note": "This exam’s points total 240. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers and the free-response algorithm (9) are multiple choice or fill-in."
+  },
+  {
+   "exam": "61b-sp17-mt2",
+   "note": "This exam’s points total 120. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers and the free-response algorithm (8d) are multiple choice or fill-in; 7(e), graded on the explanation alone, is left out."
+  },
+  {
+   "exam": "61b-sp16-mt2",
+   "note": "This exam’s points total 60. The course’s topic index doesn’t cover it, so its topic tags are this site’s. Drawn answers are fill-in or multiple choice; Q7, drawn with pictorial symbols, is left out."
+  },
+  {
+   "exam": "61b-sp15-mt2",
+   "note": "The course’s topic index doesn’t cover this exam, so its topic tags are this site’s. Drawn answers are fill-in or multiple choice, and the short-answer and design questions (2c, 4a, 6, 7, 10) are multiple choice with the staff’s reasoning in the answer notes."
+  },
+  {
+   "exam": "61b-fa25-mt1"
+  },
+  {
+   "exam": "61b-sp25-mt1",
+   "note": "The printed staff key for 2(a) reads index j − 1 starting from j = 0, which would go out of bounds; this site accepts the corrected loop."
+  },
+  {
+   "exam": "61b-fa24-mt1",
+   "note": "The staff key for 1(a) line 3 reads “spawn FootballPlayer”, but the code prints “spawn Footballer”; this site accepts both."
+  },
+  {
+   "exam": "61b-sp24-mt1"
+  },
+  {
+   "exam": "61b-fa23-mt1",
+   "note": "Staff note that Q2 mixes overloading and overriding, which more recent semesters treat as out of scope."
+  },
+  {
+   "exam": "61b-sp23-mt1",
+   "note": "This exam’s points total 4800."
+  },
+  {
+   "exam": "61b-fa22-mt1",
+   "note": "This exam’s points total 2400. The box-and-pointer diagram (1a) is asked as questions about the final state."
+  },
+  {
+   "exam": "61b-sp21-mt1",
+   "note": "This exam’s points total 1280. Written explanations are asked as multiple choice, and 6(d) (0 points) is left out."
+  },
+  {
+   "exam": "61b-fa20-mt1",
+   "note": "Coding answers follow the staff solution’s structure. Testing prompts in Q6 are adapted to multiple choice; the administrative Q1 is left out."
+  },
+  {
+   "exam": "61b-sp19-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp18-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp17-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp16-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  },
+  {
+   "exam": "61b-sp15-mt1",
+   "note": "All scored problems are represented. Coding answers follow the staff solution’s structure; some diagrams and written responses are adapted to checkable questions. See the original PDF for the exact exam format."
+  }
+ ]
+}

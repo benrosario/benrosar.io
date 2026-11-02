@@ -1,12 +1,43 @@
-# CS 61A practice site (practice.benrosar.io)
+# Exam practice sites: CS 61A (practice.benrosar.io) and CS 61B
 
 This is a static site of past CS 61A exam questions with Python checking, timed practice exams, study collections
 and a Python and Gleam playground. It works offline after one visit.
+The same app builds a site for each course in `courses/` (see **Courses** below); most of this README describes CS 61A.
 Students choose what they're studying for (Midterm 1, Midterm 2, Midterm 3 or the comprehensive Final) with
 the **Studying for** menu next to the question filter at the top of the sidebar, or with a link such as `?exam=midterm2`.
 
-This folder is the canonical source. `practice/public/` is build output and is git-ignored.
-`/Users/ben/Desktop/projects/exam-practice` is a generated local preview copy. Never edit either one by hand.
+This folder is the canonical source. `practice/public/<course>/` is build output and is git-ignored.
+`/Users/ben/Desktop/projects/exam-practice` (CS 61A) and `exam-practice-61b` are generated local preview copies. Never edit
+any of them by hand.
+
+## Courses
+
+Each course is a folder in `courses/` with its own content and a `course.json`:
+
+| Field | What it sets |
+|---|---|
+| `id` | The course (`61a`). Browser storage is `cs<id>-practice-v2`, `cs<id>-practice-nav` and `cs<id>-playground-v1`, so two courses never share saved answers. CS 61A's keys are the ones the site has always used. |
+| `name`, `title`, `heading`, `ai` | The course's name, the page title, the header, and how the "Ask AI" prompt describes the course |
+| `blurb`, `url`, `dev` | For the course switcher: clicking the header's title lists every course's site with its blurb, linking to `url`, or to `dev` (its local server, e.g. `http://localhost:8615/`) when the page is on localhost. With one course the title is plain text. |
+| `langs` | Languages that run in the browser (`py`, `gleam`). The build includes only their workers and runtimes. With none, there's no playground, Add to playground or ⌘K, and code is shown but answers are checked as text. |
+| `collections` | The study options' ids, in order (the validator checks `collections/index.json` against it) |
+| `topics` | `{TAG: name}`: every topic tag the course's exams and collections may use, and its name on the page |
+| `preview` | Its local preview folder, relative to `practice/` |
+
+The app reads the course from `<script type="application/json" id="course">`, which the build writes (`src/js/course.js`);
+the Node tests get CS 61A's. Topic walkthroughs (`learning.js`) are CS 61A's only. `content/` holds what courses share:
+the authoring helpers, the Python and SQL preludes, and `enrich.mjs`.
+
+CS 61B (`courses/61b`) has no runnable language yet (Java checking is still to come), Mini-Midterm 1, Midterm 2 and
+Final collections, the exam archive's topic list, and one site-written sample set. Its scope for each exam is this
+site's guess and says so. It deploys with `wrangler-61b.jsonc`, to its own analytics dataset, with `SITE` naming it in
+feedback emails.
+
+The Midterm 1 collection includes all 14 Midterm 1 PDFs in `~/Downloads/61b-exams` as practice entries. The Final
+collection includes all 15 Final PDFs in that folder. Scored problems are adapted into checkable questions; coding
+answers follow the staff solution's structure, and some diagrams and written responses are described in text. Struck,
+administrative, and zero-point questions are omitted. Each entry links directly to the original exam and solutions for
+the exact wording and format.
 
 ## Layout
 
@@ -38,37 +69,41 @@ practice/
   src/py/run.py          runs a playground Python program (stdin, streamed output, tracebacks of its own lines)
   src/sw.js              the service worker (the build fills in its file list and writes public/sw.js)
   src/static/            copied as is (apple-touch-icon.jpg)
-  content/exams/         source exams, each stored once (.json, or .mjs written with content/author.mjs)
-  content/collections/   the four study options: scope rules, notes, picks, timed settings (index.json sets the order)
-  content/timed/         modified problems for Midterm 3 timed practice
+  src/js/course.js       the course this page is for (course.json, from the page), and its storage names
+  courses/<course>/      one course: course.json, plus
+    exams/               source exams, each stored once (.json, or .mjs written with content/author.mjs)
+    collections/         the study options: scope rules, notes, picks, timed settings (index.json sets the order)
+    timed/               modified problems for timed practice (CS 61A's Midterm 3)
+    instructors.json     each semester's instructors; order-legacy.json (CS 61A's saved data from before collections)
+    COVERAGE.md          where each option's questions come from, what they cover, and the known gaps (CS 61A)
+  content/               shared by every course: author.mjs, enrich.mjs, sql.mjs, trees.mjs
   content/python-prelude.py  Link, Tree and the doctest runner used to check Python answers
-  content/COVERAGE.md    where each option's questions come from, what they cover, and the known gaps
   scripts/               build, validate, preview sync, staff topic import, Gleam and Python toolchains
                          (gleam-toolchain.mjs, pyodide-toolchain.mjs)
   tests/                 Node tests, the Python answer check, and browser tests (tests/ui)
-  worker.js, wrangler.jsonc  deployment, the /e analytics endpoint and the /f feedback endpoint
+  worker.js, wrangler.jsonc  deployment, the /e analytics endpoint and the /f feedback endpoint (wrangler-61b.jsonc for CS 61B)
 ```
 
 ## Commands (run from the `website/` folder)
 
 | Command | What it does |
 |---|---|
-| `npm run practice:build` | Validates the content and builds `practice/public/`. It fails on any content error. |
-| `npm run practice:serve` | Serves `practice/public/` at <http://localhost:8614>. |
+| `npm run practice:build` | Validates CS 61A's content and builds `practice/public/61a/`. It fails on any content error. `practice:build:61b` does the same for CS 61B. |
+| `npm run practice:serve` | Serves `practice/public/61a/` at <http://localhost:8614>; `practice:serve:61b` serves CS 61B at <http://localhost:8615>. |
 | `npm run practice:test` | Runs the content, collection, migration, build/preview, Worker and playground tests (running programs, every importable problem), then runs every Python answer against its doctests (needs `python3`). |
 | `npm run practice:test:ui` | Runs the browser tests in headless Chrome: switching, deep links, Back/Forward, unfinished answers, migration, timed attempts, grading, keyboard, mobile and themes, and (`tests/ui/playground.test.mjs`) the playground, importing problems, the timed-exam lock and offline use. Set `CHROME_PATH` if Chrome isn't in /Applications. Set `PRACTICE_SKIP_PYODIDE=1` to skip the tests that start Python. |
-| `npm run practice:sync` | Builds, then refreshes the local preview copy in `../exam-practice`. It deletes only files an earlier sync wrote. |
+| `npm run practice:sync` | Builds, then refreshes the local preview copy in `../exam-practice` (`practice:sync:61b`: `../exam-practice-61b`). It deletes only files an earlier sync wrote. |
 | `npm run practice:check-preview` | Exits 1 if the preview copy doesn't match a fresh build. |
-| `npm run deploy:practice` | Builds, runs `practice:test`, then deploys with wrangler. It deploys only after a clean build and passing tests. |
+| `npm run deploy:practice` | Builds, runs `practice:test`, then deploys with wrangler. It deploys only after a clean build and passing tests. `deploy:practice:61b` deploys CS 61B. |
 
-`node practice/scripts/build.mjs --allow-invalid` builds despite content errors. Use it only for work in progress.
+`node practice/scripts/build.mjs [--course <id>] --allow-invalid` builds despite content errors. Use it only for work in progress.
 
 ## Content
 
 - **Question ids.** A saved answer's key is `<exam id>|<question id>`. Problems have ids `<exam id>/<number>`. Never renumber them: progress is stored by these ids.
-- **Exam blurbs.** Every exam opens with the same blurb: its title and instructors (`content/instructors.json`, by semester, from the course archive) or "Written by this site" for site-made sets; then the collection's `note` (only what the blurb can't work out itself, such as staff recommendations), skips and how much of the exam is shown; then, after a blank line, how out-of-scope questions count.
+- **Exam blurbs.** Every exam opens with the same blurb: its title and instructors (the course's `instructors.json`, by semester, from the course archive) or "Written by this site" for site-made sets; then the collection's `note` (only what the blurb can't work out itself, such as staff recommendations), skips and how much of the exam is shown; then, after a blank line, how out-of-scope questions count.
 - **Collections.** Each collection can carry `advice` (course staff’s practice advice, shown on the home page under the coverage) and lists the source exams it uses, with `note`, staff `skip` text, `oos` (staff out of scope), `picks` (`dn` / `csm`), `tips` (a collection with `picksFrom` also gets those collections' picks and tips at build time: the Final combines Midterms 1–3), and `drop` / `keep` overrides with reasons. Scope comes from `scope.basis`: `staff` (explicit, Midterm 3) or `topics` (the staff topic tags must all be on `scope.topics`). A question shared by several collections counts toward each one where it's in scope.
-- **Adding an exam.** Write `content/exams/<id>.mjs` with the helpers in `content/author.mjs`. Pass `run: true` so Python blanks are checked by doctests, and add the exam to the right collections. Then run `npm run practice:test`. The staff topic tags come from `scripts/annotate-topics.mjs` (JSON exams) or are written in the `.mjs`.
+- **Adding an exam.** Write `courses/<course>/exams/<id>.mjs` with the helpers in `content/author.mjs`. Pass `run: true` so Python blanks are checked by doctests, and add the exam to the right collections. Then run `npm run practice:test`. The staff topic tags come from `scripts/annotate-topics.mjs` (JSON exams) or are written in the `.mjs`.
 - **Restrictions.** An exam's rules about what an answer may contain ("You may not use and, or, or not") are enforced before an answer is matched or run (`RULES` in `content/enrich.mjs`); the build fails if an official answer breaks its own rule.
 - **Checking.** Python blanks are compared with the accepted answers first, then run against the problem's doctests. Scheme and other non-executable blanks are compared as text while preserving capitalization and string contents; supported SQL blanks execute in SQLite, and the page says so. Multiple choice can list `also` (other choices the staff accepted).
 
@@ -82,7 +117,7 @@ Gleam replaced Scheme in Fall 2026 and is on the final. The course uses Gleam v1
 - **Text answers.** Gleam text answers are compared case-sensitively, preserving string contents and token boundaries, because `Ok` and `ok` differ.
 - **Authoring.** Use `gl()` code blocks and one `glTests()` block (shown on the page as the tests), with `problem(..., {run: 'gleam'})`. Tie a code blank to a question with `blank(..., {r: 'x'})`, or write an "evaluates to" question with `blank(..., {ev: 'expression'})`.
 - **Testing.** `npm run practice:test` compiles and runs every official and accepted answer with the same compiler in Node. It also checks that each problem's tests fail when a blank is left as `todo`.
-- **Adapted problems.** These are Scheme problems this site rewrote in Gleam. They live in `content/exams/61a-fa26-gleam-adapted.mjs` and carry `adapted: {from, problem}`. The page labels them wherever they appear, including timed practice and copied AI prompts.
+- **Adapted problems.** These are Scheme problems this site rewrote in Gleam. They live in `courses/61a/exams/61a-fa26-gleam-adapted.mjs` and carry `adapted: {from, problem}`. The page labels them wherever they appear, including timed practice and copied AI prompts.
 
 ## Python
 

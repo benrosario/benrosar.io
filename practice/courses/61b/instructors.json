@@ -1,0 +1,64 @@
+{
+ "note": "Instructors for each semester's exams, from the instructor line on that semester's course site (e.g. fa25.datastructur.es).",
+ "sources": [
+  "https://fa25.datastructur.es/",
+  "https://sp25.datastructur.es/",
+  "https://fa24.datastructur.es/",
+  "https://sp24.datastructur.es/",
+  "https://sp23.datastructur.es/",
+  "https://sp26.datastructur.es/"
+ ],
+ "semesters": {
+  "fa25": [
+   "Hug",
+   "Kao"
+  ],
+  "sp25": [
+   "Yokota",
+   "Hug"
+  ],
+  "fa24": [
+   "Yokota",
+   "Kao"
+  ],
+  "sp24": [
+   "Yokota",
+   "Kao"
+  ],
+  "sp23": [
+   "Hug"
+  ],
+  "sp26": [
+   "Hug",
+   "Ousterhout"
+  ],
+  "fa23": [
+   "Yokota",
+   "Kao"
+  ],
+  "fa22": [
+   "Hug"
+  ],
+  "sp21": [
+   "Hug"
+  ],
+  "fa20": [
+   "Hug"
+  ],
+  "sp19": [
+   "Hug"
+  ],
+  "sp18": [
+   "Hug"
+  ],
+  "sp17": [
+   "Hug"
+  ],
+  "sp16": [
+   "Hug"
+  ],
+  "sp15": [
+   "Hug"
+  ]
+ }
+}

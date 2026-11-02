@@ -1,11 +1,11 @@
-// The build is reproducible, the deployed folder and the local preview copy agree with it, and the analytics Worker
-// records the study collection.
+// The build is reproducible, the deployed folder and the local preview copy agree with it, every course builds, and
+// the analytics Worker records the study collection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, existsSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { build, ROOT } from '../scripts/build.mjs';
+import { build, ROOT, COURSES } from '../scripts/build.mjs';
 import { compare, DEFAULT_PREVIEW } from '../scripts/sync-preview.mjs';
 import worker from '../worker.js';
 
@@ -34,12 +34,55 @@ test('the service worker and the background download list exactly the files the 
   assert.equal(readFileSync(join(a, '_headers'), 'utf8'), '/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n/sw.js\n  Cache-Control: no-cache\n');
 });
 
-test('practice/public (what wrangler deploys) matches a fresh build', { skip: !existsSync(join(ROOT, 'public/index.html')) && 'not built yet' }, () => {
-  assert.deepEqual(compare(a, join(ROOT, 'public')), [], 'run npm run practice:build');
+test('practice/public/61a (what wrangler deploys) matches a fresh build', { skip: !existsSync(join(ROOT, 'public/61a/index.html')) && 'not built yet' }, () => {
+  assert.deepEqual(compare(a, join(ROOT, 'public/61a')), [], 'run npm run practice:build');
 });
 
 test('the exam-practice preview copy matches a fresh build', { skip: !existsSync(join(DEFAULT_PREVIEW, '.preview-manifest.json')) && 'no synced preview' }, () => {
   assert.deepEqual(compare(a, DEFAULT_PREVIEW), [], 'run npm run practice:sync');
+});
+
+test('every course builds; one with no languages has no runtimes, workers or playground data', async () => {
+  const out = {};
+  for (const id of COURSES.filter(id => id !== '61a')) await build(out[id] = mkdtempSync(join(tmpdir(), `practice-${id}-`)), { course: id });
+  const c = out['61b'];
+  const html = readFileSync(join(c, 'index.html'), 'utf8'), sw = readFileSync(join(c, 'sw.js'), 'utf8');
+  const course = JSON.parse(html.match(/<script type="application\/json" id="course">(.*?)<\/script>/)[1]);
+  assert.equal(course.id, '61b'); assert.deepEqual(course.langs, []);
+  assert.match(html, /<title>cs61b practice<\/title>/); assert.match(html, /localStorage\.getItem\("cs61b-practice-v2"\)/);
+  assert.deepEqual(Object.keys(JSON.parse(html.match(/id="runtimes">(.*?)<\/script>/)[1])), ['shell']);
+  assert.deepEqual(JSON.parse(sw.match(/const MANIFEST = (\{.*?\});/)[1]).runtimes, []);
+  assert.doesNotMatch(html, /data-(py|gleam)-/);
+  assert.ok(!existsSync(join(c, 'assets/pyodide')) && !existsSync(join(c, 'assets/gleam')));
+  assert.equal('prelude' in JSON.parse(readFileSync(join(c, html.match(/data-content="\/(assets\/content\.[0-9a-f]+\.json)"/)[1]), 'utf8')), false);
+  const bank = JSON.parse(readFileSync(join(c, html.match(/data-content="\/(assets\/content\.[0-9a-f]+\.json)"/)[1]), 'utf8'));
+  const midterm1 = bank.collections.find(x => x.id === 'midterm1');
+  const final = bank.collections.find(x => x.id === 'final');
+  const sourceMidterm1 = bank.exams.filter(x => x.id.endsWith('-mt1')).map(x => x.id);
+  assert.deepEqual(midterm1.exams.map(x => x.exam).sort(), sourceMidterm1.sort());
+  for (const id of sourceMidterm1) assert.ok(final.exams.some(x => x.exam === id), `${id} missing from final`);
+  const sourceFinals = bank.exams.filter(x => x.id.endsWith('-final') && x.id.startsWith('61b-'));
+  assert.equal(sourceFinals.length, 15, 'all downloaded 61B Finals are included');
+  for (const exam of sourceFinals) {
+    assert.ok(final.exams.some(x => x.exam === exam.id), `${exam.id} missing from final collection`);
+    assert.ok(exam.p.some(p => p.b.some(b => b.k)), `${exam.id} has no graded questions`);
+    assert.match(exam.src.exam, /^https:\/\/drive\.google\.com\/file\/d\/[^/]+\/view$/);
+    assert.match(exam.src.sol, /^https:\/\/drive\.google\.com\/file\/d\/[^/]+\/view$/);
+  }
+  const scoredProblems = {
+    sp15: '1,2,3,4,5,7,8,9', sp16: '1,2,3,4,5,6,8,9',
+    sp17: '1,2,3,4,5,6,8,9,10', sp18: '1,2,3,4,5,6,7', sp19: '1,2,4,5,6,7,8,9',
+  };
+  for (const [term, numbers] of Object.entries(scoredProblems)) {
+    const exam = bank.exams.find(x => x.id === `61b-${term}-mt1`);
+    assert.equal(exam?.p.map(x => x.n).join(), numbers, `${term} scored problems`);
+  }
+});
+
+test('CS 61A keeps the storage keys its visitors already have', () => {
+  const html = readFileSync(join(a, 'index.html'), 'utf8');
+  assert.match(html, /localStorage\.getItem\("cs61a-practice-v2"\)/);
+  assert.match(html, /<title>cs61a practice<\/title>/);
 });
 
 test('the analytics Worker stores the collection in blob8 and accepts study_select', async () => {

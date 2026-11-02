@@ -1,0 +1,5 @@
+{
+ "order": ["midterm1", "midterm2", "final"],
+ "defaultCollection": "midterm2",
+ "defaultNote": "New visitors start on the next exam for the whole class: Midterm 2 is Wed 11/4/2026."
+}

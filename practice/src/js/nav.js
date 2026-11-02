@@ -8,13 +8,14 @@
 // The renderers call record() whenever they draw a view; it adds an entry when the view differs from the current one
 // (or replaces it while the page starts and while Back/Forward redraws). Each entry remembers its scroll position.
 import { st } from './state.js';
+import { storageKey } from './course.js';
 import { $, SV, isMac } from './util.js';
 import { render } from './practice.js';
 import { renderPT, showPT } from './timed.js';
 import { select } from './selector.js';
 import { showPG, leavePG, currentFile } from './playground.js';
 
-const MAX = 'cs61a-practice-nav'; // sessionStorage: the newest entry's index, for the Forward button
+const MAX = storageKey('practice-nav'); // sessionStorage: the newest entry's index, for the Forward button
 let booting = true, restoring = false, problem = null;
 
 function describe() {

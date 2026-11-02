@@ -1,4 +1,4 @@
-// Copy the course staff's per-problem topic tags into content/exams/*.json (maintenance tool).
+// Copy the course staff's per-problem topic tags into courses/61a/exams/*.json (maintenance tool).
 // The tags come from the "Exam Questions by Topic" index on the CS 61A resources page:
 //   https://cs61a.org/resources/_exams/exam_problems_{mt1,mt2,final}.json
 // Usage: node practice/scripts/annotate-topics.mjs <dir containing those three JSON files>
@@ -17,8 +17,8 @@ for (const f of ['exam_problems_mt1', 'exam_problems_mt2', 'exam_problems_final'
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
 const titleOf = t => t.replace(/^\d+\.\s*/, '').replace(/\s*\([\d.?]+ pts\)$/, '');
 let report = [];
-for (const f of readdirSync(join(ROOT, 'content/exams')).filter(f => f.endsWith('.json'))) {
-  const path = join(ROOT, 'content/exams', f), e = JSON.parse(readFileSync(path, 'utf8'));
+for (const f of readdirSync(join(ROOT, 'courses/61a/exams')).filter(f => f.endsWith('.json'))) {
+  const path = join(ROOT, 'courses/61a/exams', f), e = JSON.parse(readFileSync(path, 'utf8'));
   const s = staff[e.src?.topics];
   if (!s) { report.push(`${e.id}: no staff index entry (${e.src?.topics})`); continue; }
   for (const p of e.p) {

@@ -1,8 +1,10 @@
-// Page chrome: theme and code-color toggles, sidebar resizing, zoom, tooltips, the filter dropdown and the countdown timer.
+// Page chrome: theme and code-color toggles, sidebar resizing, zoom, tooltips, the filter dropdown, the countdown timer
+// and the course switcher.
 import { st, cs } from './state.js';
 import { $, esc, SV } from './util.js';
 import { sidebar, render, firstMatch } from './practice.js';
 import { ev } from './events.js';
+import { COURSE } from './course.js';
 
 const m = $('#m'), side = $('#side'), th = $('#th'), hlb = $('#hlb'), flt = $('#flt');
 const THEMES = ['auto', 'light', 'dark'];
@@ -226,4 +228,27 @@ function initTimer() {
   if (T.end) { if (left() > 0) loop(); else { T.end = 0; T.left = 0; T.up = true; st.save(); } } draw();
 }
 
-export function initChrome() { initFilter(); initLayout(); initZoom(); initTips(); initTimer(); }
+// The course switcher: the title opens a list of every course's site (COURSE.sites, from the build). On this machine
+// (localhost) each links to its local server instead. With one course the title is plain text.
+function initCourses() {
+  const b = $('#crsb'), p = $('#crsp'), sites = COURSE.sites || [];
+  if (sites.length < 2) { b.replaceWith(b.firstChild); return; }
+  const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname), CHECK = SV('<path d="M5 12.5l4.5 4.5L19 7.5"/>');
+  p.querySelector('ul').innerHTML = sites.map(s => `<li><a href="${esc(local ? s.dev : s.url)}"${s.id === COURSE.id ? ' aria-current="page"' : ''}><span><b>${esc(s.name)}</b><span>${esc(s.blurb)}</span></span>${s.id === COURSE.id ? CHECK : ''}</a></li>`).join('');
+  let ht;
+  // open: unhide, then add .in so the fade/scale transition runs; close: drop .in, hide once it has faded out
+  const open = () => { clearTimeout(ht); p.hidden = false; p.offsetWidth; p.classList.add('in'); b.setAttribute('aria-expanded', 'true'); p.querySelector('[aria-current]')?.focus(); };
+  const close = f => { if (p.hidden) return; p.classList.remove('in'); b.setAttribute('aria-expanded', 'false'); clearTimeout(ht); ht = setTimeout(() => p.hidden = true, 170); if (f) b.focus(); };
+  b.onclick = () => p.classList.contains('in') ? close() : open();
+  document.addEventListener('mousedown', e => { if (!$('#crs').contains(e.target)) close(); });
+  p.addEventListener('focusout', () => setTimeout(() => { if (!p.contains(document.activeElement) && document.activeElement !== b) close(); }, 0));
+  p.onkeydown = e => {
+    if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const a = [...p.querySelectorAll('a')], i = a.indexOf(document.activeElement); e.preventDefault();
+    a[(i + (e.key === 'ArrowDown' ? 1 : a.length - 1)) % a.length].focus();
+  };
+  p.onclick = e => { if (e.target.closest('a')?.hasAttribute('aria-current')) { e.preventDefault(); close(true); } }; // this course: just close
+}
+
+export function initChrome() { initFilter(); initLayout(); initZoom(); initTips(); initTimer(); initCourses(); }

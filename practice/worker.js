@@ -27,6 +27,7 @@ const str = (v, n = 120) => (typeof v === 'string' ? v.slice(0, n) : '');
 // secret, so the address never appears in this public repo or the page; it must be a verified Email Routing destination.
 // It's sent from FEEDBACK_FROM on benrosar.io, and visitors give no address. A filled-in honeypot (a field people can't
 // see) gets a silent 204, and FEEDBACK_LIMIT caps each IP at a few messages a minute.
+// The subject names the site: the SITE var (e.g. "cs61b practice"), or CS 61A's, whose config has none.
 async function feedback(req, env) {
   if (req.method !== 'POST') return new Response(null, { status: 405 });
   const text = await req.text();
@@ -42,7 +43,7 @@ async function feedback(req, env) {
   const about = [['Page', str(body?.p, 300)], ['Studying for', str(body?.c, 16)], ['Country', str(req.cf?.country, 8)]]
     .filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join('\n');
   try {
-    await env.SEND_EMAIL.send({ from: env.FEEDBACK_FROM, to: env.FEEDBACK_TO, subject: 'cs61a practice feedback', text: `${msg}\n\n--\n${about}` });
+    await env.SEND_EMAIL.send({ from: env.FEEDBACK_FROM, to: env.FEEDBACK_TO, subject: `${env.SITE || 'cs61a practice'} feedback`, text: `${msg}\n\n--\n${about}` });
   } catch (e) {
     console.error('feedback email failed', e);
     return new Response(null, { status: 502 });

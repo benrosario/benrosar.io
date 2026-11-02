@@ -1,5 +1,6 @@
 // "Ask AI why": a self-contained tutoring prompt for a missed question, copied to the clipboard.
 import { segText } from './highlight.js';
+import { COURSE } from './course.js';
 
 function answerText(q, v) { if (q.k == 'mc') return v == null ? '(none)' : q.o[v]; if (q.k == 'sata') return v.length ? v.map(i => '- ' + q.o[i]).join('\n') : '(none selected)'; return v; }
 // title: where the question is from, e.g. "Fall 2025 Midterm 2" or "Timed practice exam"; studying: collection label.
@@ -9,7 +10,7 @@ export function aiPrompt(title, p, q, v, out, studying) {
   const block = (t, lang) => '```' + (lang || '') + '\n' + t + '\n```';
   const gleam = p.run?.lang == 'gleam' || p.b.some(b => b.s?.some(g => g.lang == 'gleam'));
   const lang = q.k == 'blank' && /[()=\[\].]/.test(q.a[0]) ? (gleam ? 'gleam' : 'python') : '';
-  return `I'm studying for a CS 61A (UC Berkeley, Fall 2026: Python, Gleam and SQL) exam${studying ? ` (${studying})` : ''} and got a practice question wrong. Please help me understand my mistake.
+  return `I'm studying for a ${COURSE.ai} exam${studying ? ` (${studying})` : ''} and got a practice question wrong. Please help me understand my mistake.
 
 ## Problem: ${title}, ${p.t}${p.authored ? '\n(Original practice written by the practice site, not course staff or a past exam.)' : p.adapted ? `\n(Not official course material: a practice site adapted this to Gleam from ${p.adapted.from}, a Scheme exam problem.)` : ''}
 ${p.b.filter(b => b.s).map(b => segText(b.s)).join('\n\n')}

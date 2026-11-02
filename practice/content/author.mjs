@@ -1,4 +1,4 @@
-// Helpers for writing newly imported exams as content/exams/<id>.mjs (same shape as the JSON exams).
+// Helpers for writing newly imported exams as courses/<course>/exams/<id>.mjs (same shape as the JSON exams).
 //
 //   export default exam('61a-fa26-mt1', 'Fall 2026 Midterm 1', 'fa26/mt1/61a-fa26-mt1', 'fa26-mt1', [
 //     problem('1', 'What Would Python Display? (6.0 pts)', [ text(...), py(`...`), blank(1, '(a)', ['1']), ... ]),
@@ -21,6 +21,8 @@ export const h = t => ({ h: t });
 export const py = (c, f, o = {}) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'py', ...(f ? { f } : {}), ...o });
 export const gl = (c, f, o = {}) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'gleam', ...(f ? { f } : {}), ...o });
 export const glTests = c => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'gleam', test: true });
+export const txt = c => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'txt' }); // a diagram drawn in text
+export const java = (c, f) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'java', ...(f ? { f } : {}) });
 export const sql = (c, f) => ({ c: c.replace(/^\n/, '').replace(/\s+$/, ''), lang: 'sql', ...(f ? { f } : {}) });
 export const seg = (...s) => ({ s: s.flat() });
 
@@ -69,10 +71,10 @@ function makeRun(p, pn, support, lang) {
   return run;
 }
 
-// exam(id, title, path under https://cs61a.org/resources/ without .pdf, staff topic-index label, problems)
+// exam(id, title, path under https://cs61a.org/resources/ without .pdf (or {exam, sol}: the PDFs' URLs), staff topic-index label, problems)
 // For a set of adapted problems, pass path null: there is no single source exam (each problem names its own).
 export function exam(id, t, path, topicsLabel, problems) {
-  const base = path && 'https://cs61a.org/resources/' + path;
+  const base = typeof path == 'string' && 'https://cs61a.org/resources/' + path;
   const p = problems.map((x, i) => {
     const { _run, _support, ...rest } = x; const out = { id: `${id}/${x.n}`, ...rest };
     if (_run) out.run = makeRun(out, i, _support, _run); else for (const q of out.b) if (q.k) { delete q.r; delete q.ev; }
@@ -82,5 +84,6 @@ export function exam(id, t, path, topicsLabel, problems) {
     for (const g of out.b.filter(b => b.s).flatMap(b => b.s)) { delete g.norun; delete g.runCode; delete g.runFills; }
     return out;
   });
-  return { id, t, src: base ? { exam: base + '.pdf', sol: base + '_sol.pdf', topics: topicsLabel } : { adapted: true }, p };
+  const src = base ? { exam: base + '.pdf', sol: base + '_sol.pdf', topics: topicsLabel } : path ? { ...path, topics: topicsLabel } : { adapted: true };
+  return { id, t, src, p };
 }
