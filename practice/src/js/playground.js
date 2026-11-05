@@ -20,7 +20,8 @@ import { status as rt, onStatus } from './runtimes.js';
 import { record, setProblem } from './nav.js';
 import { showPT, ptTick } from './timed.js';
 import { syncHome, render } from './practice.js';
-import { ev } from './events.js';
+import { ev, evOnce } from './events.js';
+import { errorClass } from './output.js';
 import { openPicker } from './picker.js';
 import { mountOffline } from './offline.js';
 import { findProblem, codeFor, findAnyProblem, importCode } from './problems.js';
@@ -64,7 +65,7 @@ const RUNKEY = isMac ? '⌘↵' : 'Ctrl+Enter', DEBUGKEY = isMac ? '⌘⇧↵' :
 const scratch = lang => 'scratch-' + lang;
 export const locked = () => !!st.S._pt && !st.S._pt.done;
 
-const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam', { latestWins: true, runMs: RUN_MS });
+const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam', { latestWins: true, runMs: RUN_MS, onLoad: (res, ms) => ev('runtime_load', { v: 'gleam', src: 'playground', res, ms }) });
 let P = null, ed = null, el = null, drawn = false, saveT, liveT, stopT, runId = 0, stopped = 0, resetting = false, compiled = {}, warming = null, S = null;
 const file = () => P.files[P.cur];
 export const currentFile = () => P?.cur;
@@ -79,10 +80,10 @@ function save() {
   clearTimeout(saveT); if (!P) return;
   if (ed) Object.assign(file(), ed.state());
   const others = Object.keys(P.files).filter(id => !id.startsWith('scratch-') && !id.startsWith('mine-') && id !== P.cur).sort((a, b) => P.files[b].at - P.files[a].at);
-  for (const id of others.slice(KEEP - 1)) delete P.files[id];
+  for (const id of others.slice(KEEP - 1)) { ev('pg_delete', { v: P.files[id].lang, src: 'evicted' }); delete P.files[id]; }
   let err = '';
   try { localStorage.setItem(KEY, JSON.stringify(P)); }
-  catch (e) { err = e?.name === 'QuotaExceededError' ? 'This browser’s storage is full' : 'This browser isn’t letting the page save'; }
+  catch (e) { err = e?.name === 'QuotaExceededError' ? 'This browser’s storage is full' : 'This browser isn’t letting the page save'; evOnce('save:playground', 'save_blocked', { v: e?.name === 'QuotaExceededError' ? 'full' : 'blocked', src: 'playground' }); }
   const n = el?.querySelector('.pgsave'); if (n) { n.hidden = !err; n.textContent = err && `${err}, so the playground isn’t being saved. Copy anything you want to keep.`; }
 }
 const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(save, 400); };
@@ -154,7 +155,7 @@ function renderPG() {
   el = m.querySelector('.pg');
   ed = createEditor(el.querySelector('.pged'), { lang: 'py', label: 'Code', onChange, onRun: e => run(e?.shiftKey ? 'trace' : 'main', true) });
   el.querySelectorAll('.seg button').forEach(b => b.onclick = () => pick(b.dataset.l));
-  el.querySelector('.pgauto input').onchange = e => { P.auto = e.target.checked; saveSoon(); if (P.auto) run('main'); };
+  el.querySelector('.pgauto input').onchange = e => { P.auto = e.target.checked; saveSoon(); ev('pg_autorun', { v: P.auto ? 'on' : 'off' }); if (P.auto) run('main'); };
   const act = a => el.querySelector(`[data-act=${a}]`);
   act('run').onclick = () => run('main', true);
   act('tests').onclick = () => run('tests', true);
@@ -303,12 +304,13 @@ function wireMenus() {
 function newFile(lang) {
   const n = Object.keys(P.files).filter(k => k.startsWith('mine-') && P.files[k].lang === lang).length + 1, id = 'mine-' + Date.now().toString(36);
   P.files[id] = { lang, title: `${NAME[lang]} playground ${n}`, code: STARTER[lang], orig: STARTER[lang], stdin: '', tab: 'out', mode: 'main', at: Date.now() };
+  ev('pg_create', { v: lang, src: 'menu' });
   open(id); const tn = el.querySelector('.pgtn'); tn.focus(); tn.select();
 }
 // Remove a file; removing the open one opens the most recently used file left (a new scratch file if there's none).
 function removeFile(id) {
   if (!P.files[id]) return drawRecent(); // already removed (e.g. a second click)
-  const lang = P.files[id].lang; delete P.files[id]; if (P.prev?.id === id) P.prev = null;
+  const lang = P.files[id].lang; ev('pg_delete', { v: lang, src: 'manual' }); delete P.files[id]; if (P.prev?.id === id) P.prev = null;
   if (id === P.cur) open(byRecent()[0] ?? latest(lang)); else save();
   drawRecent();
 }
@@ -343,7 +345,8 @@ async function run(mode, user = false) {
   const f = file(), id = ++runId, lang = f.lang, t0 = performance.now();
   mode = mode || f.mode || 'main'; if (mode !== 'trace') f.mode = mode; // a step run doesn't change what live runs do
   stepEnd(false);
-  if (user) { ev(mode === 'trace' ? 'pg_step' : 'pg_run', { v: lang + (mode === 'tests' ? '-tests' : '') }); busy(el.querySelector(`[data-act=${{ tests: 'tests', trace: 'debug' }[mode] || 'run'}]`)); }
+  const report = d => { if (user) ev(mode === 'trace' ? 'pg_step' : 'pg_run', { v: lang + (mode === 'tests' ? '-tests' : ''), ...d }); };
+  if (user) { busy(el.querySelector(`[data-act=${{ tests: 'tests', trace: 'debug' }[mode] || 'run'}]`)); }
   const loaded = lang === 'py' ? pyLoaded() : gl.loaded();
   msg(loaded ? 'Running…' : `Starting ${NAME[lang]}…`); rtPaint(lang, !loaded);
   clearTimeout(stopT); stopT = setTimeout(() => { if (id === runId) el.querySelector('[data-act=stop]').hidden = false; }, 500);
@@ -357,12 +360,14 @@ async function run(mode, user = false) {
   const r = lang === 'py'
     ? await pyJob({ source: f.code, stdin: f.stdin || '', mode }, progress, { runMs: RUN_MS })
     : await gl({ base: st.gleam.base, source: f.code, mode, erlang: f.tab === 'erl' }, progress);
-  if (id !== runId || r.superseded) return;
+  if (id !== runId || r.superseded) return report({ res: 'superseded' });
   busy(null);
   clearTimeout(stopT); el.querySelector('[data-act=stop]').hidden = true; rtPaint();
   const ms = Math.round(performance.now() - t0), result = { ...r, out: r.out || shown || [] };
   if ('js' in r) compiled = { js: r.js, erlang: r.erlang, erlangErr: r.erlangErr };
   if (r.compile) compiled = { compileErr: true };
+  // src: whether the runtime was already running, since a cold start's time is mostly loading it.
+  report({ res: runOutcome(r, id, mode), ms, src: loaded ? 'warm' : 'cold', cnt: r.n || r.steps?.length || 0, bad: r.failed || 0 });
   if (mode === 'trace' && r.steps?.length && stopped !== id) return stepStart(result);
   out(outputHTML(result, mode)); code();
   if (user && mode === 'tests' && stopped !== id && !r.unavailable) iconFx(el.querySelector('[data-act=tests]'), r.ok ? 'pass' : 'fail');
@@ -375,6 +380,16 @@ async function run(mode, user = false) {
   else if (mode === 'tests') msg(r.ok ? `${tests[0].toUpperCase() + tests.slice(1)} passed` : r.n ? `${r.failed} of ${r.n} ${tests} failed` : `No ${tests} found`, r.ok ? 'ok' : 'no');
   // The time only when the runtime was already running: otherwise it's mostly starting up.
   else msg(r.ok ? (loaded ? `Finished in ${took}` : 'Finished') : 'Stopped with an error', r.ok ? '' : 'no');
+}
+// How a run ended, for analytics: a fixed word or a built-in Python error's class, never anything the student wrote.
+function runOutcome(r, id, mode) {
+  if (stopped === id) return 'stopped';
+  if (r.unavailable) return 'unavailable';
+  if (r.compile) return 'compile';
+  if (r.nostep) return 'nostep';
+  if (/^Timed out/.test(r.err || '')) return 'timeout';
+  if (r.ok) return 'ok';
+  return errorClass(r.err) || (mode === 'tests' ? (r.n ? 'failed' : 'none') : 'error');
 }
 // The Run or Run tests button pressed (b) gives a small press and spins until the run ends; busy(null) stops it.
 function busy(b) {
@@ -395,7 +410,7 @@ function outputHTML(r, mode) {
 }
 // Stopping ends the worker; Python starts again straight away so the next run doesn't wait (Gleam starts on its next run).
 function stop() {
-  stopped = runId; clearTimeout(liveT);
+  stopped = runId; clearTimeout(liveT); ev('pg_stop', { v: file().lang });
   if (file().lang === 'py') { stopPy(); warmPy(); } else gl.dispose();
 }
 function warmPy() { if (!pyLoaded() && !warming) { warming = pyJob({}).finally(() => { warming = null; rtPaint(); }); rtPaint('py', true); } }
@@ -418,7 +433,7 @@ function rtPaint(lang, start) {
 // and each function frame's number (f1, f2, … in the order they were first called, as in an environment diagram).
 function stepStart(r) {
   const num = new Map(); for (const s of r.steps) for (const f of s.st) if (f.id && !num.has(f.id)) num.set(f.id, num.size + 1);
-  S = { ...r, i: 0, num }; ed.readOnly(true); el.classList.add('stepping');
+  S = { ...r, i: 0, num, lang: file().lang, t0: performance.now(), far: 0 }; ed.readOnly(true); el.classList.add('stepping');
   if (file().lang === 'gleam') { tab('out', false); el.querySelector('.pgtabs').hidden = true; }
   el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = false;
   const range = el.querySelector('.pgstep input'); range.max = r.steps.length - 1;
@@ -432,11 +447,13 @@ function debugButton(on) {
   b.dataset.tip = on ? 'Stop debugging and edit your code (Escape)' : `Debug: step through it line by line (${DEBUGKEY})`;
   return b;
 }
+// A debug session ending: the furthest step reached (cnt) out of how many were recorded (tot), and how long it lasted.
+function debugEnded() { ev('pg_debug_end', { v: S.lang, cnt: S.far + 1, tot: S.steps.length, ms: Math.round(performance.now() - S.t0), res: S.cut ? 'cut' : S.ok ? 'ok' : 'error' }); }
 // Leave debug mode, showing everything the program printed (show: false when something else is about to fill the output,
 // such as another file opening, possibly because the one being debugged was removed).
 function stepEnd(show = true) {
   if (!S || !el) return;
-  const r = S; S = null; ed.readOnly(false); ed.mark(); el.classList.remove('stepping'); debugButton(false);
+  debugEnded(); const r = S; S = null; ed.readOnly(false); ed.mark(); el.classList.remove('stepping'); debugButton(false);
   el.querySelector('.pgtabs').hidden = file()?.lang !== 'gleam';
   el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = true;
   if (show) { out(outputHTML(r, 'main')); msg(r.cut ? '' : r.ok ? 'Finished' : 'Stopped with an error', r.ok ? '' : 'no'); }
@@ -445,7 +462,7 @@ function stepEnd(show = true) {
 function upTo(chunks, n) { const r = []; for (const c of chunks) { if (n <= 0) break; r.push({ ...c, t: c.t.slice(0, n) }); n -= c.t.length; } return r; }
 function stepTo(i) {
   if (!S) return;
-  const n = S.steps.length; i = S.i = Math.max(0, Math.min(n - 1, i));
+  const n = S.steps.length; i = S.i = Math.max(0, Math.min(n - 1, i)); S.far = Math.max(S.far, i);
   const s = S.steps[i], before = S.steps[i - 1], end = s.ev === 'end', top = s.st.at(-1);
   ed.mark(end ? 0 : s.l, before?.l);
   // Frames, outermost first; names whose value just changed are marked, and the frame running now.
@@ -489,18 +506,18 @@ function wireStep() {
 
 // ---- reset and share ----
 function reset() {
-  const f = file(); P.prev = { id: P.cur, code: f.code }; stepEnd(); iconFx(el.querySelector('[data-act=reset]'), 'trash');
+  const f = file(); ev('pg_reset', { v: f.lang }); P.prev = { id: P.cur, code: f.code }; stepEnd(); iconFx(el.querySelector('[data-act=reset]'), 'trash');
   resetting = true; ed.replace(f.orig); resetting = false;
   el.querySelector('.pgundo').hidden = false; save();
 }
 function undoReset() {
   if (P.prev?.id !== P.cur) return;
-  stepEnd(); resetting = true; ed.replace(P.prev.code); resetting = false;
+  ev('pg_reset_undo', { v: file().lang }); stepEnd(); resetting = true; ed.replace(P.prev.code); resetting = false;
   P.prev = null; el.querySelector('.pgundo').hidden = true; save();
 }
 async function share() {
   const b = el.querySelector('[data-act=share] span'), f = file();
-  const ok = await copyText(await shareLink(f)); ev('pg_share', { v: f.lang });
+  const ok = await copyText(await shareLink(f)); ev('pg_share', { v: f.lang, res: ok ? 'ok' : 'error' });
   b.textContent = ok ? 'Link copied' : 'Couldn’t copy';
   // A copied link shows a check mark for as long as the label says so.
   const btn = b.parentElement; clearTimeout(btn._t);
@@ -529,11 +546,11 @@ function iconFx(btn, kind) {
 function addProblem(x, fill) {
   const code = codeFor(x, fill);
   P.files[x.p.id] = { lang: x.lang, title: x.p.t, code, orig: code, src: { p: x.p.id, x: x.e.id, xt: x.e.t, fill }, stdin: '', tab: 'out', mode: 'tests', panel: true, at: Date.now() };
-  ev('pg_import', { x: x.e.id, q: x.p.id, v: fill });
+  ev('pg_create', { v: x.lang, src: 'link' }); ev('pg_import', { x: x.e.id, q: x.p.id, v: fill, src: 'link', res: 'new' });
 }
 function pickProblem() {
   P.pick ||= { lang: '', all: false, fill: 'mine' };
-  openPicker({ prefs: P.pick, save: saveSoon, has: id => Object.values(P.files).some(f=>f.src?.p===id), current: () => ({id:P.cur,title:file().title,lang:file().lang}), pick: (x, fill, destination) => addToPlayground(x.p.id,destination,fill) });
+  openPicker({ prefs: P.pick, save: saveSoon, has: id => Object.values(P.files).some(f=>f.src?.p===id), current: () => ({id:P.cur,title:file().title,lang:file().lang}), pick: (x, fill, destination) => addToPlayground(x.p.id,destination,fill,'picker') });
 }
 // The problem's statement above the editor (its text and questions, without answers), for an imported file.
 function panel(f) {
@@ -646,7 +663,7 @@ export function showPG(id) {
 // Close the view (the caller draws the next one). Runs still going are ignored; the workers stay ready.
 export function leavePG() {
   if (!st.pgView) return;
-  save(); clearTimeout(liveT); runId++; S = null;
+  save(); clearTimeout(liveT); runId++; if (S) debugEnded(); S = null;
   st.pgView = false; el = ed = null; document.body.classList.remove('pgm'); pgb.setAttribute('aria-pressed', 'false');
 }
 
@@ -667,7 +684,8 @@ export async function initPlayground() {
       const code = await unpack(h[2]), id = 'shared-' + Date.now().toString(36);
       P.files[id] = { lang: h[1], title: 'Shared code', code, orig: code, stdin: '', tab: 'out', mode: 'main', at: Date.now() };
       P.cur = id; st.pgWant = id; save();
-    } catch { st.pgWant ??= ''; }
+      ev('pg_shared_open', { v: h[1], res: 'ok' }); ev('pg_create', { v: h[1], src: 'share' });
+    } catch { st.pgWant ??= ''; ev('pg_shared_open', { v: h[1], res: 'error' }); }
   }
   // ⌘K / Ctrl+K: import a problem, from anywhere (opening the playground first). Not during a practice exam.
   addEventListener('keydown', e => {
@@ -685,7 +703,8 @@ export function playgroundDestinations(id) {
   if (!P) load(); const x = findAnyProblem(id); if (!x) return [];
   return byRecent().filter(id => !(x.p.run || x.hasCode) || P.files[id].lang === x.lang).map(id => ({id, title:P.files[id].title, lang:P.files[id].lang}));
 }
-export function addToPlayground(id, destination, fill = 'mine') {
+// via: where the request came from, 'practice' (a problem's Add to playground) or 'picker' (the import dialog).
+export function addToPlayground(id, destination, fill = 'mine', via = 'practice') {
   if (locked()) return showPT(true);
   if (!P) load(); const x = findAnyProblem(id); if (!x) return;
   const target = destination && P.files[destination];
@@ -707,5 +726,6 @@ export function addToPlayground(id, destination, fill = 'mine') {
     P.files[next] = {lang,title:x.p.t,code,orig:code,src,stdin:'',tab:'out',mode:x.p.run?'tests':'main',panel:true,at:Date.now()};
   }
   save(); showPG(next); save(); ed.focus();
-  ev('pg_import',{x:x.e.id,q:x.p.id,v:fill});
+  if (!target) ev('pg_create',{v:lang,src:via});
+  ev('pg_import',{x:x.e.id,q:x.p.id,v:fill,src:via,res:target?'existing':'new'});
 }

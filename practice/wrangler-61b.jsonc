@@ -18,15 +18,15 @@
     "not_found_handling": "none",
     "run_worker_first": ["/e", "/f"]
   },
-  // Its own dataset, so CS 61A's analytics stay as they were.
+  // The same dataset as CS 61A; the Worker's COURSE var (blob11) tells the two apart.
   "analytics_engine_datasets": [
     {
       "binding": "EVENTS",
-      "dataset": "practice_events_61b"
+      "dataset": "practice_events"
     }
   ],
   // Feedback (POST /f) is emailed to the FEEDBACK_TO secret: `wrangler secret put FEEDBACK_TO --config practice/wrangler-61b.jsonc`.
-  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io", "SITE": "cs61b practice" },
+  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io", "SITE": "cs61b practice", "COURSE": "61b" },
   "send_email": [{ "name": "SEND_EMAIL", "allowed_sender_addresses": ["feedback@benrosar.io"] }],
   "ratelimits": [{ "name": "FEEDBACK_LIMIT", "namespace_id": "6102", "simple": { "limit": 5, "period": 60 } }]
 }

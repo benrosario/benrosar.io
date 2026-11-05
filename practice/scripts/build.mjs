@@ -99,7 +99,7 @@ export async function build(out, { course: id = DEFAULT_COURSE, allowInvalid = f
   // The page's course details (course.js), and the course's names and storage key in the page shell.
   // sites: every course's site, for the header's course switcher (chrome.js).
   const sites = COURSES.map(c => loadCourse(c)).map(({ id, name, blurb, url, dev }) => ({ id, name, blurb, url, dev }));
-  const pageCourse = { id: course.id, name: course.name, ai: course.ai, langs, topics: course.topics, sites };
+  const pageCourse = { id: course.id, name: course.name, ai: course.ai, url: course.url, langs, topics: course.topics, sites };
   const fill = { TITLE: course.title, HEADING: course.heading, KEY: `cs${course.id}-practice-v2` };
   const html = readFileSync(join(ROOT, 'src/index.html'), 'utf8').replace(/\{\{(\w+)\}\}/g, (_, k) => fill[k])
     .replace('<!--STYLES-->', `<link rel="stylesheet" href="/${name.css}">\n<link rel="preload" href="/${name.content}" as="fetch" crossorigin>`)

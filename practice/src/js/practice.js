@@ -329,22 +329,23 @@ function card(x, P, ex) {
   h += `<div class="row"><button class="p ck ib" data-tip="${esc(howChecked(q, p))}">${ICON.check}Check</button><button class="hint ib" type="button" aria-expanded="false">${ICON.hint}Hint</button><button class="sh ib">${ICON.answer}Show answer</button><button class="ai" hidden data-tip="Copies a prompt about your mistake. Paste it into ChatGPT, Claude, or any AI chat.">${AI_ICON}<span>Ask AI why</span></button><button class="rst ib" data-tip="${esc('Clear your answer to this question' + (also.length ? `. It also counts toward ${list(also)}, so it clears there too.` : ''))}">${ICON.reset}Reset</button></div><div class="hints" hidden aria-live="polite"></div><div class="out" hidden></div><div class="ans" hidden></div>`;
   c.innerHTML = h; wireFills(c);
   const ta = c.querySelector('textarea'), grow = () => { if (!ta) return; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 2 + 'px'; }, ins = [...c.querySelectorAll('input')], fb = c.querySelector('.fb'), an = c.querySelector('.ans'), out = c.querySelector('.out');
-  const showKey = () => { an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); slide(an, true); };
+  const showKey = () => { an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); slide(an, true);
+    an.querySelector('.walkthrough')?.addEventListener('toggle', e => { if (e.target.open) ev('walkthrough_open', { x: ex.id, q: id }); }); };
   let relabelSh; function hideKey() { slide(an, false); relabelSh?.('Show answer'); }
   // Hint asks first, then each hint slides in; once all are shown the button toggles them (Hide hints / Show hints).
   const hint = c.querySelector('.hint'), hints = hintsFor(p,q), hintBox = c.querySelector('.hints'); let shown = 0, hintsOpen = false;
   const hintsTo = open => { hintsOpen = open; slide(hintBox, open); hint.setAttribute('aria-expanded', open); };
   const relabelHint = confirmBtn(hint, () => {
-    const item = document.createElement('p'); item.textContent = `${++shown}. ${hints[shown-1]}`; hintBox.append(item);
+    const item = document.createElement('p'); item.textContent = `${++shown}. ${hints[shown-1]}`; hintBox.append(item); ev('hint_open', { x: ex.id, q: id, k: q.k, cnt: shown });
     if (hintsOpen) { item.hidden = true; slide(item, true); } else hintsTo(true);
     relabelHint(shown < hints.length ? 'Next hint' : 'Hide hints');
   }, () => shown >= hints.length && (hintsTo(!hintsOpen), relabelHint(hintsOpen ? 'Hide hints' : 'Show hints'), true));
-  const ai = c.querySelector('.ai'); wireAI(ai, () => { const s = st.S[id]; return s && aiPrompt(ex.t, p, q, s.v, s.o, st.view.label); });
+  const ai = c.querySelector('.ai'); wireAI(ai, () => { const s = st.S[id]; return s && aiPrompt(ex.t, p, q, s.v, s.o, st.view.label); }, () => ev('ai_copy', { x: ex.id, q: id, k: q.k }));
   const complete = c0 => { const c1 = counts(st.S, ex); if (c1.ok == c1.n && c0.ok < c0.n) ev('exam_complete', { x: ex.id }); };
   function show(ok, msg, o) {
     c.className = 'q ' + (ok ? 'ok' : 'no') + (x.oos ? ' oosq' : ''); ai.hidden = !!ok; fb.className = 'fb ' + (ok ? 'ok' : 'no');
     fb.innerHTML = ok ? '✓ ' + esc(msg || 'Correct') : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
-    const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { const c0 = counts(st.S, ex); st.S[id].ok = true; st.S[id].m = 'Marked correct by you'; st.save(); show(true, st.S[id].m); out.hidden = true; stats(); complete(c0); };
+    const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { const c0 = counts(st.S, ex); st.S[id].ok = true; st.S[id].m = 'Marked correct by you'; st.save(); ev('self_mark', { x: ex.id, q: id, k: q.k }); show(true, st.S[id].m); out.hidden = true; stats(); complete(c0); };
     // A text-only blank that didn't match: say plainly that nothing was run.
     if (!ok && !o && q.k == 'blank' && !runs(q)) o = `Compared with the official answer text (capitalization and string contents matter). This answer wasn’t run, so if yours is equivalent, press “I was right”.`;
     out.hidden = !o; out.textContent = o || ''; if (ok && !an.hidden) hideKey();
@@ -361,7 +362,7 @@ function card(x, P, ex) {
   // An unchecked answer (typed or picked, not yet checked) survives re-renders, collection switches and reloads.
   const dr = st.S._dr?.[id]; if (dr != null) setInputs(dr);
   function get() { if (ta) return ta.value; if (q.k == 'mc') { const i = ins.find(i => i.checked); return i ? +i.value : null; } return ins.filter(i => i.checked).map(i => +i.value); }
-  let dt; const draft = () => { const v = get(), s = st.S[id]; st.S._dr = st.S._dr || {};
+  let dt, firstEdit = 0; const draft = () => { firstEdit ||= performance.now(); const v = get(), s = st.S[id]; st.S._dr = st.S._dr || {};
     if (s && JSON.stringify(s.v) === JSON.stringify(v) || v === null || v === '' || (Array.isArray(v) && !v.length && !s)) delete st.S._dr[id]; else st.S._dr[id] = v;
     clearTimeout(dt); dt = setTimeout(st.save, 250); };
   if (ta) ta.addEventListener('input', draft); ins.forEach(i => i.addEventListener('change', draft));
@@ -372,11 +373,12 @@ function card(x, P, ex) {
     let g; try { g = await grade(q, v, p); } catch (e) { g = {unavailable:true,out:'Checking could not finish. Press Check to retry. ' + e.message}; } finally { ck.disabled = false; }
     if (g.unavailable) { fb.className='fb'; fb.textContent='Could not check · retry'; out.hidden=false; out.textContent=g.out; return; }
     const previous = st.S[id]; st.S[id] = { v, ok: g.ok, m: g.how, o: g.out, gv: GV, misses: (previous?.misses || (previous && !previous.ok ? 1 : 0)) + (g.ok ? 0 : 1) }; if (st.S._dr) delete st.S._dr[id]; st.save(); show(g.ok, g.how, g.out); stats(); if (g.ok) confetti(ck);
-    ev('check', { x: ex.id, q: id, k: q.k, ok: g.ok, run: !!g.ran }); complete(c0);
+    // cnt: which attempt this is, from the wrong tries so far. ms: time from first changing the answer to this check.
+    ev('check', { x: ex.id, q: id, k: q.k, ok: g.ok, run: !!g.ran, cnt: st.S[id].misses + (g.ok ? 1 : 0), ms: firstEdit && Math.round(performance.now() - firstEdit) }); firstEdit = 0; complete(c0);
     if (!g.ok) { c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); }
   };
   c.addEventListener('animationend', () => c.classList.remove('shake'));
-  relabelSh = confirmBtn(c.querySelector('.sh'), () => { showKey(); relabelSh('Hide answer'); ev('reveal', { x: ex.id, q: id, k: q.k }); }, () => !an.hidden && (hideKey(), true));
+  relabelSh = confirmBtn(c.querySelector('.sh'), () => { showKey(); relabelSh('Hide answer'); ev('reveal', { x: ex.id, q: id, k: q.k, res: st.S[id] ? 'tried' : 'untried' }); }, () => !an.hidden && (hideKey(), true));
   confirmBtn(c.querySelector('.rst'), () => { delete st.S[id]; if (st.S._dr) delete st.S._dr[id]; if(st.S._missed) delete st.S._missed[id]; st.save(); const nw = card(x, P, ex); nw.id = wrap.id; nw.style.scrollMarginTop = wrap.style.scrollMarginTop; wrap.replaceWith(nw); stats(); });
   if (ta) { ta.addEventListener('input', grow); requestAnimationFrame(grow); ta.onkeydown = e => { if (e.key == 'Enter' && (e.metaKey || e.ctrlKey)) ck.click(); }; }
   wrap.append(c, an); return wrap;

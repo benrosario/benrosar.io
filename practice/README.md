@@ -178,6 +178,8 @@ Migration from schema 2 is repeatable and keeps the old fields, so a rollback st
 
 `worker.js` documents the event layout. Every event now carries the study collection in `blob8`, alongside the original source exam id in `blob4`. Events from before collections existed have an empty `blob8`, and they were all Midterm 3 practice. Collection switches are logged as `study_select`. The playground logs `pg_open`, `pg_run` (the language, and whether it ran tests), `pg_share`, `pg_import` (the problem and what filled the blanks) and `pg_from_practice`; live Gleam runs as you type aren't logged.
 
+Both sites write to the one `practice_events` dataset, and `blob11` says which course a row belongs to (the Worker's `COURSE` var). Rows from before that field have an empty `blob11` and are all CS 61A. New events must be added to `NAMES` in `worker.js` or they're dropped, which a test in `tests/build.test.mjs` checks. Events hold fixed values only: never code, stdin, error messages, feedback text or full URLs. Local pages send no events unless the URL has `?ev=1`, which the UI tests use.
+
 ## Feedback
 
 **Send feedback** at the bottom of the sidebar opens a dialog. The message goes to `POST /f`, and `worker.js` emails it,

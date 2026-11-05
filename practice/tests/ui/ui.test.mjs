@@ -301,7 +301,7 @@ test('the Home Exams action opens the newest final by default and resumes the la
   await open(null, '?exam=midterm2&view=home');
   await q('document.querySelector(".homepaths [data-act=exams]").click()');
   await page.waitFor('document.querySelector("#m .note b")');
-  assert.equal(await selected(), 'final'); assert.match(await examTitle(), /^Fall 2025 Final/);
+  assert.equal(await selected(), 'final'); assert.match(await examTitle(), /^Summer 2026 Final/);
   await pick('midterm1'); const last = await examTitle();
   await q('document.querySelector("#home").click()'); await page.waitFor('document.querySelector(".homepaths")');
   await pick('midterm2');
@@ -518,12 +518,12 @@ test('sort chips order the sidebar, reverse it, and are remembered per study opt
   const suggested = await names();
   await q('document.querySelector("#srtb").click()'); await sleep(200);
   assert.equal(await q('document.querySelector("#srtb").getAttribute("aria-expanded")'), 'true');
-  assert.deepEqual(await q('[...document.querySelectorAll("#srto button")].map(b=>b.textContent)'), ['Suggested', 'Exam date', 'Answered', 'Progress', 'Length']);
+  assert.deepEqual(await q('[...document.querySelectorAll("#srto button")].map(b=>b.textContent)'), ['Suggested', 'Exam date', 'Answered', 'Progress', 'Length', 'Staff picks']);
   await q('document.querySelector("#srto [data-k=date]").click()'); await sleep(200);
   assert.equal(await q('document.querySelector("#srtp").hidden'), true);
   assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Newest first. Press to reverse.');
   assert.equal((await names())[0], 'Fall 2025 Final');
-  assert.deepEqual((await rest()).slice(0, 2), ['Fall 2026 Midterm 1', 'Spring 2026 Midterm 2']);
+  assert.deepEqual((await rest()).slice(0, 2), ['Fall 2026 Midterm 1', 'Summer 2026 Final']);
   await q('document.querySelector("#srtd").click()');
   assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Oldest first. Press to reverse.');
   assert.equal((await rest())[0], 'Spring 2023 Midterm 2');
@@ -536,7 +536,7 @@ test('sort chips order the sidebar, reverse it, and are remembered per study opt
   assert.equal(await q('document.querySelector("#srtb").textContent'), 'Sort: Length');
   assert.equal(await q('document.querySelector("#srtd").getAttribute("aria-label")'), 'Order: Shortest first. Press to reverse.');
   assert.equal(await q('document.activeElement.id'), 'srtb');
-  assert.equal((await rest())[0], 'Spring 2025 Final');
+  assert.equal((await rest())[0], 'Fall 2026 Midterm 1');
   await q('document.querySelector("#srtb").click()'); await sleep(200); await page.key('Escape', 'Escape', 27); await sleep(200);
   assert.equal(await q('document.querySelector("#srtp").hidden'), true);
   // Each study option keeps its own sort; the choice survives a reload.

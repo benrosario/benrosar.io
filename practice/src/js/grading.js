@@ -1,5 +1,6 @@
 // Answer checking. Runtimes are isolated in serialized, restartable browser workers.
 import { st } from './state.js';
+import { ev } from './events.js';
 import { createRunner } from './runner.js';
 import { whenDownloaded } from './runtimes.js';
 import { matchesAnswer, restrictionError } from './answers.js';
@@ -28,8 +29,8 @@ export function loadingText(q, p) {
   if (isGleam(p)) return gleamLoaded() ? 'Compiling…' : 'Loading Gleam (first run downloads the compiler)…';
   return pyLoaded() ? 'Running…' : 'Loading Python (first run takes a few seconds)…';
 }
-const py = createRunner(() => new Worker(st.py.worker), 'Python / SQLite');
-const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam');
+const py = createRunner(() => new Worker(st.py.worker), 'Python / SQLite', { onLoad: (res, ms) => ev('runtime_load', { v: 'py', res, ms }) });
+const gl = createRunner(() => new Worker(st.gleam.worker, { type: 'module' }), 'Gleam', { onLoad: (res, ms) => ev('runtime_load', { v: 'gleam', res, ms }) });
 // py-worker.js runs the prelude when it starts. The playground shares this worker, and stops it with stopPy.
 export const pyJob = (data, progress, opts) => py({ base: st.py.base, prelude: st.bank.prelude + '\n' + (st.bank.sqlPrelude || ''), ...data }, progress, opts);
 export const stopPy = () => py.dispose();

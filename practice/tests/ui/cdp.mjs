@@ -19,11 +19,12 @@ export const chromePath = () => CANDIDATES.find(p => existsSync(p));
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json',
   '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
-// Serve a directory on 127.0.0.1 (random port). POST /e is accepted and ignored, like the analytics Worker.
+// Serve a directory on 127.0.0.1 (random port). POST /e is accepted like the analytics Worker, its events kept in .events.
 export function serve(dir) {
+  const events = [];
   const server = createServer((req, res) => {
     const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    if (path === '/e') { res.writeHead(204); return res.end(); }
+    if (path === '/e') { let b = ''; req.on('data', d => b += d); req.on('end', () => { try { events.push(...JSON.parse(b).e); } catch {} res.writeHead(204); res.end(); }); return; }
     let file = normalize(join(dir, path));
     if (!file.startsWith(normalize(dir))) { res.writeHead(403); return res.end(); }
     if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
@@ -32,7 +33,7 @@ export function serve(dir) {
     res.end(readFileSync(file));
   });
   // close() also drops open keep-alive connections, so the page really can't reach it afterwards (the offline test).
-  return new Promise(r => server.listen(0, '127.0.0.1', () => r({ url: `http://127.0.0.1:${server.address().port}`, close: () => { server.close(); server.closeAllConnections(); } })));
+  return new Promise(r => server.listen(0, '127.0.0.1', () => r({ events, url: `http://127.0.0.1:${server.address().port}`, close: () => { server.close(); server.closeAllConnections(); } })));
 }
 
 export async function launch({ headless = true } = {}) {

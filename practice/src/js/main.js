@@ -2,7 +2,7 @@
 import { st } from './state.js';
 import { load, saver } from './store.js';
 import { resolveCollection } from './model.js';
-import { initEvents } from './events.js';
+import { initEvents, evOnce, sessionStart } from './events.js';
 import { initTheme, initChrome, applyZoom } from './chrome.js';
 import { render, initTopicControls, goHome, browseExams } from './practice.js';
 import { initTimed } from './timed.js';
@@ -20,7 +20,8 @@ const TAG = document.currentScript || document.querySelector('script[data-conten
 st.gleam = { worker: TAG.dataset.gleamWorker, base: TAG.dataset.gleamBase };
 st.py = { worker: TAG.dataset.pyWorker, base: TAG.dataset.pyBase };
 st.runtimes = JSON.parse(document.getElementById('runtimes').textContent);
-const reportSaving = initSaveNotice(() => st.save());
+const saveNotice = initSaveNotice(() => st.save());
+const reportSaving = status => { saveNotice(status); if (!status.ok) evOnce('save:' + status.reason, 'save_blocked', { v: status.reason, src: status.operation }); };
 initFeedback();
 initOffline(); // the service worker, before anything else is fetched
 
@@ -34,6 +35,7 @@ async function boot() {
   initEvents(); initTheme();
   // A URL that names a collection wins; otherwise the last one used (Midterm 3 for people with schema-2 data).
   select(fromURL() || st.S._c, { initial: true });
+  sessionStart();
   initNav(); // the exam or view the URL names, if any
   initSelector(); initChrome(); initSort(); initTopicControls();
   $('#home').onclick = e => { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); goHome(); };

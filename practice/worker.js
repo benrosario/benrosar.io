@@ -5,7 +5,12 @@
 // Data point layout (query with the Analytics Engine SQL API, dataset "practice_events"):
 //   index1  anonymous visitor id
 //   blob1   event name: exam_open | problem_open | check | reveal | exam_complete | theme | pt_start | pt_submit | study_select
-//           | pg_open | pg_run | pg_share | pg_import | pg_from_practice (the playground)
+//           | pt_review | pt_retry | pt_new | pt_quit
+//           | pg_open | pg_run | pg_step | pg_debug_end | pg_share | pg_shared_open | pg_import | pg_create | pg_delete
+//           | pg_stop | pg_reset | pg_reset_undo | pg_autorun (the playground)
+//           | social_click | fb_open | fb_send | source_open (contact and outbound links)
+//           | hint_open | walkthrough_open | ai_copy | self_mark (studying)
+//           | session_start | runtime_load | js_error | save_blocked (traffic and reliability)
 //   blob2   anonymous visitor id     blob3  page-load session id
 //   blob4   source exam id (the original past exam, e.g. 61a-fa25-mt2), or pt<minutes> for a timed practice exam
 //           (pt50, pt110, pt180, ...; which collection's exam it was is in blob8)
@@ -16,10 +21,22 @@
 //   blob7   country (from Cloudflare)
 //   blob8   study collection selected when the event happened: midterm1 | midterm2 | midterm3 | final.
 //           Empty for events sent before study collections existed; those were all Midterm 3 practice.
+//   blob9   what triggered it or where it came from (pg_create: menu | picker | practice | link | share; pg_delete: manual |
+//           evicted; session_start: the referring domain)     blob10  outcome (ok, error, stopped, a Python error class...)
+//   blob11  course, from this Worker's COURSE var: 61a | 61b. Both sites share this dataset. Empty on rows written before
+//           the field existed; those were all CS 61A.
 //   double1 check result: 1 correct, 0 wrong, -1 not a check
 //   double2 1 if the check ran code (Python doctests or Gleam tests), else 0
-//   double3 pt_submit: questions correct    double4 pt_submit: question count    double5 pt_submit: seconds used
-const NAMES = new Set(['exam_open', 'problem_open', 'check', 'reveal', 'exam_complete', 'theme', 'pt_start', 'pt_submit', 'study_select']);
+//   double3 pt_submit: questions correct    double4 pt_submit: question count, pg_debug_end: steps recorded    double5 pt_submit: seconds used
+//   double6 duration in ms    double7 a count (tests run, debug steps reached, attempt number, days since first visit)
+//   double8 how many of double7 failed
+// Never send code, stdin, error messages, feedback text or full URLs here: only fixed values like the ones above.
+const NAMES = new Set(['exam_open', 'problem_open', 'check', 'reveal', 'exam_complete', 'theme', 'pt_start', 'pt_submit', 'study_select',
+  'pt_review', 'pt_retry', 'pt_new', 'pt_quit',
+  'pg_open', 'pg_run', 'pg_step', 'pg_debug_end', 'pg_share', 'pg_shared_open', 'pg_import', 'pg_create', 'pg_delete', 'pg_stop', 'pg_reset', 'pg_reset_undo', 'pg_autorun',
+  'social_click', 'fb_open', 'fb_send', 'source_open',
+  'hint_open', 'walkthrough_open', 'ai_copy', 'self_mark',
+  'session_start', 'runtime_load', 'js_error', 'save_blocked']);
 const num = v => (Number.isFinite(v) ? v : 0);
 const str = (v, n = 120) => (typeof v === 'string' ? v.slice(0, n) : '');
 
@@ -67,8 +84,8 @@ export default {
       if (!NAMES.has(e?.n)) continue;
       env.EVENTS.writeDataPoint({
         indexes: [uid],
-        blobs: [e.n, uid, sid, str(e.x), str(e.q, 200), str(e.k || e.v, 16), country, str(e.c, 16)],
-        doubles: [e.n === 'check' ? (e.ok ? 1 : 0) : -1, e.run ? 1 : 0, num(e.ok), num(e.tot), num(e.sec)],
+        blobs: [e.n, uid, sid, str(e.x), str(e.q, 2000), str(e.k || e.v, 16), country, str(e.c, 16), str(e.src, 64), str(e.res, 32), str(env.COURSE, 8)],
+        doubles: [e.n === 'check' ? (e.ok ? 1 : 0) : -1, e.run ? 1 : 0, num(e.ok), num(e.tot), num(e.sec), num(e.ms), num(e.cnt), num(e.bad)],
       });
     }
     return new Response(null, { status: 204 });

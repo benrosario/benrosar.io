@@ -1,4 +1,4 @@
-// The course this page is for: {id, name, ai, langs, topics}, from courses/<id>/course.json, which the build writes
+// The course this page is for: {id, name, ai, url, langs, topics}, from courses/<id>/course.json, which the build writes
 // into the page as <script type="application/json" id="course">. Outside a page (the Node tests) it's CS 61A.
 import CS61A from '../../courses/61a/course.json' with { type: 'json' };
 

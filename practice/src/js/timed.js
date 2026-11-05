@@ -132,9 +132,9 @@ function ptCard(x, p, rev, X) {
   if (r) {
     const fb = c.querySelector('.fb'); fb.className = 'fb ' + (X.lost || r.pending ? '' : r.ok ? 'ok' : 'no');
     fb.innerHTML = r.pending ? 'Not checked · retry available' : r.ok ? '✓ ' + esc(r.m || 'Correct') : X.lost ? 'Your answer wasn’t saved' : r.none ? '✗ Not answered' : '✗ Not quite' + (q.k == 'blank' ? ' <button class="mk" data-tip="Count this as correct, e.g. if your answer works but is written differently">I was right</button>' : '');
-    const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { r.ok = true; r.m = 'Marked correct by you'; const hs = (st.S._pth || []).find(h => h.d == X.sub); if (hs) { hs.ok++; if (hs !== X && hs.res && hs.res[key]) Object.assign(hs.res[key], { ok: true, m: r.m }); } st.save(); const y = scrollY; renderPT(); scrollTo(0, y); };
+    const mk = fb.querySelector('.mk'); if (mk) mk.onclick = () => { r.ok = true; r.m = 'Marked correct by you'; ev('self_mark', { x: 'pt' + X.min, q: key, k: q.k, src: 'timed' }); const hs = (st.S._pth || []).find(h => h.d == X.sub); if (hs) { hs.ok++; if (hs !== X && hs.res && hs.res[key]) Object.assign(hs.res[key], { ok: true, m: r.m }); } st.save(); const y = scrollY; renderPT(); scrollTo(0, y); };
     const out = c.querySelector('.out'); if (out) { const o = r.o || (q.k == 'blank' && !runs(q) ? 'Compared with the official answer text; this answer wasn’t run.' : ''); out.hidden = !o; out.textContent = o; }
-    const ai = c.querySelector('.ai'); if (ai) wireAI(ai, () => aiPrompt('Timed practice exam', p, q, v, r.o, label(X.c)));
+    const ai = c.querySelector('.ai'); if (ai) wireAI(ai, () => aiPrompt('Timed practice exam', p, q, v, r.o, label(X.c)), () => ev('ai_copy', { x: 'pt' + X.min, q: key, k: q.k, src: 'timed' }));
     const an = document.createElement('div'); an.className = 'ans'; an.innerHTML = `<h4>Official answer</h4><div class="k">${esc(keyText(q))}</div>` + explanationHTML(p,q); w.append(an);
   } else if (!rev) c.querySelector('.qh .tag').dataset.tip = howChecked(q, p) + ' when you submit.';
   return w;
@@ -163,9 +163,9 @@ function ptWire(root) {
   root.querySelectorAll('[data-act]').forEach(b => {
     if (b._w) return; b._w = 1; const a = b.dataset.act;
     if (a == 'submit') confirmBtn(b, () => ptSubmit());
-    else if (a == 'quit') confirmBtn(b, () => { st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); });
-    else if (a == 'retry') b.onclick = () => ptSubmit(true, ptX());
-    else if (a == 'new') b.onclick = () => { st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); };
+    else if (a == 'quit') confirmBtn(b, () => { ev('pt_quit', { x: 'pt' + st.S._pt?.min }); st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); });
+    else if (a == 'retry') b.onclick = () => { ev('pt_retry', { x: 'pt' + ptX()?.min }); ptSubmit(true, ptX()); };
+    else if (a == 'new') b.onclick = () => { ev('pt_new', { x: 'pt' + ptX()?.min }); st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); };
     else if (a == 'back') b.onclick = () => showPT(false);
     else if (a == 'home') b.onclick = () => { st.ptHist = null; if (st.S._pt && st.S._pt.done) { st.S._pt = null; st.save(); } renderPT(); scrollTo(0, 0); ptTick(); };
   });
@@ -211,7 +211,7 @@ function questionsPer(V, pool) {
 }
 // Function declarations below may run during the first render (sidebar -> ptHistNav).
 export function ptDate(d) { return new Date(d).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
-function ptOpen(d) { st.ptHist = d; st.ptView = true; st.S._view = 'pt'; st.save(); document.body.classList.add('ptm'); renderPT(); scrollTo(0, 0); ptTick(); }
+function ptOpen(d) { st.ptHist = d; st.ptView = true; st.S._view = 'pt'; st.save(); ev('pt_review', { x: 'pt' + ptX()?.min }); document.body.classList.add('ptm'); renderPT(); scrollTo(0, 0); ptTick(); }
 export function ptHistNav(nav) {
   const H = (st.S._pth || []).filter(x => x.c == st.cid); if (!H.length) return; const box = document.createElement('div'); box.className = 'hist';
   box.innerHTML = '<div class="histh">Practice exam history</div>' + H.map(x => {

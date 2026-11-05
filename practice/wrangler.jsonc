@@ -26,7 +26,7 @@
   ],
   // Feedback (POST /f) is emailed to the FEEDBACK_TO secret: `wrangler secret put FEEDBACK_TO --config practice/wrangler.jsonc`.
   // It must be a verified destination address in Email Routing for benrosar.io. For local dev, put it in practice/.dev.vars.
-  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io" },
+  "vars": { "FEEDBACK_FROM": "feedback@benrosar.io", "COURSE": "61a" },
   "send_email": [{ "name": "SEND_EMAIL", "allowed_sender_addresses": ["feedback@benrosar.io"] }],
   "ratelimits": [{ "name": "FEEDBACK_LIMIT", "namespace_id": "6101", "simple": { "limit": 5, "period": 60 } }]
 }

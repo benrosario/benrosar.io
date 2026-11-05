@@ -86,8 +86,8 @@ export async function copyText(t) {
   }
 }
 // Wire an "Ask AI why" button: copy the prompt, then show "Copied" for a moment.
-export function wireAI(btn, prompt) {
-  let back; btn.onclick = async () => { const t = prompt(); if (!t) return; const ok = await copyText(t); clearTimeout(back);
+export function wireAI(btn, prompt, copied) {
+  let back; btn.onclick = async () => { const t = prompt(); if (!t) return; const ok = await copyText(t); clearTimeout(back); if (ok) copied?.();
     swapLabel(btn, ok ? 'Copied! Paste into an AI chat' : 'Couldn’t copy', () => btn.classList.toggle('copied', ok));
     back = setTimeout(() => swapLabel(btn, 'Ask AI why', () => btn.classList.remove('copied')), 2500); };
 }

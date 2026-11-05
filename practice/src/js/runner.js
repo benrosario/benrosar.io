@@ -3,8 +3,10 @@
 // runs go to onProgress, and runMs can give this request its own time limit. With latestWins (the playground's live runs), a new request drops older ones still waiting, and
 // stops one that has been running for over staleMs, since only the newest code's result is wanted. Each dropped
 // request resolves with {superseded: true}. A result with {restart: true} gets a fresh worker for the next request.
-export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000, latestWins = false, staleMs = 1000 } = {}) {
-  let worker, active, timer, warm = false, seq = 0;
+export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000, latestWins = false, staleMs = 1000, onLoad } = {}) {
+  let worker, active, timer, warm = false, seq = 0, loadT = 0;
+  // onLoad(res, ms): how a new worker's start went ('ok' | 'error' | 'timeout'), once per worker.
+  const loadDone = res => { if (loadT) onLoad?.(res, Date.now() - loadT); loadT = 0; };
   const queue = [];
   const stop = () => { clearTimeout(timer); worker?.terminate(); worker = null; warm = false; };
   function finish(result, restart = false) {
@@ -17,24 +19,24 @@ export function createRunner(makeWorker, name, { loadMs = 60000, runMs = 8000, l
   function deadline(loaded) {
     clearTimeout(timer);
     const ms = active?.runMs || runMs;
-    timer = setTimeout(() => finish({ ok: false, unavailable: !loaded, err: loaded
+    timer = setTimeout(() => { if (!loaded) loadDone('timeout'); finish({ ok: false, unavailable: !loaded, err: loaded
       ? `Timed out after ${ms / 1000} seconds (infinite loop or recursion?)`
-      : `${name} took too long to load. Check your connection and try again.` }, true), loaded ? ms : loadMs);
+      : `${name} took too long to load. Check your connection and try again.` }, true); }, loaded ? ms : loadMs);
   }
   function pump() {
     if (active || !queue.length) return;
     active = queue.shift();
     try {
       if (!worker) {
-        worker = makeWorker();
+        loadT = Date.now(); worker = makeWorker();
         worker.onmessage = ({ data }) => {
           if (!active || data.id !== active.id) return;
-          if (data.loaded) { warm = true; active.started = Date.now(); deadline(true); }
+          if (data.loaded) { loadDone('ok'); warm = true; active.started = Date.now(); deadline(true); }
           else if ('p' in data) active.progress?.(data.p);
-          else finish(data.r, !!(data.r?.unavailable || data.r?.restart));
+          else { if (data.r?.unavailable) loadDone('error'); finish(data.r, !!(data.r?.unavailable || data.r?.restart)); }
         };
-        worker.onerror = worker.onmessageerror = e => finish({ ok: false, unavailable: true,
-          err: `${name} failed to load or stopped: ${e.message || 'Please try again.'}` }, true);
+        worker.onerror = worker.onmessageerror = e => { loadDone('error'); finish({ ok: false, unavailable: true,
+          err: `${name} failed to load or stopped: ${e.message || 'Please try again.'}` }, true); };
       }
       // A worker may still need an optional package (SQLite), even when Python is warm.
       deadline(false);
