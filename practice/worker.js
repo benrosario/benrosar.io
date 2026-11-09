@@ -5,7 +5,7 @@
 // Data point layout (query with the Analytics Engine SQL API, dataset "practice_events"):
 //   index1  anonymous visitor id
 //   blob1   event name: exam_open | problem_open | check | reveal | exam_complete | theme | pt_start | pt_submit | study_select
-//           | pt_review | pt_retry | pt_new | pt_quit
+//           | pt_review | pt_retry | pt_new | pt_quit | pt_share | pt_share_dismiss (a practice exam link for a friend)
 //           | pg_open | pg_run | pg_step | pg_debug_end | pg_share | pg_shared_open | pg_import | pg_create | pg_delete
 //           | pg_stop | pg_reset | pg_reset_undo | pg_autorun (the playground)
 //           | social_click | fb_open | fb_send | source_open (contact and outbound links)
@@ -15,7 +15,7 @@
 //   blob4   source exam id (the original past exam, e.g. 61a-fa25-mt2), or pt<minutes> for a timed practice exam
 //           (pt50, pt110, pt180, ...; which collection's exam it was is in blob8)
 //   blob5   question id, problem title for problem_open, or comma-separated problem ids for pt_*
-//   blob6   question kind (mc | sata | blank), theme (auto | light | dark), timeout | manual for pt_submit,
+//   blob6   question kind (mc | sata | blank), theme (auto | light | dark), timeout | manual for pt_submit, shared for pt_start from a friend's link,
 //           the newly selected collection for study_select, or the language for pg_run (py | py-tests | gleam |
 //           gleam-tests) and pg_share (py | gleam), or the fill for pg_import (blanks | mine | solution)
 //   blob7   country (from Cloudflare)
@@ -32,7 +32,7 @@
 //   double8 how many of double7 failed
 // Never send code, stdin, error messages, feedback text or full URLs here: only fixed values like the ones above.
 const NAMES = new Set(['exam_open', 'problem_open', 'check', 'reveal', 'exam_complete', 'theme', 'pt_start', 'pt_submit', 'study_select',
-  'pt_review', 'pt_retry', 'pt_new', 'pt_quit',
+  'pt_review', 'pt_retry', 'pt_new', 'pt_quit', 'pt_share', 'pt_share_dismiss',
   'pg_open', 'pg_run', 'pg_step', 'pg_debug_end', 'pg_share', 'pg_shared_open', 'pg_import', 'pg_create', 'pg_delete', 'pg_stop', 'pg_reset', 'pg_reset_undo', 'pg_autorun',
   'social_click', 'fb_open', 'fb_send', 'source_open',
   'hint_open', 'walkthrough_open', 'ai_copy', 'self_mark',

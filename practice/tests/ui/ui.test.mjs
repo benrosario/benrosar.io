@@ -672,6 +672,40 @@ test('a practice exam numbers its own problems and hides parts whose questions w
   assert.equal(await q('document.querySelectorAll("#pt-0 .qw").length'), keys.length);
 });
 
+test('a reviewed practice exam can be shared: the link gives a fresh attempt with the same questions', async () => {
+  const now = Date.now(), keys = ['0|13', '0|14', '0|21'];
+  const H = { d: now - 1000, c: 'midterm2', pool: 'source', min: 50, ok: 1, n: 3, used: 6e4, ids: ['61a-su23-final/2'], keys, ans: { '0|13': '1' }, res: {}, start: now - 7e4, end: now + 3e6, sub: now - 1000, done: 1 };
+  await open({ _sv: 3, _c: 'midterm2', _cs: {}, _view: 'pt', _pth: [H] }, `?exam=midterm2&view=timed&attempt=${H.d}`);
+  await q('window.__copied=null;navigator.clipboard.writeText=async t=>{window.__copied=t}');
+  await q('document.querySelector("[data-act=share]").click()');
+  await page.waitFor('window.__copied');
+  const link = new URL(await q('window.__copied'));
+  assert.equal(link.searchParams.get('exam'), 'midterm2'); assert.equal(link.searchParams.get('view'), 'timed');
+  assert.doesNotMatch(link.search, /attempt|ans/);
+  assert.match(await q('document.querySelector("[data-act=share]").textContent'), /Link copied/);
+
+  // A friend's browser: nothing saved; they're offered the exam and the clock waits for Start.
+  await open(null, link.search);
+  assert.equal(await q('new URLSearchParams(location.search).get("take")'), null, 'the code leaves the URL');
+  assert.match(await q('document.querySelector(".ptshared").textContent'), /50 minutes · 1 problem · 3 questions/);
+  assert.equal((await saved())._pt, undefined);
+  await q('document.querySelector("[data-share=go]").click()');
+  await page.waitFor('document.querySelector("#pt-0 .qw")');
+  const S = await saved();
+  assert.deepEqual(S._pt.ids, H.ids); assert.deepEqual(S._pt.keys, keys); assert.equal(S._pt.min, 50); assert.equal(S._pt.shared, 1);
+  assert.deepEqual(S._pt.ans, {}); assert.equal(S._ptshare, undefined);
+  assert.equal(await q('document.querySelectorAll("#pt-0 .qw").length'), 3);
+  assert.match(await q('document.querySelector("#m .note b").textContent'), /Midterm 2 shared practice exam/);
+
+  // Not now forgets it; a broken code says so instead of starting anything.
+  await open(null, link.search); await q('document.querySelector("[data-share=x]").click()');
+  assert.equal(await q('document.querySelector(".ptshared")'), null); assert.equal((await saved())._ptshare, undefined);
+  await open(null, '?exam=midterm2&view=timed&take=bm90LWpzb24');
+  assert.match(await q('document.querySelector(".ptshared").textContent'), /can’t be opened/);
+  assert.equal(await q('document.querySelector("[data-share=go]")'), null);
+  assert.deepEqual(page.logs.filter(l => /error/i.test(l)), []);
+});
+
 test('keyboard: the study menu works like the filter menu', async () => {
   await open(null, '?exam=midterm2');
   const b = '#sdd .ddb';

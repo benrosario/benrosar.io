@@ -29,7 +29,7 @@ function describe() {
 const same = (a, b) => !!a && !!b && ['c', 'v', 'x', 'p', 'a', 'f'].every(k => a[k] === b[k]);
 function url(d) {
   const u = new URL(location.href), s = u.searchParams;
-  for (const k of ['exam', 'x', 'p', 'view', 'attempt', 'f']) s.delete(k);
+  for (const k of ['exam', 'x', 'p', 'view', 'attempt', 'f', 'take']) s.delete(k);
   s.set('exam', d.c);
   if (d.x) s.set('x', d.x); if (d.p) s.set('p', d.p); if (d.v) s.set('view', d.v); if (d.a != null) s.set('attempt', d.a); if (d.f) s.set('f', d.f);
   u.hash = '';
@@ -91,7 +91,10 @@ function sync() { back.disabled = !canGo(-1); fwd.disabled = !canGo(1); }
 export function initNav() {
   history.scrollRestoration = 'manual';
   const s = new URLSearchParams(location.search), v = s.get('view'), x = s.get('x');
-  if (v === 'timed') { st.S._view = 'pt'; if (+s.get('attempt')) st.ptHist = +s.get('attempt'); } // initTimed opens it
+  if (v === 'timed') { st.S._view = 'pt'; if (+s.get('attempt')) st.ptHist = +s.get('attempt'); // initTimed opens it
+    // A shared practice exam (timed.js shareURL): kept until it's started or dismissed; the URL drops it.
+    // A finished attempt would otherwise stay on screen; it's already in the attempt history.
+    if (s.get('take')) { st.S._ptshare = { c: st.cid, code: s.get('take').slice(0, 4000) }; st.ptHist = null; if (st.S._pt?.done) st.S._pt = null; st.save(); } }
   else if (v === 'home') { st.S._view = ''; st.cur = -1; }
   else if (v === 'play') { st.S._view = ''; st.pgWant = s.get('f') || ''; }
   else if (x) { const i = st.view.exams.findIndex(ex => ex.id === x); if (i >= 0) { st.S._view = ''; st.cur = i; if (s.get('p')) problem = { x, p: s.get('p') }; } }

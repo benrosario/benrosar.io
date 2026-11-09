@@ -349,6 +349,7 @@ body.ptm .pthome{padding:28px;max-width:760px;margin:0 auto 24px}
 .pthome .ptlength-title{margin:24px 0 10px;font-size:14px;color:var(--fg)}
 .pthome .ptopts{margin:0 0 20px}.pthome .ptopt{min-height:94px}
 .ptrule-details{margin:16px 0 20px;font-size:14px}.ptrule-details summary{padding:8px 0;cursor:pointer;color:var(--mut)}.ptrule-details .ptrules{margin:8px 0}
+.ptshared{margin:16px 0 20px;padding:14px 16px;border:1px solid var(--acc);border-radius:12px;background:var(--card);font-size:14px;line-height:1.55}.ptshared p{margin:4px 0 12px}.ptshared .row{display:flex;flex-wrap:wrap;gap:8px}.ptshared button{min-height:40px;padding:8px 16px}
 #ptgo{min-height:46px;min-width:160px}.pthome .pth{display:block;overflow-x:auto}
 .ptsession{padding:20px;margin-bottom:20px;border:1px solid var(--bd);border-radius:12px;background:var(--card);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
 .ptsession .ptclock,.ptsession .ptscore{grid-column:1/-1;font-size:28px}.ptsession .ptsub{grid-column:1/-1;margin:0 0 12px}

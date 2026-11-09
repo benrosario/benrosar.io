@@ -5,7 +5,7 @@
 // Each attempt records its collection (c), content version (cv), pool, problem ids, question keys and a small
 // snapshot of each question so it stays reviewable if the question bank changes later. History: S._pth (newest first, 20).
 import { st, cs } from './state.js';
-import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, scrollToEl, AI_ICON, wireAI, animatePracticeCollection } from './util.js';
+import { $, esc, SV, fmtT, fmtMin, fmtClock, confirmBtn, scrollToEl, AI_ICON, wireAI, animatePracticeCollection, copyText } from './util.js';
 import { segHTML, segText, wireFills, FILLS } from './highlight.js';
 import { grade, keyText, howChecked, loadingText, runs } from './grading.js';
 import { aiPrompt } from './ai.js';
@@ -62,6 +62,48 @@ function ptStart(L) {
   X.snap = snapshot(X);
   st.S._pt = X; st.save(); ev('pt_start', { x: 'pt' + L.min, q: ids.join(',') }); renderPT(); scrollTo(0, 0); ptTick();
 }
+
+// Sharing an attempt: a link that gives someone else the same problems and questions, on a fresh clock of the same
+// length. Answers and scores are not in the link. ?exam=<collection>&view=timed&take=<code>, where code is base64url
+// JSON {m: minutes, i: problem ids, k?: question ids per problem}. nav.js saves an incoming code as S._ptshare
+// ({c, code}) and drops it from the URL; the collection's practice exam home offers it until it's started or dismissed.
+const b64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
+export function shareCode(X) {
+  const k = X.keys && X.ids.map((_, pi) => X.keys.filter(key => key.split('|')[0] == pi).map(key => key.split('|')[1]));
+  return b64(JSON.stringify({ m: X.min, i: X.ids, ...(k ? { k } : {}) }));
+}
+export function shareURL(X) {
+  const u = new URL(location.href); u.search = ''; u.hash = '';
+  u.searchParams.set('exam', X.c); u.searchParams.set('view', 'timed'); u.searchParams.set('take', shareCode(X));
+  return u.href;
+}
+// The shared exam waiting for this collection, checked against the current question bank (null if none).
+// {min, ids, keys?, n: questions} or {bad: true} when none of its problems exist here.
+function sharedExam() {
+  const sh = st.S._ptshare; if (!sh || sh.c !== st.cid) return null;
+  const T = st.view.timed; let o;
+  try { o = JSON.parse(unb64(sh.code)); } catch { return { bad: true }; }
+  if (!o || !Array.isArray(o.i) || !(+o.m > 0) || !T) return { bad: true };
+  const tmp = { pool: T.pool, set: T.set }, ids = [], keys = [];
+  o.i.forEach((id, j) => {
+    const p = prob(tmp, String(id)); if (!p) return;
+    const pi = ids.push(String(id)) - 1, want = Array.isArray(o.k?.[j]) ? o.k[j].map(String) : null;
+    // Without question ids (a modified-pool exam), the attempt includes every question, as such attempts always have.
+    if (want) p.b.forEach(b => { if (b.k && want.includes(String(b.id))) keys.push(pi + '|' + b.id); });
+  });
+  if (!ids.length) return { bad: true };
+  const n = o.k ? keys.length : ids.reduce((n, id) => n + prob(tmp, id).b.filter(b => b.k).length, 0);
+  return { min: Math.min(600, Math.round(+o.m)), ids, ...(o.k ? { keys } : {}), n, lost: ids.length < o.i.length };
+}
+function ptStartShared(sh) {
+  const T = st.view.timed, now = Date.now();
+  st.S._ptseen = st.S._ptseen || {}; sh.ids.forEach(id => st.S._ptseen[id] = (st.S._ptseen[id] || 0) + 1);
+  const X = { c: st.cid, cv: st.bank.version, pool: T.pool, set: T.set, min: sh.min, ids: sh.ids, start: now, end: now + sh.min * 6e4, ans: {}, shared: 1 };
+  if (sh.keys) X.keys = sh.keys;
+  X.snap = snapshot(X); delete st.S._ptshare;
+  st.S._pt = X; st.save(); ev('pt_start', { x: 'pt' + sh.min, q: sh.ids.join(','), v: 'shared' }); renderPT(); scrollTo(0, 0); ptTick();
+}
 const findInView = (V, id) => { for (const ex of V.exams) for (const P of ex.problems) if (P.p.id === id) return P; return null; };
 
 export function showPT(on) {
@@ -84,7 +126,7 @@ export function renderPT() {
     const pending = all.filter(k=>X.res[k.key]?.pending).length;
     const ok = all.filter(k => X.res[k.key]?.ok).length, used = X.sub - X.start;
     nt.innerHTML = other + (st.ptHist != null ? `<b>${esc(label(X.c))} attempt from ${esc(ptDate(X.d))}.</b> ` : '') + (X.lost ? 'Your answers to this attempt weren’t saved, so only the questions and official answers are shown. ' : '') + `<b>${pending ? 'Provisional score' : 'Score'}: ${ok}/${all.length - pending} checked questions (${all.length > pending ? Math.round(100 * ok / (all.length - pending)) : 0}%).</b> ${pending ? `${pending} answers could not be checked and have not been marked wrong. Use Retry unavailable checks. ` : ''} ${X.sub >= X.end - 500 ? 'Time ran out, so the exam submitted itself.' : `Submitted after ${fmtT(used)} of ${fmtClock(X.min)}.`} <span class="mut">${fromPool}${changed}</span>`;
-  } else nt.innerHTML = other + `<b>${esc(label(X.c))} practice exam · ${fmtMin(X.min)}.</b> ${X.ids.length} problems, ${all.length} questions. Your answers save as you type. Nothing is checked until you submit, and the exam submits itself when time runs out.${X.pool == 'source' ? ' This pool includes past-exam and labeled site-authored practice; you may have seen some problems before.' : ''}`;
+  } else nt.innerHTML = other + `<b>${esc(label(X.c))} ${X.shared ? 'shared ' : ''}practice exam · ${fmtMin(X.min)}.</b> ${st.S._ptshare ? 'A shared practice exam is waiting; it will be offered on the practice exam page after this one. ' : ''}${X.ids.length} problems, ${all.length} questions. Your answers save as you type. Nothing is checked until you submit, and the exam submits itself when time runs out.${X.pool == 'source' ? ' This pool includes past-exam and labeled site-authored practice; you may have seen some problems before.' : ''}`;
   m.append(nt);
   X.ids.forEach((id, pi) => {
     const p = prob(X, id) || { t: X.snap?.t?.[id] || id, b: [] }, d = document.createElement('section'); d.className = 'prob'; d.id = 'pt-' + pi; d.style.scrollMarginTop = '64px';
@@ -109,9 +151,10 @@ export function renderPT() {
   ptSide(); ptWire(document); ptTick();
 }
 function endButtons(X, rev, side) {
-  if (rev && Object.values(X.res || {}).some(r=>r.pending)) return '<button class="p" data-act="retry">Retry unavailable checks</button><button data-act="back">Back to practice questions</button>';
-  if (st.ptHist != null) return '<button class="p" data-act="home">' + (st.S._pt && !st.S._pt.done ? 'Back to your exam' : 'Practice exam home') + '</button><button data-act="back">Back to practice questions</button>';
-  if (rev) return '<button class="p" data-act="new">Take another exam</button><button data-act="back">Back to practice questions</button>';
+  const share = '<button data-act="share" data-tip="Copies a link that gives someone the same questions, on their own clock. Your answers and score aren’t included.">Copy link for a friend</button>';
+  if (rev && Object.values(X.res || {}).some(r=>r.pending)) return '<button class="p" data-act="retry">Retry unavailable checks</button>' + share + '<button data-act="back">Back to practice questions</button>';
+  if (st.ptHist != null) return '<button class="p" data-act="home">' + (st.S._pt && !st.S._pt.done ? 'Back to your exam' : 'Practice exam home') + '</button>' + share + '<button data-act="back">Back to practice questions</button>';
+  if (rev) return '<button class="p" data-act="new">Take another exam</button>' + share + '<button data-act="back">Back to practice questions</button>';
   return '<button class="p" data-act="submit">Submit exam</button>' + (side ? '<button data-act="quit" data-tip="Throw away this attempt">Quit exam</button>' : '');
 }
 
@@ -172,6 +215,8 @@ function ptWire(root) {
     else if (a == 'retry') b.onclick = () => { ev('pt_retry', { x: 'pt' + ptX()?.min }); ptSubmit(true, ptX()); };
     else if (a == 'new') b.onclick = () => { ev('pt_new', { x: 'pt' + ptX()?.min }); st.S._pt = null; st.save(); renderPT(); scrollTo(0, 0); ptTick(); };
     else if (a == 'back') b.onclick = () => showPT(false);
+    else if (a == 'share') { let t; b.onclick = async () => { const X = ptX(); if (!X) return; const ok = await copyText(shareURL(X)); if (ok) ev('pt_share', { x: 'pt' + X.min, q: X.ids.join(',') });
+      clearTimeout(t); b.textContent = ok ? 'Link copied' : 'Couldn’t copy the link'; t = setTimeout(() => b.textContent = 'Copy link for a friend', 2500); }; }
     else if (a == 'home') b.onclick = () => { st.ptHist = null; if (st.S._pt && st.S._pt.done) { st.S._pt = null; st.save(); } renderPT(); scrollTo(0, 0); ptTick(); };
   });
 }
@@ -193,8 +238,10 @@ function ptHome() {
   const V = st.view, T = V.timed, pool = timedPool(st.bank, V), Ls = timedLengths(V, pool), C = cs();
   const qper = pool.length ? questionsPer(V, pool) : 0, q = n => Math.max(1, Math.round(qper * n / 5) * 5);
   let sel = Ls.find(L => L.ok && L.min == C.ptlen) || Ls.find(L => L.ok);
-  const H = (st.S._pth || []).filter(x => x.c == st.cid), others = (st.S._pth || []).length - H.length;
-  m.innerHTML = `<section class="prob pthome"><h2>Timed practice exam · ${esc(V.label)}</h2>
+  const H = (st.S._pth || []).filter(x => x.c == st.cid), others = (st.S._pth || []).length - H.length, sh = sharedExam();
+  const shared = !sh ? '' : sh.bad ? `<div class="ptshared" role="note"><b>This shared practice exam can’t be opened.</b><p>Its problems aren’t in this version of the ${esc(V.label)} question bank.</p><div class="row"><button data-share="x">Dismiss</button></div></div>`
+    : `<div class="ptshared" role="note"><b>Someone shared a practice exam with you</b><p>${fmtMin(sh.min)} · ${sh.ids.length} problem${sh.ids.length > 1 ? 's' : ''} · ${sh.n} question${sh.n == 1 ? '' : 's'}. You get the same questions they had, on your own clock. Their answers and score aren’t included.${sh.lost ? ' Some of its problems are no longer in the question bank, so they’re left out.' : ''}</p><div class="row"><button class="p" data-share="go">Start shared exam</button><button data-share="x">Not now</button></div></div>`;
+  m.innerHTML = `<section class="prob pthome"><h2>Timed practice exam · ${esc(V.label)}</h2>${shared}
 <details class="ptsource-details"><summary>About the questions</summary><p>${esc(T.intro)}</p></details>
 ${Ls.length ? `<h3 class="ptlength-title">Exam length</h3><div class="ptopts" role="radiogroup" aria-label="Exam length">${Ls.map(L => `<button type="button" class="ptopt" role="radio" aria-checked="${L === sel}" data-min="${L.min}"${L.ok ? '' : ' disabled'}><b>${fmtMin(L.min)}</b><span>${L.ok ? `${L.count} problems · about ${q(L.count)} questions${L.note ? ' · ' + esc(L.note) : ''}` : `Needs ${L.count} problems; ${pool.length} available`}</span></button>`).join('')}</div>` : ''}
 <details class="ptrule-details"><summary>How this exam works</summary><ul class="ptrules"><li>The clock starts when you press Start exam.</li><li>Nothing is checked until you submit. Then you get your score, accepted answers, available explanations and topic walkthroughs.</li><li>Python code runs against doctests; Gleam code is compiled and tested; SQL runs in SQLite on several datasets. Other blanks use text comparison. Individual code blanks use official answers for the other blanks, and stated restrictions still apply.</li><li>When time runs out, the exam submits itself.</li><li>Answers are saved in this browser, so reloading the page won't lose them.</li></ul></details>
@@ -206,6 +253,9 @@ ${others ? `<p class="mut">You have ${others} past attempt${others > 1 ? 's' : '
   const opts = [...m.querySelectorAll('.ptopt')];
   opts.forEach(o => o.onclick = () => { if (o.disabled) return; C.ptlen = +o.dataset.min; sel = Ls.find(L => L.min == C.ptlen); st.save(); opts.forEach(x => x.setAttribute('aria-checked', x === o)); });
   const go = $('#ptgo'); if (go) go.onclick = () => ptStart(sel);
+  m.querySelectorAll('[data-share]').forEach(b => b.onclick = () => {
+    if (b.dataset.share == 'go') return ptStartShared(sh);
+    ev('pt_share_dismiss', {}); delete st.S._ptshare; st.save(); renderPT(); });
   m.querySelectorAll('.pthl').forEach(a => a.onclick = e => { e.preventDefault(); ptOpen(+a.dataset.d); });
 }
 function questionsPer(V, pool) {
@@ -246,6 +296,7 @@ async function ptSubmit(retry = false, target = st.S._pt) {
   ev('pt_submit', { c: X.c, x: 'pt' + X.min, q: X.ids.join(','), v: X.sub >= X.end - 500 ? 'timeout' : 'manual', ok, tot: all.length, sec: Math.round((X.sub - X.start) / 1e3) });
   const kept = Object.fromEntries(Object.entries(res).map(([k, v]) => [k, v.o ? { ...v, o: v.o.slice(0, 600) } : v]));
   const H = { d: X.sub, c: X.c, cv: X.cv, pool: X.pool, set: X.set, min: X.min, ok, n: all.length, used: X.sub - X.start, ids: X.ids, keys: X.keys, ans: X.ans, res: kept, snap: X.snap, start: X.start, end: X.end, sub: X.sub, done: 1 };
+  if (X.shared) H.shared = 1;
   if (!H.keys) delete H.keys; if (!H.snap) delete H.snap; if (!H.set) delete H.set;
   st.S._pth = [H, ...(st.S._pth || []).filter(h=>h.d!==X.sub)].slice(0, 20); st.save();
   if (st.ptView) { renderPT(); scrollTo(0, 0); } ptTick();
