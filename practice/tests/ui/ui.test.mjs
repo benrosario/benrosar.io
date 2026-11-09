@@ -697,6 +697,25 @@ test('a reviewed practice exam can be shared: the link gives a fresh attempt wit
   assert.equal(await q('document.querySelectorAll("#pt-0 .qw").length'), 3);
   assert.match(await q('document.querySelector("#m .note b").textContent'), /Midterm 2 shared practice exam/);
 
+  // Opened during another running exam: that exam stays on screen, with the offer above it. Submitting keeps the
+  // offer; quitting into it asks first, then replaces the running exam.
+  const run = { c: 'midterm1', pool: 'source', min: 50, ids: H.ids, keys: ['0|13'], start: now, end: now + 3e6, ans: { '0|13': 'x' } };
+  await open({ _sv: 3, _c: 'midterm1', _cs: {}, _view: 'pt', _pt: run }, link.search);
+  assert.ok(await q('!!document.querySelector("#ptclock")'), 'the running exam is still shown');
+  assert.match(await q('document.querySelector(".ptshared").textContent'), /middle of a Midterm 1 practice exam/);
+  assert.equal(await q('document.querySelector("#m .note").textContent.includes("waiting")'), false);
+  await q('document.querySelector("[data-share=go]").click()');
+  assert.equal((await saved())._pt.c, 'midterm1', 'the first click only asks');
+  assert.match(await q('document.querySelector("[data-share=go]").textContent'), /are you sure/);
+  await q('document.querySelector("[data-share=go]").click()');
+  await page.waitFor('document.querySelector("#m .note b")?.textContent.includes("shared")');
+  assert.deepEqual((await saved())._pt.keys, keys); assert.equal((await saved())._ptshare, undefined);
+  await open({ _sv: 3, _c: 'midterm2', _cs: {}, _view: 'pt', _pt: { ...run, c: 'midterm2' } }, link.search);
+  await q('(b=>{b.click();b.click()})(document.querySelector(".ptside [data-act=submit]"))');
+  await page.waitFor('document.querySelector(".ptscore")');
+  assert.ok(await q('!!document.querySelector(".ptshared [data-share=go]")'), 'still offered on the review page');
+  assert.ok(await q('[...document.querySelectorAll(".ptbtns .pti")].every(b=>b.querySelector(":scope>svg"))'), 'each button has an icon');
+
   // Not now forgets it; a broken code says so instead of starting anything.
   await open(null, link.search); await q('document.querySelector("[data-share=x]").click()');
   assert.equal(await q('document.querySelector(".ptshared")'), null); assert.equal((await saved())._ptshare, undefined);
