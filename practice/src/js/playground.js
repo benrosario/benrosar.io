@@ -8,7 +8,8 @@
 // Debug: the program runs once, recording each line it runs (run.py's trace_program; gleam-step.js for Gleam's main), then the student
 // steps through the recording, forward and back: the editor marks the line about to run and the one that just ran, and the
 // output pane shows the frames and their names, and what had been printed by then. The editor is read-only meanwhile;
-// the Debug button becomes Stop debug, which goes back to editing.
+// the Debug button becomes Stop debug, which goes back to editing. Actions that would run or change the code, or the
+// stdin, are greyed out until then (DEBUG_OFF); moving to another file, sharing and importing still work.
 // During a timed practice exam the playground is locked: its button is hidden, and links to it open the attempt.
 import { st } from './state.js';
 import { storageKey, hasPlayground, langNames } from './course.js';
@@ -62,6 +63,7 @@ pub fn pow_test() {
 `,
 };
 const RUNKEY = isMac ? '⌘↵' : 'Ctrl+Enter', DEBUGKEY = isMac ? '⌘⇧↵' : 'Ctrl+Shift+Enter';
+const DEBUG_OFF = '[data-act=run],[data-act=tests],[data-act=reset],.pgundo,.pgpa [data-f],.pgauto,.pgin textarea', DEBUG_TIP = 'Not available while debugging. Press Stop debug first.';
 const scratch = lang => 'scratch-' + lang;
 export const locked = () => !!st.S._pt && !st.S._pt.done;
 
@@ -161,6 +163,7 @@ function renderPG() {
   act('tests').onclick = () => run('tests', true);
   act('debug').onclick = () => S ? (stepEnd(), ed.focus()) : run('trace', true);
   wireStep();
+  el.addEventListener('click', e => { if (S && e.target.closest(DEBUG_OFF)) { e.preventDefault(); e.stopPropagation(); } }, true);
   act('stop').onclick = stop;
   act('share').onclick = share;
   act('import').onclick = pickProblem;
@@ -176,7 +179,7 @@ function renderPG() {
   el.querySelectorAll('.pgtabs button').forEach(b => b.onclick = () => tab(b.dataset.t));
   const stdin = el.querySelector('.pgin textarea');
   stdin.oninput = () => { file().stdin = stdin.value; saveSoon(); if (P.auto) live(800); };
-  stdin.onkeydown = e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); run('main', true); } };
+  stdin.onkeydown = e => { if (!S && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); run('main', true); } };
   wireSizes();
 }
 
@@ -433,7 +436,7 @@ function rtPaint(lang, start) {
 // and each function frame's number (f1, f2, … in the order they were first called, as in an environment diagram).
 function stepStart(r) {
   const num = new Map(); for (const s of r.steps) for (const f of s.st) if (f.id && !num.has(f.id)) num.set(f.id, num.size + 1);
-  S = { ...r, i: 0, num, lang: file().lang, t0: performance.now(), far: 0 }; ed.readOnly(true); el.classList.add('stepping');
+  S = { ...r, i: 0, num, lang: file().lang, t0: performance.now(), far: 0 }; ed.readOnly(true); el.classList.add('stepping'); debugLock(true);
   if (file().lang === 'gleam') { tab('out', false); el.querySelector('.pgtabs').hidden = true; }
   el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = false;
   const range = el.querySelector('.pgstep input'); range.max = r.steps.length - 1;
@@ -447,13 +450,22 @@ function debugButton(on) {
   b.dataset.tip = on ? 'Stop debugging and edit your code (Escape)' : `Debug: step through it line by line (${DEBUGKEY})`;
   return b;
 }
+// Grey out DEBUG_OFF while debugging, each with the same hint in place of its tooltip. aria-disabled rather than disabled so
+// they can still be hovered and focused to show it; the click listener in renderPG makes them do nothing.
+function debugLock(on) {
+  el.querySelectorAll(DEBUG_OFF).forEach(n => {
+    if (on) { n._tip = n.dataset.tip; n.dataset.tip = DEBUG_TIP; } else if (n._tip) n.dataset.tip = n._tip; else delete n.dataset.tip;
+    const c = n.querySelector('input') || n; if (on) c.setAttribute('aria-disabled', 'true'); else c.removeAttribute('aria-disabled');
+  });
+  el.querySelector('.pgin textarea').readOnly = on;
+}
 // A debug session ending: the furthest step reached (cnt) out of how many were recorded (tot), and how long it lasted.
 function debugEnded() { ev('pg_debug_end', { v: S.lang, cnt: S.far + 1, tot: S.steps.length, ms: Math.round(performance.now() - S.t0), res: S.cut ? 'cut' : S.ok ? 'ok' : 'error' }); }
 // Leave debug mode, showing everything the program printed (show: false when something else is about to fill the output,
 // such as another file opening, possibly because the one being debugged was removed).
 function stepEnd(show = true) {
   if (!S || !el) return;
-  debugEnded(); const r = S; S = null; ed.readOnly(false); ed.mark(); el.classList.remove('stepping'); debugButton(false);
+  debugEnded(); const r = S; S = null; ed.readOnly(false); ed.mark(); el.classList.remove('stepping'); debugLock(false); debugButton(false);
   el.querySelector('.pgtabs').hidden = file()?.lang !== 'gleam';
   el.querySelector('.pgstep').hidden = el.querySelector('.pgfr').hidden = true;
   if (show) { out(outputHTML(r, 'main')); msg(r.cut ? '' : r.ok ? 'Finished' : 'Stopped with an error', r.ok ? '' : 'no'); }
@@ -497,7 +509,7 @@ function wireStep() {
   el.querySelector('.pgmain').addEventListener('keydown', e => {
     if (!S || e.target.matches('input, .pgin textarea') || e.altKey) return;
     const mod = e.metaKey || e.ctrlKey;
-    if (mod && e.key === 'Enter') { e.preventDefault(); run(e.shiftKey ? 'trace' : 'main', true); }
+    if (mod && e.key === 'Enter') { e.preventDefault(); msg('Press Stop debug (or Escape) to run your code.'); }
     else if (!mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); stepTo(S.i + (e.key === 'ArrowRight' ? 1 : -1)); }
     else if (e.key === 'Escape') { e.preventDefault(); stepEnd(); ed.focus(); }
     else if (e.target === ed.textarea && !mod && (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter')) msg('Press Stop debug (or Escape) to change your code.');

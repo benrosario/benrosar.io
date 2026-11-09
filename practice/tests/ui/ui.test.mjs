@@ -662,6 +662,16 @@ test('unavailable timed checks stay ungraded and can be retried', {timeout:12000
   assert.equal((await saved())._pth.length,1,'retry updates the original attempt');
 });
 
+test('a practice exam numbers its own problems and hides parts whose questions were left out', async () => {
+  const now = Date.now(), keys = [13, 14, 21, 22, 23, 24, 25, 26].map(i => '0|' + i);
+  await open({ _sv: 3, _c: 'midterm2', _cs: {}, _view: 'pt', _pt: { c: 'midterm2', pool: 'source', min: 50, ids: ['61a-su23-final/2'], keys, start: now, end: now + 3e6, ans: {} } }, '?exam=midterm2');
+  assert.match(await q('document.querySelector("#pt-0 h2").textContent'), /^1\. Slipknot/);
+  assert.match(await q('document.querySelector("#ptb .nm, .ptside .nm, [data-pi=\'0\'] .nm").textContent'), /^1\. Slipknot$/);
+  const t = await q('document.querySelector("#pt-0").textContent');
+  assert.match(t, /Product/); assert.match(t, /Knots/); assert.doesNotMatch(t, /Untangle/);
+  assert.equal(await q('document.querySelectorAll("#pt-0 .qw").length'), keys.length);
+});
+
 test('keyboard: the study menu works like the filter menu', async () => {
   await open(null, '?exam=midterm2');
   const b = '#sdd .ddb';

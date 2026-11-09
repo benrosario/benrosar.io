@@ -224,6 +224,7 @@ body.pgm #side,body.pgm .grip,body.pgm #rs,body.pgm #stat{display:none}body.pgm 
 .ednext{background:color-mix(in srgb,var(--acc) 16%,transparent)}.edprev{background:color-mix(in srgb,var(--mut) 12%,transparent)}
 .edmk>div::before{content:'';position:absolute;left:calc(var(--gw) + 2px);top:50%;width:0;height:0;margin-top:-5px;border:5px solid transparent;border-left:7px solid var(--acc)}.edprev::before{border-left-color:var(--mut)!important;opacity:.6}
 .pg.stepping .pgstat:has(.pgmsg:empty):has(.pgundo[hidden]){display:none}.ed.ro .edta{caret-color:transparent;cursor:default}.pg.stepping .pged{border-color:color-mix(in srgb,var(--acc) 55%,var(--bd))}
+.pg button[aria-disabled=true],.pg textarea[aria-disabled=true],.pgauto:has(input[aria-disabled=true]){opacity:.45;filter:grayscale(1);cursor:not-allowed;transform:none}.pgauto input[aria-disabled=true]{cursor:not-allowed}
 .pgstep{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--bd)}.pgstep[hidden]{display:none}
 .pgstep button{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;font-size:14px}.pgstep button:disabled{cursor:default;opacity:.4}.pgstep svg{width:16px;height:16px}
 .pgstep input{flex:1;min-width:80px;accent-color:var(--acc)}.pgsn{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}

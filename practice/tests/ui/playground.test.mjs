@@ -123,6 +123,31 @@ test('Python Debug: forward and back through the lines, the frames, return value
   assert.deepEqual(page.logs, []);
 });
 
+test('Debug greys out what it makes unavailable, with a hint, and gives it back afterwards', { skip: NOPY, timeout: 120000 }, async () => {
+  await fresh('?exam=final&view=play&f=scratch-py'); await inPlayground();
+  await type('print(1)\n');
+  const runTip = await q('document.querySelector("[data-act=run]").dataset.tip');
+  await click('[data-act=debug]'); await until('!document.querySelector(".pgstep").hidden', 90000);
+  const off = `[...document.querySelectorAll("[data-act=run],[data-act=tests],[data-act=reset],.pgundo,.pgauto input,.pgin textarea")]`, debugging = () => q('!document.querySelector(".pgstep").hidden');
+  assert.deepEqual(await q(`[...new Set(${off}.map(n => n.getAttribute("aria-disabled")))]`), ['true']);
+  assert.deepEqual(await q(`[...new Set(${off}.map(n => n.closest("[data-tip]").dataset.tip))]`), ['Not available while debugging. Press Stop debug first.']);
+  assert.equal(await q('getComputedStyle(document.querySelector("[data-act=run]")).cursor'), 'not-allowed');
+  // None of them does anything, and neither does the Run shortcut; the rest of the toolbar stays available.
+  for (const s of ['[data-act=run]', '[data-act=tests]', '[data-act=reset]', '.pgauto input']) { await click(s); assert.equal(await debugging(), true, s); }
+  assert.equal(await q('document.querySelector(".pgauto input").checked'), false);
+  assert.equal(await q('document.querySelector(".pgin textarea").readOnly'), true);
+  assert.equal(await q('document.querySelector("[data-act=reset]").classList.contains("arm")'), false);
+  await q('document.querySelector("[data-s=fwd]").focus()'); await page.key('Enter', 'Enter', 13, CMD);
+  assert.equal(await debugging(), true); assert.match(await msg(), /Press Stop debug/);
+  assert.equal(await q('document.querySelector("[data-act=share]").hasAttribute("aria-disabled")'), false);
+  await click('[data-act=debug]');
+  assert.deepEqual(await q(`[...new Set(${off}.map(n => n.hasAttribute("aria-disabled")))]`), [false]);
+  assert.equal(await q('document.querySelector("[data-act=run]").dataset.tip'), runTip);
+  assert.equal(await q('"tip" in document.querySelector("[data-act=reset]").dataset'), false);
+  assert.equal(await q('document.querySelector(".pgin textarea").readOnly'), false);
+  assert.deepEqual(page.logs, []);
+});
+
 test('Gleam Debug: frames for each call with their return values, the output tabs hidden meanwhile, and back to running as you type', async () => {
   await fresh('?exam=final&view=play&f=scratch-gleam'); await inPlayground(); await msgIs('/Finished/', 60000);
   await click('[data-act=debug]'); await until('!document.querySelector(".pgstep").hidden', 60000);

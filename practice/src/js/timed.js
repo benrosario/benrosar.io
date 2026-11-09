@@ -23,6 +23,8 @@ const PTICON = SV('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4
 let ptBusy = false, PROB = null, MOD = {};
 const lookup = () => { if (!PROB) { PROB = {}; for (const e of st.bank.exams) for (const p of e.p) PROB[p.id] = { p, e }; for (const k in st.bank.timed) MOD[k] = Object.fromEntries(st.bank.timed[k].map(p => [p.id, p])); } };
 const label = c => st.views[c]?.label || c;
+// Exam titles keep their original number ("4. Skipper"); the attempt numbers problems itself.
+const ptTitle = t => t.replace(/^\d+\.\s*/, '');
 // The problem an attempt's id refers to, from the current bank (null if it no longer exists).
 function prob(X, id) { lookup(); return X.pool == 'source' ? PROB[id]?.p || null : MOD[X.set || 'midterm3']?.[id] || null; }
 const srcOf = (X, id) => { lookup(); const P = PROB[id]?.p;
@@ -89,10 +91,13 @@ export function renderPT() {
     const src = srcOf(X, id);
     // Adapted problems say so during the exam too; other sources are only shown afterwards.
     const tip = p.authored ? '<span class="tip note">Original practice written by this site; not a course-staff problem</span>' : p.adapted ? `<span class="tip adapted">⇄ ${esc(rev ? src : 'Adapted to Gleam by this site from a Scheme exam problem')}</span>` : rev && src ? `<span class="tip oos">${X.pool == 'source' ? 'From' : 'Based on'} ${esc(src)}</span>` : '';
-    d.innerHTML = `<h2>${pi + 1}. ${esc(p.t)}</h2>` + (tip ? `<div class="tips">${tip}</div>` : '');
+    d.innerHTML = `<h2>${pi + 1}. ${esc(ptTitle(p.t))}</h2>` + (tip ? `<div class="tips">${tip}</div>` : '');
     const mine = all.filter(x => x.pi == pi), keys = new Set(mine.map(x => x.key));
-    p.b.forEach(b => {
-      if (b.s) { const t = document.createElement('div'); t.className = 'txt';
+    // A part whose questions were all left out (out of scope for this collection) is hidden along with them.
+    const runAfter = i => { const r = []; for (const b of p.b.slice(i + 1)) { if (b.s) break; if (b.k) r.push(b); } return r; };
+    p.b.forEach((b, i) => {
+      if (b.s) { const run = runAfter(i); if (run.length && !run.some(q => keys.has(pi + '|' + q.id))) return;
+        const t = document.createElement('div'); t.className = 'txt';
         // Hide the "Show all answers" fills until the exam is over.
         t.innerHTML = segHTML(rev ? b.s : b.s.map(g => g.f ? { ...g, f: null } : g)); if (rev) wireFills(t); d.append(t); return; }
       if (keys.has(pi + '|' + b.id)) d.append(ptCard(mine.find(x => x.key == pi + '|' + b.id), p, rev, X));
@@ -144,7 +149,7 @@ function ptSide() {
   const X = ptX(), rev = !!X.done, all = ptQs(X), s = document.createElement('div'); s.className = 'ptside';
   let h = rev ? `<div class="ptscore">${all.filter(k => X.res[k.key]?.ok).length}/${all.length-pendingCount(X)}</div><div class="ptsub mut">${pendingCount(X) ? 'checked questions correct · ' + pendingCount(X) + ' pending' : 'questions correct'}</div>`
     : `<div class="ptclock" id="ptclock">${fmtT(Math.max(0, X.end - Date.now()))}</div><div class="ptsub mut" id="ptleft">left of ${fmtClock(X.min)}${X.c !== st.cid ? ' · ' + esc(label(X.c)) : ''}</div>`;
-  X.ids.forEach((id, pi) => { h += `<a href="#pt-${pi}" data-pi="${pi}"><span class="nm">${pi + 1}. ${esc((prob(X, id)?.t || X.snap?.t?.[id] || id).replace(/\s*\([\d.]+ pts\)$/, ''))}</span><span class="ct" id="ptc-${pi}"></span></a>`; });
+  X.ids.forEach((id, pi) => { h += `<a href="#pt-${pi}" data-pi="${pi}"><span class="nm">${pi + 1}. ${esc(ptTitle(prob(X, id)?.t || X.snap?.t?.[id] || id).replace(/\s*\([\d.]+ pts\)$/, ''))}</span><span class="ct" id="ptc-${pi}"></span></a>`; });
   h += `<div class="ptbtns">${endButtons(X, rev, true)}</div>`;
   s.innerHTML = h; s.classList.add('ptsession'); m.querySelector('.ptchooser').after(s);
   s.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); scrollToEl(document.getElementById('pt-' + a.dataset.pi)); });
