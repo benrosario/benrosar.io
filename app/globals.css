@@ -1,14 +1,21 @@
 @import "tailwindcss";
 
-/* Newsreader for headings: an editorial serif drawn for reading on screens.
-   Atkinson Hyperlegible Next for text: built by the Braille Institute so
-   similar letters stay easy to tell apart. Both self-hosted, latin subset. */
+/* Geist for headings and text, Geist Mono for numbers and small machine-like
+   labels. Atkinson Hyperlegible Next is kept for the "ben rosario" wordmark
+   only. All self-hosted variable fonts, latin subset. */
 @font-face {
-  font-family: "Newsreader";
+  font-family: "Geist";
   font-style: normal;
-  font-weight: 200 800;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/newsreader-latin-opsz-normal.woff2") format("woff2");
+  src: url("/fonts/geist-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-mono-latin-wght-normal.woff2") format("woff2");
 }
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
@@ -17,20 +24,17 @@
   font-display: swap;
   src: url("/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2") format("woff2");
 }
-@font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  font-style: italic;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url("/fonts/atkinson-hyperlegible-next-latin-wght-italic.woff2") format("woff2");
-}
 :root {
   color-scheme: light dark;
   --action: light-dark(#253b33, #c3d5ae);
   --on-action: light-dark(#ffffff, #18251c);
   --action-hover: light-dark(#405547, #d8e5c7);
-  --font-body: "Atkinson Hyperlegible Next", Arial, Helvetica, sans-serif;
-  --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Geist Mono for numbers and small labels; also exposed to Tailwind as font-mono below. */
+  --font-code: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Used by the wordmark alone, with no fallback to the body font. */
+  --font-wordmark: "Atkinson Hyperlegible Next";
   --paper: light-dark(#f8f7f3, #121c17);
   --ink: light-dark(#253b33, #e5ebde);
   /* Secondary reading text and small metadata. Both pass 4.5:1 on the page,
@@ -41,7 +45,6 @@
   --orange: light-dark(#c3623e, #e89773);
   /* Orange for text (hover states): #c3623e is too light for small text. */
   --orange-text: light-dark(#a14f2d, #e89773);
-  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
 }
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
@@ -137,6 +140,7 @@ select:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 .wordmark {
+  font-family: var(--font-wordmark);
   font-size: 23px;
   font-weight: 700;
   letter-spacing: -1.1px;
@@ -166,42 +170,8 @@ select:focus-visible {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.hero {
-  overflow-x: clip;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 48px;
-  padding-block: 44px 48px;
-}
-.hero-copy {
-  position: relative;
-  z-index: 2;
-}
-.hero h1 {
-  max-width: 13em;
-  font: 400 clamp(40px, 4.2vw, 58px)/1.04 var(--font-serif);
-  letter-spacing: -0.022em;
-  margin: 0 0 24px;
-}
 .orange {
   color: var(--orange);
-}
-.hero-copy > p {
-  max-width: 50ch;
-  font-size: 19px;
-  line-height: 1.6;
-  color: var(--text-2);
-  margin: 0 0 20px;
-}
-.hero-copy > .availability {
-  max-width: none;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  font-size: 16px;
-  color: var(--ink);
-  margin-bottom: 24px;
 }
 .button {
   display: inline-flex;
@@ -232,122 +202,16 @@ select:focus-visible {
 .text-link:hover {
   color: var(--orange-text);
 }
-/* A small accent beside the name. The composition is drawn at 480x400 and
-   zoomed down, so every piece keeps its proportions. */
-.hero-art {
-  width: 480px;
-  height: 400px;
-  zoom: 0.62;
-  position: relative;
-  isolation: isolate;
-}
-.art-grid {
-  position: absolute;
-  inset: 12px 10px;
-  background-image: radial-gradient(#a3ab9660 0.8px, transparent 0.8px);
-  background-size: 19px 19px;
-  mask-image: radial-gradient(ellipse, black, transparent 70%);
-}
-.sculpture {
-  position: absolute;
-  width: 255px;
-  height: 255px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) rotate(-27deg);
-}
-.sculpture-core {
-  position: absolute;
-  inset: 35px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 32% 27%,
-    #e3e7c7 3%,
-    #c4caa6 37%,
-    #8c9a78 69%,
-    #465f48 98%
-  );
-  box-shadow: 20px 35px 42px -22px #465f484d;
-}
-.sculpture-ring {
-  position: absolute;
-  inset: 0;
-  border: 29px solid #a7b68c;
-  border-radius: 50%;
-  box-shadow:
-    inset 5px 6px 12px #e8edcb,
-    4px 5px 8px #3c51362b;
-  transform: rotateX(57deg);
-  background: linear-gradient(135deg, #e5e9c9, #a4b487 50%, #627957);
-  mask-image: radial-gradient(ellipse, transparent 48%, black 49%);
-}
-.ring-two {
-  transform: rotate(60deg) rotateX(57deg);
-}
-.ring-three {
-  transform: rotate(120deg) rotateX(57deg);
-}
-.orbit {
-  position: absolute;
-  border: 1px solid #b9c0ad69;
-  border-radius: 50%;
-  left: 50%;
-  top: 50%;
-  width: 365px;
-  height: 280px;
-  transform: translate(-50%, -50%) rotate(-34deg);
-  z-index: -1;
-}
-.orbit-two {
-  width: 295px;
-  height: 348px;
-  transform: translate(-50%, -50%) rotate(-34deg);
-}
 h2 {
-  font: 400 46px/1.1 var(--font-serif);
-  letter-spacing: -0.02em;
+  font: 500 42px/1.1 var(--font-display);
+  letter-spacing: -0.03em;
   margin: 0;
-}
-.section-title {
-  margin-bottom: 32px;
-}
-.work-section {
-  padding-block: 25px 0;
 }
 .section-heading {
   display: flex;
   justify-content: space-between;
   align-items: end;
   margin-bottom: 30px;
-}
-.featured-project {
-  background: light-dark(#eeefe6, #202e27);
-  border: 1px solid light-dark(#dfe2d6, #3c4c41);
-  border-radius: 12px;
-  padding: 40px;
-  display: grid;
-  grid-template-columns: 0.92fr 1.1fr;
-  gap: 52px;
-}
-.project-story {
-  padding: 6px 0 0;
-}
-.project-story h3 {
-  font: 400 40px/1.08 var(--font-serif);
-  letter-spacing: -0.02em;
-  margin: 0 0 12px;
-}
-.project-subtitle {
-  font-size: 20px;
-  line-height: 1.4;
-  margin: 0 0 18px;
-}
-.project-description {
-  font-size: 16px;
-  color: var(--text-2);
-  line-height: 1.65;
-  max-width: 30em;
-  margin: 0 0 22px;
 }
 .project-metrics {
   display: grid;
@@ -370,16 +234,14 @@ h2 {
 .project-metrics dd {
   order: -1;
   margin: 0;
-  font: 400 34px/1.05 var(--font-serif);
+  font: 500 30px/1.05 var(--font-code);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
   color: var(--ink);
 }
 .case-heading .project-metrics {
   max-width: 680px;
   margin-top: 28px;
-}
-.project-overview h4 {
-  font: 400 32px/1.1 var(--font-serif);
-  letter-spacing: -0.015em;
 }
 .case-evidence {
   border-top: 1px solid var(--line);
@@ -432,7 +294,8 @@ h2 {
 .tags > span {
   border: 1px solid light-dark(#d5dacb, #3c4c41);
   border-radius: 4px;
-  font-size: 13px;
+  font-family: var(--font-code);
+  font-size: 12px;
   padding: 5px 10px;
   color: var(--text-2);
   background: light-dark(#f8f9f2, transparent);
@@ -448,7 +311,8 @@ h2 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-family: var(--font-code);
+  font-size: 13px;
   color: var(--muted);
   margin: 18px 0 0;
 }
@@ -456,35 +320,31 @@ h2 {
   width: 5px;
   height: 5px;
 }
-/* Live demo: the same chat surface as the replay above it. */
+/* Live demo: the same chat surface as the replay, with the sign-in copy above it. */
 .live-demo {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 48px;
-  align-items: start;
-  padding: 64px 0 8px;
-  scroll-margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .demo-sign-in h3 {
-  font: 400 32px/1.1 var(--font-serif);
-  letter-spacing: -0.015em;
-  margin: 0 0 14px;
+  font: 500 var(--fs-h3, 24px)/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
 }
 .demo-sign-in p {
   color: var(--text-2);
-  font-size: 16px;
-  line-height: 1.65;
-  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 8px;
 }
 .demo-sign-in > div {
-  margin: 20px 0;
+  margin: 8px 0;
   min-height: 44px;
 }
 .demo-sign-in .demo-privacy {
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-  margin-top: 24px;
-  font-size: 14px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--muted);
 }
 .live-demo button:disabled,
@@ -711,62 +571,22 @@ h2 {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-@media (max-width: 760px) {
-  .live-demo {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    padding-top: 48px;
-  }
-}
-.future-project {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-  padding: 27px 31px;
-  margin-top: 22px;
-  border: 1px dashed light-dark(#d7dbcc, #3c4c41);
-  border-radius: 8px;
-}
-.future-project h3 {
-  font: normal 23px var(--font-serif);
-  margin: 8px 0;
-}
-.future-project p {
-  font-size: 15px;
-  color: var(--text-2);
-  margin: 0;
-  line-height: 1.7;
-}
-.future-project > .text-link {
-  margin-left: auto;
-  white-space: nowrap;
-}
-.about-section {
-  padding-block: 105px 95px;
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 70px;
-}
-
-.about-copy {
-  padding-top: 17px;
-}
 .about-copy > p {
   max-width: 52ch;
   font-size: 16px;
   color: var(--text-2);
-  line-height: 1.75;
-  margin: 0 0 18px;
+  line-height: 1.7;
+  margin: 0 0 16px;
 }
 .about-copy > .about-lead {
   color: var(--ink);
-  font-size: 21px;
-  line-height: 1.5;
+  font: 400 var(--fs-lead, 24px)/1.35 var(--font-display);
+  letter-spacing: -0.02em;
 }
 .focus-list {
   border-top: 1px solid var(--line);
-  padding-top: 20px;
-  margin-top: 28px;
+  padding-top: 16px;
+  margin-top: 22px;
   font-size: 15px;
 }
 .focus-list p {
@@ -783,27 +603,11 @@ h2 {
 }
 
 .file-type {
+  font-family: var(--font-code);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--muted);
-}
-.site-footer {
-  border-top: 1px solid var(--line);
-  padding-block: 25px 35px;
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  font-size: 14px;
-  color: var(--muted);
-}
-.site-footer .wordmark {
-  font-size: 23px;
-  color: var(--ink);
-}
-.site-footer > a:last-child {
-  margin-left: auto;
-  color: var(--text-2);
 }
 .case-study {
   padding-block: 45px 80px;
@@ -813,8 +617,8 @@ h2 {
   padding-block: 70px 45px;
 }
 .case-heading h1 {
-  font: 400 clamp(46px, 6vw, 76px)/1.02 var(--font-serif);
-  letter-spacing: -0.025em;
+  font: 600 clamp(40px, 5.4vw, 68px)/1.05 var(--font-display);
+  letter-spacing: -0.035em;
   margin: 0 0 22px;
 }
 .case-heading > p {
@@ -859,7 +663,8 @@ h2 {
   border-radius: 8px;
 }
 .decisions h3 {
-  font: 400 26px/1.2 var(--font-serif);
+  font: 500 24px/1.2 var(--font-display);
+  letter-spacing: -0.02em;
   margin: 0 0 14px;
 }
 .decisions p {
@@ -901,31 +706,10 @@ h2 {
   .wrap {
     width: min(1240px, calc(100% - 150px));
   }
-  .featured-project {
-    gap: 70px;
-    padding: 48px;
-  }
 }
 @media (max-width: 1000px) {
   .wrap {
     width: calc(100% - 60px);
-  }
-  .hero {
-    gap: 24px;
-  }
-  .hero-art {
-    zoom: 0.48;
-  }
-  .featured-project {
-    padding: 28px;
-    gap: 28px;
-    grid-template-columns: 0.9fr 1.1fr;
-  }
-  .project-story h3 {
-    font-size: 34px;
-  }
-  .about-section {
-    gap: 45px;
   }
 }
 @media (max-width: 760px) {
@@ -939,83 +723,8 @@ h2 {
     gap: 20px;
     font-size: 14px;
   }
-  /* Phones: the sculpture sits small beside the name instead of below it. */
-  .hero {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    padding-block: 24px 28px;
-    gap: 0;
-  }
-  .hero-copy {
-    display: contents;
-  }
-  .hero h1 {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    font-size: clamp(34px, 9.5vw, 42px);
-    margin-bottom: 18px;
-  }
-  .hero-art {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    justify-self: end;
-    zoom: 0.24;
-    margin-bottom: -40px;
-  }
-  .hero-copy > p,
-  .hero-copy > .button {
-    grid-column: 1 / -1;
-  }
-  .hero-copy > p {
-    font-size: 17px;
-  }
-  .hero-copy > .button {
-    justify-self: start;
-  }
   h2 {
     font-size: 38px;
-  }
-  .work-section {
-    padding-top: 12px;
-  }
-  .featured-project {
-    grid-template-columns: 1fr;
-    padding: 26px 20px;
-    gap: 36px;
-  }
-  .project-story h3 {
-    font-size: 36px;
-  }
-  .project-description {
-    max-width: none;
-  }
-  .future-project {
-    padding: 23px;
-    gap: 17px;
-    flex-wrap: wrap;
-  }
-  .future-project > div:nth-child(2) {
-    flex: 1;
-    min-width: 170px;
-  }
-  .future-project h3 {
-    font-size: 22px;
-  }
-  .future-project > .text-link {
-    margin-left: 60px;
-    font-size: 13px;
-  }
-  .about-section {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding-block: 70px;
-  }
-  .site-footer {
-    flex-wrap: wrap;
-    gap: 18px;
-  }
-  .site-footer > a:last-child {
-    margin-left: auto;
   }
   .case-heading {
     padding-top: 48px;
@@ -1043,13 +752,6 @@ h2 {
   *::after {
     transition: none !important;
     animation: none !important;
-  }
-}
-
-/* Keep the decorative orbit inside the viewport on narrow phones. */
-@media (max-width: 480px) {
-  .hero-art {
-    overflow: hidden;
   }
 }
 
@@ -1185,35 +887,10 @@ h2 {
     gap: 6px;
   }
 }
-.site-footer > a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-
-/* A replay of a real exchange from the bot, shown in the featured project. */
-/* Button to the live demo in the featured project's left column. */
-.demo-link {
-  margin-top: 26px;
-}
-.demo-link p {
-  margin: 10px 0 0;
-  font-size: 14px;
-  color: var(--muted);
-}
-/* Let grid columns shrink to the screen instead of to their widest content. */
-.featured-project > * {
-  min-width: 0;
-}
-.sample-exchange {
-  align-self: center;
-}
-.sample-exchange h4 {
-  margin: 0;
-}
 .sample-meta {
-  margin: 8px 0 20px;
+  margin: 4px 0 12px;
   font-size: 14px;
+  line-height: 1.5;
   color: var(--muted);
 }
 .replay {
@@ -1400,18 +1077,6 @@ h2 {
     padding: 18px 14px;
   }
 }
-.footer-email {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.footer-email:hover {
-  color: var(--orange-text);
-}
-
 /* In multi-line text, keep the dot on the first line. */
 .availability .status-dot {
   align-self: auto;
@@ -1429,11 +1094,7 @@ h2 {
   color: var(--orange-text);
 }
 
-/* Leadership facts, given their own place beside the About heading. */
-.roles {
-  margin-top: 36px;
-  max-width: 26em;
-}
+/* Leadership roles, in full on the About tab. */
 .roles h3 {
   margin: 0 0 4px;
   font-size: 14px;
@@ -1444,23 +1105,18 @@ h2 {
   margin: 0;
 }
 .roles dl > div {
-  padding: 14px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--line);
 }
 .roles dt {
-  font: 400 22px/1.2 var(--font-serif);
-  letter-spacing: -0.01em;
+  font: 500 19px/1.25 var(--font-display);
+  letter-spacing: -0.015em;
 }
 .roles dd {
   margin: 4px 0 0;
   font-size: 15px;
   line-height: 1.55;
   color: var(--text-2);
-}
-@media (max-width: 760px) {
-  .roles {
-    margin-top: 24px;
-  }
 }
 .wordmark {
   white-space: nowrap;
@@ -1525,4 +1181,476 @@ h2 {
 .replay-name-tag {
   font-weight: 400;
   color: var(--text-2);
+}
+
+/* ---------- Homepage: an identity rail beside the project tabs ----------
+   Below the fit-mode query everything is in normal document flow and the page
+   scrolls. In fit mode (wide and tall enough) main is exactly one screen and
+   only the panels (and the chat inside panel 1) may scroll. */
+:root {
+  --header-h: 76px; /* .site-header-inner */
+}
+.wrap-wide {
+  width: min(1440px, calc(100% - 2 * clamp(20px, 4vw, 72px)));
+  margin-inline: auto;
+}
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "intro" "stage" "end";
+  gap: 32px;
+  padding-block: 28px 32px;
+}
+.rail-intro {
+  grid-area: intro;
+}
+.stage {
+  grid-area: stage;
+  min-width: 0;
+}
+.rail-end {
+  grid-area: end;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rail-intro h1 {
+  max-width: 12em;
+  font: 600 var(--fs-h1, clamp(34px, 8.5vw, 48px))/1.06 var(--font-display);
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+}
+.rail-meta {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.availability {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.rail-foot {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.rail-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rail-foot a:hover {
+  color: var(--orange-text);
+}
+/* The sticky header carries the email above 760px; repeat it only below. */
+@media (min-width: 761px) {
+  .rail-foot-email {
+    display: none !important;
+  }
+}
+
+/* Panels: two columns once the panel itself is wide enough. */
+.stage .ptabs-panel {
+  container: panel / inline-size;
+  padding: var(--pad, 20px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: light-dark(#cad1bf, #40513d) transparent;
+}
+.panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+.panel-story h2 {
+  font: 600 var(--fs-h2, 32px)/1.1 var(--font-display);
+  letter-spacing: -0.03em;
+  margin: 0 0 6px;
+}
+.project-subtitle {
+  font-size: var(--fs-sub, 18px);
+  line-height: 1.35;
+  margin: 0 0 10px;
+}
+.project-description {
+  max-width: 36em;
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.panel-story .project-metrics {
+  container-type: inline-size;
+  gap: 14px;
+  padding: 12px 0;
+  margin: 0 0 14px;
+}
+.panel-story .project-metrics > div {
+  gap: 4px;
+}
+.panel-story .project-metrics dt {
+  font-size: 13px;
+  line-height: 1.4;
+}
+/* The size follows the window height, but six mono characters ("~2,000",
+   "Hourly") must also fit a third of the row, so it is capped by the row's
+   width: at 8cqi a six-character value takes about 85% of its column. */
+.panel-story .project-metrics dd {
+  font-size: min(var(--fs-metric, 26px), 8cqi);
+}
+.panel-story .project-links {
+  margin-top: 6px;
+  gap: 8px 10px;
+}
+/* Secondary links drawn as outlined buttons, so they read as actions next to
+   the filled primary button. The border is a mix of the text colour so it
+   stays visible on the panel surface in both themes. */
+.boxed-link {
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 8px;
+  background: var(--paper);
+}
+.boxed-link:hover {
+  border-color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.panel-story .project-note {
+  margin-top: 2px;
+  font-size: 12px;
+}
+.sibling-note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.sibling-note .inline-link {
+  display: inline-block;
+  padding-block: 12px; /* 44px target without moving the text */
+  margin-block: -12px;
+}
+.demo-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 12px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.demo-link button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.demo-link button:hover {
+  color: var(--orange-text);
+}
+
+/* Panel 1, right column: the replay, or the live demo when it is available. */
+.demo-stage {
+  container: demo / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+/* A narrow column gets the icon-only replay button, as on phones. */
+@container demo (max-width: 340px) {
+  .replay-again {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    padding: 0;
+  }
+  .replay-again svg {
+    display: block;
+  }
+  .replay-again-label {
+    display: none;
+  }
+}
+.demo-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+}
+.demo-switch button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+.demo-switch button:hover {
+  color: var(--orange-text);
+}
+.demo-switch button[aria-pressed="true"] {
+  background: var(--action);
+  color: var(--on-action);
+}
+.demo-switch button:focus-visible {
+  outline-offset: 2px;
+}
+.demo-view {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.demo-view[hidden] {
+  display: none;
+}
+.demo-view:focus {
+  outline: none; /* focus target for "Try the live demo"; its controls show focus */
+}
+.demo-view > h3 {
+  margin: 0;
+  font: 500 var(--fs-h3, 24px)/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Panel 2, right column: the screenshot in a plain browser frame. */
+.shot {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: light-dark(#fffefa, #18241e);
+  box-shadow: 0 18px 40px -28px light-dark(#253b3366, #00000099);
+}
+.shot-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 30px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--muted);
+}
+.shot-dots {
+  flex: none;
+  width: 32px;
+  height: 8px;
+  background: radial-gradient(circle, var(--line) 3.5px, transparent 4px) 0 0 / 12px 8px repeat-x;
+}
+.shot-url {
+  flex: 1;
+  margin-right: 44px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shot-view {
+  display: block;
+  overflow: hidden;
+}
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Show the screenshot for the active theme: the picker's choice, else the system's. */
+.shot .shot-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .shot .shot-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .shot .shot-dark {
+    display: block;
+  }
+}
+:root[data-theme="dark"] .shot .shot-light {
+  display: none;
+}
+:root[data-theme="dark"] .shot .shot-dark {
+  display: block;
+}
+
+@container panel (min-width: 560px) {
+  .panel-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(24px, 4cqi, 52px);
+  }
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .sierra-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  /* The working site is the larger column. */
+  .practice-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  }
+  .practice-grid .project-metrics {
+    gap: 10px;
+  }
+  .practice-grid .project-metrics dt {
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+}
+@container panel (min-width: 720px) {
+  .practice-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  }
+}
+
+/* ---------- Fit mode: one screen, no page scroll ---------- */
+@media (min-width: 1000px) and (min-height: 660px) {
+  .home {
+    --pad: clamp(16px, 2.6dvh, 36px);
+    --fs-h1: clamp(32px, min(3vw, 5.4dvh), 56px);
+    --fs-h2: clamp(24px, min(2.1vw, 4dvh), 42px);
+    --fs-h3: clamp(18px, min(1.4vw, 2.7dvh), 26px);
+    --fs-sub: clamp(16px, 2.4dvh, 22px);
+    --fs-metric: clamp(20px, 3.3dvh, 32px);
+    --fs-lead: clamp(18px, 2.8dvh, 26px);
+    --fs-body: clamp(15px, min(1vw, 1.6dvh), 17px);
+    height: calc(100dvh - var(--header-h));
+    grid-template-columns: minmax(0, 29fr) minmax(0, 71fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "intro stage"
+      "end stage";
+    column-gap: clamp(32px, 3.6vw, 72px);
+    row-gap: 16px;
+    padding-block: var(--pad);
+  }
+  .rail-intro {
+    padding-top: 30px; /* level with the tabs, below their 24px tour-hint row */
+  }
+  .rail-end {
+    align-self: end;
+  }
+  .project-description,
+  .about-copy > p:not(.about-lead),
+  .roles dd,
+  .sibling-note {
+    font-size: var(--fs-body);
+  }
+  .stage {
+    min-height: 0;
+  }
+  .panel-grid {
+    height: 100%;
+    grid-template-rows: minmax(0, 1fr);
+  }
+  /* "safe" so a panel taller than the screen overflows downward, where it can scroll. */
+  .panel-story,
+  .about-copy,
+  .roles,
+  .shot-col {
+    align-self: safe center;
+  }
+  /* Panel 2: the frame takes the column's height (up to the image's), and the
+     screenshot is shown large enough to read, anchored top-left: the right and
+     bottom edges are cropped rather than the whole page shrunk. */
+  .shot-col {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    min-height: 0;
+  }
+  .shot {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+  .shot-col .sibling-note {
+    flex: none;
+  }
+  .shot-bar {
+    flex: none;
+  }
+  .shot-view {
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+  .shot img {
+    /* At least 75% of the 1120px capture; on taller screens up to its full size,
+       so the frame fills the column instead of leaving space around it. */
+    width: max(100%, 840px, min(1120px, 105dvh));
+    max-width: none;
+  }
+  /* Panel 1: the replay or chat fills the column and scrolls inside. */
+  .demo-stage,
+  .demo-view,
+  .demo-view .replay,
+  .demo-view .live-demo {
+    min-height: 0;
+  }
+  .demo-stage {
+    height: 100%;
+  }
+  .demo-view {
+    flex: 1;
+  }
+  .demo-view .replay {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .demo-view .replay-log {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: light-dark(#cad1bf, #40513d) transparent;
+  }
+  .demo-view .live-demo {
+    flex: 1;
+  }
+  .demo-view .chat-panel,
+  .demo-view .chat-panel.is-active {
+    flex: 1;
+    height: auto;
+    /* Enough for a readable conversation. On short screens (720-770px) this
+       makes the live view, and only it, scroll the panel by a little. */
+    min-height: 300px;
+  }
+  /* The "Try it live" switch already titles this view; keep its heading for
+     screen readers only, so the chat gets the height. */
+  .demo-view .demo-sign-in h3 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.panel-story .tags > span {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+.panel-story .button {
+  min-height: 44px;
+  padding: 11px 18px;
 }

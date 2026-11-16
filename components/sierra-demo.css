@@ -1,0 +1,43 @@
+/* Replay / Try it live crossfade (components/sierra-demo.tsx). Duration: VIEW_FADE_MS in
+   lib/tab-intent.ts (keep --demo-fade in step). Opacity only. Reduced motion: the script never
+   enters the animated states, and globals.css switches animations off. */
+
+.demo-views {
+  --demo-fade: 200ms;
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.demo-view[data-entering] {
+  animation: demo-view-in var(--demo-fade) ease-out;
+}
+/* The outgoing view stays mounted, out of flow over the incoming one, for the fade. Only where
+   the views fill a fixed-height column (fit mode); elsewhere they have different natural
+   heights, so the outgoing view is simply replaced and the incoming one fades in. */
+.demo-view[data-exiting] {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  animation: demo-view-out var(--demo-fade) ease-out;
+}
+@media (max-width: 999.98px), (max-height: 659.98px) {
+  .demo-view[data-exiting] {
+    display: none;
+  }
+}
+
+@keyframes demo-view-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes demo-view-out {
+  from {
+    opacity: 1;
+  }
+}

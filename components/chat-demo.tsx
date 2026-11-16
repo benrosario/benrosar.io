@@ -2,7 +2,7 @@
 import Script from "next/script";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { trimChatHistory, type ChatMessage } from "@/lib/chat-request";
-import { Arrow, Mountain } from "./icons";
+import { Mountain } from "./icons";
 import { ChatMessageContent } from "./chat-message";
 
 type GoogleIdentity = {
@@ -15,7 +15,7 @@ declare global {
 }
 
 // Runtime configuration keeps the overview intact until both services are ready.
-// One request per page load, shared by the demo and the button that links to it.
+// One request per page load, shared by the demo and the controls that switch to it.
 let demoConfig: Promise<string | null> | null = null;
 function loadDemoClientId() {
   demoConfig ??= fetch("/api/demo/config", { cache: "no-store", credentials: "omit" })
@@ -24,7 +24,8 @@ function loadDemoClientId() {
     .catch(() => null); // The project overview remains usable if configuration is unavailable.
   return demoConfig;
 }
-function useDemoClientId() {
+/** The public Google client ID, or null while loading or when the live demo is unavailable. */
+export function useDemoClientId() {
   const [clientId, setClientId] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
@@ -37,20 +38,6 @@ function useDemoClientId() {
 export function LiveDemo() {
   const clientId = useDemoClientId();
   return clientId ? <ChatDemo googleClientId={clientId} /> : null;
-}
-
-// Shown only when the live demo is available, so it never links to nothing.
-export function LiveDemoLink() {
-  const clientId = useDemoClientId();
-  if (!clientId) return null;
-  return (
-    <div className="demo-link">
-      <a className="button primary" href="#live-demo">
-        Try the live demo <Arrow direction="down" />
-      </a>
-      <p>Sign in with Google. Three questions per account.</p>
-    </div>
-  );
 }
 
 export function ChatDemo({ googleClientId }: { googleClientId: string }) {

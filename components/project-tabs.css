@@ -1,0 +1,365 @@
+/* Tabs above a single stage. Class names are prefixed ptabs- to avoid collisions.
+   Imported from components/project-tabs.tsx (global CSS may be imported from any
+   component in the app; nothing else in the site uses the ptabs- prefix).
+
+   Motion, and where to tune it:
+   - panel slide/crossfade: PANEL_MOTION_MS, PANEL_SHIFT_PX, PANEL_EASING in lib/tab-intent.ts
+   - highlight glide, stage corner: --ptabs-glide below
+   - tour bar / hint easing out and in: --ptabs-ease below
+   - summary fade-in: the ptabs-in animation below
+   All of it is switched off by prefers-reduced-motion (globals.css kills transitions and
+   animations, and the script skips the panel animation, so nothing waits for an event). */
+
+.ptabs-root {
+  --ptabs-surface: light-dark(#eeefe6, #202e27); /* same as .featured-project */
+  --ptabs-hint-h: 24px; /* reserved row above the tabs for the tour hint */
+  --ptabs-glide: 260ms ease-out; /* highlight moving between tabs */
+  --ptabs-ease: 350ms ease-out; /* tour bar and hint easing in and out */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+/* ---- strip ---- */
+.ptabs-strip {
+  position: relative;
+  z-index: 1; /* lets the selected tab overlap the stage's top border */
+  flex: none;
+  container: ptabs / inline-size;
+}
+.ptabs-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ptabs-hint-h);
+  margin: 0;
+  padding-inline: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--ptabs-ease); /* in when the tour starts, out when it ends */
+  pointer-events: none;
+}
+.ptabs-root[data-tour="running"] .ptabs-hint {
+  opacity: 1;
+}
+.ptabs-hint-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  animation: ptabs-pulse 1.6s ease-in-out infinite;
+}
+.ptabs-root[data-paused] .ptabs-hint-dot {
+  animation-play-state: paused;
+}
+
+/* The track is the coordinate space of the highlight; the list holds the tabs. */
+.ptabs-track {
+  position: relative;
+}
+.ptabs-list {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+/* ---- the selected tab's highlight ----
+   Sits behind the tabs and is moved (transform, width) to the measured box of the selected
+   tab. It reproduces the selected tab's look: surface fill, line border, rounded top, and
+   one extra pixel at the bottom that covers the stage's top border so the two join. */
+.ptabs-hl {
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  box-sizing: border-box;
+  background: var(--ptabs-surface);
+  border: 1px solid var(--line);
+  border-bottom-color: var(--ptabs-surface);
+  border-radius: 12px 12px 0 0;
+  opacity: 0; /* until measured; the selected tab paints itself meanwhile */
+  pointer-events: none;
+  transition:
+    transform var(--ptabs-glide),
+    width var(--ptabs-glide);
+}
+.ptabs-root[data-hl="ready"] .ptabs-hl {
+  opacity: 1;
+}
+
+/* ---- tabs (narrow container: label only, equal widths) ---- */
+.ptabs-tab {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 56px; /* >= 44px touch target */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 8px;
+  margin: 0;
+  text-align: left;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-bottom-color: transparent;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  transition: background-color 0.2s;
+}
+.ptabs-tab[aria-selected="true"] {
+  background: var(--ptabs-surface);
+  border-bottom-color: var(--ptabs-surface);
+  margin-bottom: -1px; /* cover the stage's top border so the tab joins the stage */
+}
+/* Once the highlight is placed it draws the selected look; the tabs become see-through
+   (the strip sits on the page background, which is --paper) so it can glide behind them. */
+.ptabs-root[data-hl="ready"] .ptabs-tab {
+  background-color: transparent;
+}
+.ptabs-root[data-hl="ready"] .ptabs-tab[aria-selected="true"] {
+  border-color: transparent;
+}
+@media (hover: hover) {
+  .ptabs-root .ptabs-tab[aria-selected="false"]:hover {
+    cursor: pointer;
+    background-color: light-dark(#f1f0ea, #19251f);
+  }
+}
+.ptabs-tab:focus-visible {
+  outline-offset: -4px; /* the default offset would be clipped by the tab */
+}
+
+.ptabs-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* narrow tabs: room for a three-line label rather than cutting it */
+  line-clamp: 3;
+  overflow: hidden;
+  font: 500 15px/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.ptabs-sub {
+  display: none; /* label only until there is room */
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.ptabs-stat {
+  flex: none;
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.ptabs-summary {
+  display: none;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  color: var(--text-2);
+}
+/* Text that appears only on the selected tab fades in (never on first paint). */
+.ptabs-root[data-changed] .ptabs-summary {
+  animation: ptabs-in 240ms ease-out both;
+}
+
+/* ---- progress bar of the auto-tour ----
+   Rides on the highlight, so it is always on the selected tab. Idle and stopped: collapsed
+   and transparent. Running: full height, filling. When the tour stops it freezes where it is
+   and eases out (fade plus collapsing onto its baseline). The collapse uses height, not the
+   individual `scale` property: the CSS pipeline rewrites that into `transform`, which the
+   fill animation owns. */
+.ptabs-bar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 0;
+  border-radius: 3px 3px 0 0;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: left bottom;
+  opacity: 0;
+  transition:
+    opacity var(--ptabs-ease),
+    height var(--ptabs-ease);
+  animation: ptabs-fill var(--ptabs-rest, 7000ms) linear forwards;
+  animation-play-state: paused;
+  pointer-events: none;
+}
+.ptabs-root[data-tour="running"] .ptabs-bar {
+  opacity: 1;
+  height: 3px;
+  animation-play-state: running;
+}
+.ptabs-root[data-tour="running"][data-paused] .ptabs-bar {
+  animation-play-state: paused; /* hidden document: hold, then carry on from here */
+}
+
+/* ---- stage ---- */
+.ptabs-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: clip; /* the panels slide inside the stage; nothing spills out, no scrollbars */
+  background: var(--ptabs-surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition:
+    border-top-left-radius var(--ptabs-glide),
+    border-top-right-radius var(--ptabs-glide); /* in step with the highlight */
+}
+.ptabs-root[data-first] .ptabs-stage {
+  border-top-left-radius: 0;
+}
+.ptabs-root[data-last] .ptabs-stage {
+  border-top-right-radius: 0;
+}
+.ptabs-panel {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.ptabs-panel[hidden] {
+  display: none;
+}
+.ptabs-panel:focus-visible {
+  outline-offset: -4px;
+  border-radius: 12px;
+}
+/* The outgoing panel stays mounted for the length of its exit, out of flow and layered over
+   the stage, so the incoming panel alone decides the layout. The script animates opacity and
+   transform; the base opacity of 0 means it is invisible the moment the animation ends,
+   before it is hidden. Where panels do not fill a fixed-height stage (everything below the
+   fit-mode query, see TOUR_FIT_QUERY) it never exists: see panelMotionMode(). */
+.ptabs-panel[data-exiting] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 999.98px), (max-height: 659.98px) {
+  .ptabs-panel[data-exiting] {
+    display: none;
+  }
+}
+
+/* ---- medium container ---- */
+@container ptabs (min-width: 480px) {
+  .ptabs-tab {
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+  .ptabs-tab[aria-selected="true"] {
+    flex-grow: 1.6;
+  }
+  .ptabs-label {
+    font-size: 18px;
+  }
+  .ptabs-tab[aria-selected="true"] .ptabs-sub {
+    display: flex;
+  }
+}
+/* Here the stat appears with the selection (wider up, it is on every tab). */
+@container ptabs (min-width: 480px) and (max-width: 719.98px) {
+  .ptabs-root[data-changed] .ptabs-tab[aria-selected="true"] .ptabs-sub {
+    animation: ptabs-in 240ms ease-out both;
+  }
+}
+
+/* ---- wide container: summary and stat, selected tab widest ---- */
+@container ptabs (min-width: 720px) {
+  .ptabs-tab {
+    min-height: 70px;
+    padding: 10px 18px;
+  }
+  /* Unselected tabs take the width of their label (so it is never cut off while it
+     fits); the selected tab takes the rest and truncates its summary if needed. */
+  .ptabs-tab[aria-selected="false"] {
+    flex: 0 1 auto;
+  }
+  .ptabs-tab[aria-selected="true"] {
+    flex: 1 1 0;
+  }
+  .ptabs-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 20px;
+  }
+  .ptabs-sub {
+    display: flex;
+  }
+  .ptabs-tab[aria-selected="true"] .ptabs-summary {
+    display: block;
+  }
+  /* The separator only when a stat precedes the summary. */
+  .ptabs-tab[aria-selected="true"] .ptabs-stat + .ptabs-summary::before {
+    content: "\00b7";
+    margin-right: 8px;
+    color: var(--muted);
+  }
+}
+
+@keyframes ptabs-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes ptabs-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ptabs-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Where the tour can never run (see shouldStartTour in lib/tab-intent.ts), do not
+   reserve the hint's row. */
+@media (max-width: 999.98px), (max-height: 659.98px), not ((hover: hover) and (pointer: fine)), (prefers-reduced-motion: reduce) {
+  .ptabs-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptabs-tab,
+  .ptabs-hl,
+  .ptabs-hint,
+  .ptabs-bar,
+  .ptabs-stage {
+    transition: none;
+  }
+  .ptabs-summary,
+  .ptabs-sub,
+  .ptabs-hint-dot {
+    animation: none !important;
+  }
+}

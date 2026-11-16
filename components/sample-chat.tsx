@@ -163,12 +163,15 @@ function rememberReplay() {
   }
 }
 
-export function SampleChat() {
+/** `active` is false while the replay is hidden (another tab or view is shown). A playback
+ *  that gets hidden stops and starts again from the beginning when it is shown again. */
+export function SampleChat({ active = true }: { active?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [shown, setShown] = useState(TOTAL_WORDS);
   const [expanded, setExpanded] = useState(false);
   const [hasReplayed, setHasReplayed] = useState(false);
   const frame = useRef<number | null>(null);
+  const interrupted = useRef(false);
   const question = useRef<HTMLParagraphElement | null>(null);
   // Server HTML remains readable without JavaScript; hydration checks this browser's visit.
   const seenReplay = useSyncExternalStore(subscribeToReplayVisit, hasSeenReplay, () => true);
@@ -195,6 +198,23 @@ export function SampleChat() {
     };
     frame.current = requestAnimationFrame(tick);
   }, [stop]);
+
+  // Never play while hidden: stop when hidden mid-playback, restart when shown again.
+  useEffect(() => {
+    if (!active) {
+      if (frame.current !== null) {
+        stop();
+        interrupted.current = true;
+      }
+      return;
+    }
+    if (!interrupted.current) return;
+    const restart = requestAnimationFrame(() => {
+      interrupted.current = false;
+      startPlayback();
+    });
+    return () => cancelAnimationFrame(restart);
+  }, [active, stop, startPlayback]);
 
   useEffect(() => {
     if (!waiting || !question.current) return;

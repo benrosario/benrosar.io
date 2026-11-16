@@ -42,7 +42,7 @@ export const projects: Project[] = [
     repo: "https://github.com/benrosario/sierra-class-helper",
     stack: ["Python", "FastAPI", "OpenAI", "FAISS", "Discord"],
     metrics: [
-      { value: "40+", label: "students adopted the bot" },
+      { value: "40+", label: "active users" },
       { value: "~2,000", label: "course records searched" },
       { value: "Hourly", label: "course data refresh" },
     ],
@@ -102,3 +102,47 @@ export const projects: Project[] = [
     ],
   },
 ];
+
+// The CS 61A exam practice site (practice/ in this repo). It is a homepage tab only: it is not in `projects`, so it has no case-study route.
+// Counts come from the built content file (`npm run practice:build`, then practice/public/61a/assets/content.*.json): 23 exam sets,
+// of which 21 are past staff exams (the other two are sets written for the site), holding 137 problems and 835 questions.
+export const practiceSite = {
+  title: "CS 61A Exam Practice",
+  tagline: "Past exams, checked in your browser.",
+  description:
+    "A study site of past CS 61A exam questions with in-browser answer checking, timed practice exams, and a playground that runs Python and Gleam. It works offline after one visit.",
+  url: "https://practice.benrosar.io/",
+  metrics: [
+    { value: "21", label: "past exams, Summer 2023 to Fall 2026" },
+    { value: "835", label: "questions with in-browser answer checking" },
+    { value: "500+", label: "students have used it" },
+  ],
+  stack: ["JavaScript", "Pyodide", "Gleam compiler (WebAssembly)", "Service worker", "esbuild", "Cloudflare Workers"],
+  features: [
+    {
+      title: "Past exam questions with answer checking.",
+      description: "Multiple choice, select-all and fill-in-the-blank questions are checked as you answer, and coding answers are run against the exam’s doctests.",
+    },
+    {
+      title: "Timed practice exams.",
+      description: "A practice exam draws problems for the exam you’re studying for, Midterm 1, 2, 3 or the Final, and counts down the time.",
+    },
+    {
+      title: "Study collections.",
+      description: "Each exam has its own collection with topic filters, so you can work through only what it covers.",
+    },
+    {
+      title: "A playground for Python and Gleam.",
+      description: "Any problem can be opened in an editor that runs Python or Gleam in the browser, and its doctests or tests can be run there.",
+    },
+  ],
+  siblingNote: "A CS 61B version of the site covers Java exam questions.",
+  siblingUrl: "https://61b.benrosar.io/",
+  screenshots: {
+    light: "/projects/practice-61a-light.webp",
+    dark: "/projects/practice-61a-dark.webp",
+    alt: "The CS 61A practice playground showing a Fall 2025 Final problem above a Python editor, with all 9 doctests passing.",
+    width: 1120,
+    height: 760,
+  },
+};
