@@ -22,7 +22,7 @@ export const PANEL_MOTION_MS = 240; // incoming and outgoing panel, overlapped
 export const PANEL_SHIFT_PX = 16; // how far each panel slides
 export const PANEL_EASING = "ease-out";
 export const MOTION_SLACK_MS = 140; // timeout fallback fires this long after the nominal end
-export const VIEW_FADE_MS = 200; // Replay / Try it live crossfade
+export const VIEW_TRANSITION_MS = 420; // Replay / Try it live transition
 
 /* ---------- real movement ---------- */
 

@@ -1504,13 +1504,35 @@ h2 {
   }
   .sierra-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    transition:
+      grid-template-columns 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      column-gap 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sierra-grid .panel-story {
+    min-width: 0;
+    overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition:
+      opacity 180ms ease-out 200ms,
+      transform 360ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
   }
   /* Give course replies the full stage when visitors switch from the replay. */
   .sierra-grid:has(.demo-stage[data-view="live"]) {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0fr) minmax(0, 1fr);
+    column-gap: 0;
   }
   .sierra-grid:has(.demo-stage[data-view="live"]) .panel-story {
-    display: none;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-16px);
+    transition:
+      opacity 140ms ease-out,
+      transform 260ms ease-out,
+      visibility 0s linear 140ms;
   }
   /* The working site is the larger column. */
   .practice-grid {

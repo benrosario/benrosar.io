@@ -1,9 +1,9 @@
-/* Replay / Try it live crossfade (components/sierra-demo.tsx). Duration: VIEW_FADE_MS in
-   lib/tab-intent.ts (keep --demo-fade in step). Opacity only. Reduced motion: the script never
-   enters the animated states, and globals.css switches animations off. */
+/* Replay and live views move in opposite directions while the desktop grid opens
+   or closes. Keep --demo-motion in step with VIEW_TRANSITION_MS in lib/tab-intent.ts.
+   Reduced motion is handled by the view state and the global motion preference. */
 
 .demo-views {
-  --demo-fade: 200ms;
+  --demo-motion: 420ms;
   position: relative;
   display: flex;
   flex: 1 1 auto;
@@ -11,19 +11,26 @@
   min-width: 0;
   min-height: 0;
 }
-.demo-view[data-entering] {
-  animation: demo-view-in var(--demo-fade) ease-out;
+.demo-view[data-entering][data-kind="live"] {
+  animation: demo-live-in var(--demo-motion) cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-/* The outgoing view stays mounted, out of flow over the incoming one, for the fade. Only where
-   the views fill a fixed-height column (fit mode); elsewhere they have different natural
-   heights, so the outgoing view is simply replaced and the incoming one fades in. */
+.demo-view[data-entering][data-kind="replay"] {
+  animation: demo-replay-in var(--demo-motion) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Only the fixed-height desktop stage can layer the outgoing view cleanly. */
 .demo-view[data-exiting] {
   position: absolute;
   inset: 0;
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  animation: demo-view-out var(--demo-fade) ease-out;
+}
+.demo-view[data-exiting][data-kind="replay"] {
+  animation: demo-replay-out 160ms ease-in both;
+}
+.demo-view[data-exiting][data-kind="live"] {
+  animation: demo-live-out 160ms ease-in both;
 }
 @media (max-width: 999.98px), (max-height: 659.98px) {
   .demo-view[data-exiting] {
@@ -31,13 +38,21 @@
   }
 }
 
-@keyframes demo-view-in {
-  from {
-    opacity: 0;
-  }
+@keyframes demo-live-in {
+  from { opacity: 0; transform: translateX(20px); clip-path: inset(0 0 0 8%); }
+  34% { opacity: 0; transform: translateX(20px); clip-path: inset(0 0 0 8%); }
+  to { opacity: 1; transform: translateX(0); clip-path: inset(0); }
 }
-@keyframes demo-view-out {
-  from {
-    opacity: 1;
-  }
+@keyframes demo-replay-in {
+  from { opacity: 0; transform: translateX(-20px); clip-path: inset(0 8% 0 0); }
+  34% { opacity: 0; transform: translateX(-20px); clip-path: inset(0 8% 0 0); }
+  to { opacity: 1; transform: translateX(0); clip-path: inset(0); }
+}
+@keyframes demo-replay-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-12px); }
+}
+@keyframes demo-live-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(12px); }
 }

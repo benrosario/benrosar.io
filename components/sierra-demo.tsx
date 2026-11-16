@@ -12,7 +12,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { REDUCED_MOTION_QUERY, TOUR_FIT_QUERY, VIEW_FADE_MS, MOTION_SLACK_MS, panelMotionMode } from "@/lib/tab-intent";
+import { REDUCED_MOTION_QUERY, TOUR_FIT_QUERY, VIEW_TRANSITION_MS, MOTION_SLACK_MS, panelMotionMode } from "@/lib/tab-intent";
 import { ChatDemo, useDemoClientId } from "./chat-demo";
 import { useTabActive } from "./project-tabs";
 import { SampleChat } from "./sample-chat";
@@ -20,7 +20,7 @@ import { SampleChat } from "./sample-chat";
 // The Sierra Class Helper tab: a recorded replay, and the live demo when it is available.
 // Both views stay mounted, so a signed-in conversation survives switching views and tabs.
 type View = "replay" | "live";
-// `exiting` is the view that is only still on screen to fade out, `entering` the one fading in.
+// `exiting` is the view that is only still on screen to animate out, `entering` the one animating in.
 type Shown = { view: View; exiting: View | null; entering: View | null };
 type DemoState = {
   clientId: string | null;
@@ -69,11 +69,11 @@ export function SierraDemo({ children }: { children: ReactNode }) {
     if (moveFocus && next === "live") requestAnimationFrame(() => liveRef.current?.focus());
   };
 
-  // The crossfade ends on the animation event (see DemoViews); this is the fallback.
+  // The entering view ends the transition (see DemoViews); this is the fallback.
   // Reduced motion never enters the animated states, so nothing waits for an event.
   useEffect(() => {
     if (!shown.exiting && !shown.entering) return;
-    const t = setTimeout(settle, VIEW_FADE_MS + MOTION_SLACK_MS);
+    const t = setTimeout(settle, VIEW_TRANSITION_MS + MOTION_SLACK_MS);
     return () => clearTimeout(t);
   }, [shown, settle]);
 
@@ -125,7 +125,7 @@ export function SierraDemoStage() {
     "aria-hidden": view !== v ? true : undefined,
     inert: view !== v,
     onAnimationEnd: (e: AnimationEvent<HTMLElement>) => {
-      if (exiting === v && e.target === e.currentTarget) settle(); // not an animation inside the view
+      if (entering === v && e.target === e.currentTarget) settle(); // not an animation inside the view
     },
   });
   return (
@@ -141,7 +141,7 @@ export function SierraDemoStage() {
         </div>
       )}
       <div className="demo-views">
-        <section className="demo-view" id={ids.replay} aria-labelledby={`${ids.replay}-title`} {...viewProps("replay")}>
+        <section className="demo-view" data-kind="replay" id={ids.replay} aria-labelledby={`${ids.replay}-title`} {...viewProps("replay")}>
           <h3 id={`${ids.replay}-title`}>Watch it find a class</h3>
           <p className="sample-meta">
             A replay of a real reply from Discord on September 29, 2026. Instructor names are changed.
@@ -149,7 +149,7 @@ export function SierraDemoStage() {
           <SampleChat active={tabActive && view === "replay"} />
         </section>
         {clientId && (
-          <div className="demo-view" id={ids.live} tabIndex={-1} ref={liveRef} {...viewProps("live")}>
+          <div className="demo-view" data-kind="live" id={ids.live} tabIndex={-1} ref={liveRef} {...viewProps("live")}>
             <ChatDemo googleClientId={clientId} />
           </div>
         )}
