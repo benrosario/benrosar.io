@@ -129,7 +129,7 @@ export function SierraDemoStage() {
     },
   });
   return (
-    <div className="demo-stage">
+    <div className="demo-stage" data-view={view}>
       {clientId && (
         <div className="demo-switch" role="group" aria-label="Demo view">
           <button type="button" aria-pressed={view === "replay"} aria-controls={ids.replay} onClick={() => show("replay")}>

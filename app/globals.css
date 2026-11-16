@@ -352,14 +352,14 @@ h2 {
   opacity: 0.55;
   cursor: not-allowed;
 }
-/* Short until there is a conversation to show, then a fixed-height
-   scrolling transcript. */
+/* Short until there is a conversation to show, then a taller scrolling
+   transcript with room to read course results. */
 .chat-panel {
   display: flex;
   flex-direction: column;
 }
 .chat-panel.is-active {
-  height: 480px;
+  height: 600px;
 }
 .reset-chat {
   display: grid;
@@ -404,6 +404,9 @@ h2 {
 }
 .assistant-message {
   margin-bottom: 18px;
+}
+.assistant-message > div {
+  max-width: 72ch;
 }
 .message-author {
   display: block;
@@ -1451,13 +1454,13 @@ h2 {
 }
 .shot-dots {
   flex: none;
-  width: 32px;
+  width: 36px;
   height: 8px;
   background: radial-gradient(circle, var(--line) 3.5px, transparent 4px) 0 0 / 12px 8px repeat-x;
 }
 .shot-url {
   flex: 1;
-  margin-right: 44px;
+  margin-right: 48px;
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
@@ -1501,6 +1504,13 @@ h2 {
   }
   .sierra-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  /* Give course replies the full stage when visitors switch from the replay. */
+  .sierra-grid:has(.demo-stage[data-view="live"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sierra-grid:has(.demo-stage[data-view="live"]) .panel-story {
+    display: none;
   }
   /* The working site is the larger column. */
   .practice-grid {
@@ -1631,9 +1641,9 @@ h2 {
   .demo-view .chat-panel.is-active {
     flex: 1;
     height: auto;
-    /* Enough for a readable conversation. On short screens (720-770px) this
-       makes the live view, and only it, scroll the panel by a little. */
-    min-height: 300px;
+    /* Leave room for a long course reply; the enclosing panel can scroll on
+       shorter screens without shrinking the transcript. */
+    min-height: 600px;
   }
   /* The "Try it live" switch already titles this view; keep its heading for
      screen readers only, so the chat gets the height. */
