@@ -600,8 +600,15 @@ h2 {
   font-size: 14px;
   font-weight: 700;
 }
-.focus-list span {
-  margin: 0 6px;
+.focus-list ul {
+  list-style: disc;
+  margin: 0;
+  padding-left: 1.25em;
+}
+.focus-list li + li {
+  margin-top: 4px;
+}
+.focus-list li::marker {
   color: var(--muted);
 }
 
@@ -1314,7 +1321,7 @@ h2 {
   font-size: min(var(--fs-metric, 26px), 8cqi);
 }
 .panel-story .project-links {
-  margin-top: 6px;
+  margin: 14px 0 12px;
   gap: 8px 10px;
 }
 /* Secondary links drawn as outlined buttons, so they read as actions next to

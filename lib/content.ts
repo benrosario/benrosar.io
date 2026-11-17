@@ -5,7 +5,7 @@ export const profile = {
   resume: "/resume.pdf",
   site: "https://benrosar.io",
   email: "hello@benrosar.io",
-  availability: "Seeking Summer 2027 internships in software engineering and applied AI.",
+  availability: "Looking for a Summer 2027 internship in software engineering or applied AI.",
 };
 export type Project = {
   slug: string;

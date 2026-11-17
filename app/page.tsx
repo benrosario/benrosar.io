@@ -94,7 +94,7 @@ function PracticePanel() {
           ))}
         </div>
         <div className="project-links">
-          <a className="button primary" href={practiceSite.url} target="_blank" rel="noopener noreferrer">
+          <a className="text-link boxed-link" href={practiceSite.url} target="_blank" rel="noopener noreferrer">
             Open the practice site <Arrow />
             <NewTab />
           </a>
@@ -132,19 +132,20 @@ function AboutPanel() {
       <div className="about-copy">
         <h2 className="sr-only">About me</h2>
         <p className="about-lead">
-          I enjoy figuring out what people need from software and building something that helps or
-          gives them something fun to spend time with.
+          I’m studying Cognitive Science at Berkeley, where I’ve been especially interested in neural
+          networks and how people learn.
         </p>
         <p>
-          Cognitive Science gives me room to explore neural networks alongside how people think,
-          make decisions, and use technology.
+          I also enjoy building things for students around me. At Sierra College, I made a bot to help
+          find classes. More recently at Berkeley, I built practice sites for CS 61A and CS 61B exams.
         </p>
         <div className="focus-list">
           <p className="focus-title">Currently exploring</p>
-          <p>
-            Neural networks <span aria-hidden="true">·</span> Retrieval-augmented generation{" "}
-            <span aria-hidden="true">·</span> Software development
-          </p>
+          <ul>
+            <li>Neural networks</li>
+            <li>Retrieval-augmented generation</li>
+            <li>Software development</li>
+          </ul>
         </div>
       </div>
       <section className="roles" aria-labelledby="roles-title">
@@ -197,13 +198,13 @@ export default function Home() {
       <main id="home" className="home wrap-wide">
         <div className="rail-intro">
           <h1>
-            I build software that students use<span className="orange">.</span>
+            Building software that makes work easier<span className="orange">.</span>
           </h1>
           <p className="rail-meta">
-            Cognitive Science, UC Berkeley, class of 2028 <span aria-hidden="true">·</span> San Francisco Bay Area
+            Studying Cognitive Science at UC Berkeley, Class of 2028 <span aria-hidden="true">·</span> San Francisco Bay Area
           </p>
           <p className="rail-meta">
-            Previously Student Body President at Sierra College, representing 21,000 students.
+            Before Berkeley, I was Student Body President at Sierra College, where I represented 21,000 students.
           </p>
           <p className="availability">
             <span className="status-dot" aria-hidden="true" />
