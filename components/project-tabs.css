@@ -115,7 +115,7 @@
   border-bottom-color: transparent;
   border-radius: 12px 12px 0 0;
   overflow: hidden;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, flex-grow var(--ptabs-glide);
 }
 .ptabs-tab[aria-selected="true"] {
   background: var(--ptabs-surface);
@@ -146,13 +146,13 @@
   -webkit-line-clamp: 3; /* narrow tabs: room for a three-line label rather than cutting it */
   line-clamp: 3;
   overflow: hidden;
-  font: 500 15px/1.2 var(--font-display);
+  font: 700 15px/1.2 var(--font-display);
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
   text-wrap: balance;
 }
 .ptabs-sub {
-  display: none; /* label only until there is room */
+  display: flex;
   align-items: baseline;
   gap: 8px;
   min-width: 0;
@@ -169,7 +169,7 @@
   font-variant-numeric: tabular-nums;
 }
 .ptabs-summary {
-  display: none;
+  display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -299,7 +299,7 @@
     flex: 0 1 auto;
   }
   .ptabs-tab[aria-selected="true"] {
-    flex: 1 1 0;
+    flex: 1 1 auto;
   }
   .ptabs-label {
     display: block;

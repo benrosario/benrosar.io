@@ -455,10 +455,10 @@ export function ProjectTabs({
                   onClick={() => select(tab.id)}
                 >
                   <span className="ptabs-label">{tab.label}</span>
-                  {(tab.stat || (selected && tab.summary)) && (
+                  {(tab.stat || tab.summary) && (
                     <span className="ptabs-sub">
                       {tab.stat && <span className="ptabs-stat">{tab.stat}</span>}
-                      {selected && tab.summary && <span className="ptabs-summary">{tab.summary}</span>}
+                      {tab.summary && <span className="ptabs-summary">{tab.summary}</span>}
                     </span>
                   )}
                 </button>

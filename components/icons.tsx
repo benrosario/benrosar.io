@@ -32,6 +32,23 @@ export function GitHub() {
     </svg>
   );
 }
+export function House() {
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m3 10 9-7 9 7M5.5 9v12h13V9M9.5 21v-7h5v7" />
+    </svg>
+  );
+}
 export function Mountain() {
   return (
     <svg

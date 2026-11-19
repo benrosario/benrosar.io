@@ -218,22 +218,20 @@ export default function Home() {
               {
                 id: "sierra",
                 label: projects[0].title,
-                summary: "Course search in Discord",
-                stat: "40+ active users",
+                summary: "semantic + IDF keyword search",
                 tourMs: SIERRA_TOUR_MS,
                 panel: <SierraPanel />,
               },
               {
                 id: "practice",
-                label: practiceSite.title,
-                summary: "Past exams, checked in your browser",
-                stat: questionCount ? `${questionCount} questions` : undefined,
+                label: "Berkeley CS61a Practice Tool",
+                summary: "500+ users/month",
                 panel: <PracticePanel />,
               },
               {
                 id: "about",
                 label: "About me",
-                summary: "Background and what I’m exploring",
+                summary: "my background",
                 panel: <AboutPanel />,
               },
             ]}

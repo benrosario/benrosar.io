@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { projects } from "@/lib/content";
-import { Arrow } from "@/components/icons";
+import { Arrow, GitHub, House } from "@/components/icons";
 import { ThemePicker } from "@/components/theme-picker";
 import { ProjectMetrics } from "@/components/project-overview";
 export function generateStaticParams() {
@@ -50,7 +50,7 @@ export default async function ProjectPage({
   return (
     <main className="case-study wrap">
       <div className="case-toolbar">
-        <Link className="text-link" href="/#work">
+        <Link className="button primary" href="/#work">
           ← Back to selected work
         </Link>
         <ThemePicker />
@@ -119,17 +119,17 @@ export default async function ProjectPage({
         <p>{project.nextSteps}</p>
       </section>
       <div className="case-actions">
+        <Link className="button primary" href="/#work">
+          Back to project overview <House />
+        </Link>
         <a
           className="button primary"
           href={project.repo}
           target="_blank"
           rel="noreferrer"
         >
-          Explore the source <Arrow />
+          Explore the source <GitHub />
         </a>
-        <Link className="text-link" href="/#work">
-          Back to project overview <Arrow />
-        </Link>
       </div>
     </main>
   );

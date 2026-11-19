@@ -276,7 +276,22 @@ h2 {
   line-height: 1.7;
   color: var(--text-2);
   max-width: 52ch;
-  margin: 0 0 6px;
+  margin: 0;
+}
+.evidence-list .text-link {
+  width: fit-content;
+  padding: 16px 12px;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  line-height: 1;
+}
+.evidence-list .text-link svg {
+  display: block;
+}
+.evidence-list .text-link:hover {
+  border-color: var(--action);
+  color: var(--action);
 }
 @media (max-width: 600px) {
   .project-metrics {
@@ -685,7 +700,7 @@ h2 {
 }
 .case-actions {
   display: flex;
-  gap: 30px;
+  gap: 12px;
   margin-top: 25px;
 }
 .sr-only {
